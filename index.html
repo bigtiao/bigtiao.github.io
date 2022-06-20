@@ -150,6 +150,174 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">SAP变式配置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-20 14:33:00 / 修改时间：14:43:47" itemprop="dateCreated datePublished" datetime="2022-06-20T14:33:00+08:00">2022-06-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>1 VC基本概念及应用场景</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9bd726088c625aff64211aacf1443e56_720w.jpg" alt="img"></p>
+<p>VC是Variant Configuration，是依据客户需求做选择配置，完成后通过Super BOM及Super Routing结合相关性找到找到所需要物料及工序，来简化客户操作，减少BOM、物料及工艺路线的维护工作量。</p>
+<p>但启用VC会增加BOM的维护复杂度，增加IT部门的工作量。VC的使用非常广泛，例如：电子消费品行业，家居行业(沙发)，凡是定制化生产的企业均可以尝试考虑一下VC是否能给企业带来便利。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a500d9b6457cef02b54e1bf53446e7c0_720w.jpg" alt="img"></p>
+<p>如图是联想针对ThinkPad定制化销售的WEB界面，界面上可以对“操作系统”、“显示屏”、“显卡”、“内存”等进行选配，但这不是SAP系统的标准的选配界面，但SAP可以向前和向后做扩展兼容，如：WEB，手机APP，SAP-Fiori等都可以用运用到可配置VC，同时</p>
+<p>VC功能不仅仅是运用在ERP上，在其他的系统也能通用，如：PLM, CRM, MES。</p>
+<p><strong>2 特性</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-cde6df12d3ed219b21eaaf7e0b0bf3fd_720w.jpg" alt="img"></p>
+<p><strong>特性：</strong>可以理解为是一种属性。</p>
+<p>举个例子，比如说人，有性别，年龄，民族等等这些区分，那么这些我们称为“特性”，特性里面会有“值”，比如民族有“汉族”，“蒙古族”，这些我们成为特性值，特性与特性值之间是一种从属关系，我们也可以定义这些特性它允许什么样的值存在，是什么类型的，数值型，货币型，日期型还是字段型，同时特性可以定义只允许被哪些类使用。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-01733add65bae6023090e03fe8e2a1ba_720w.jpg" alt="img"></p>
+<p>上图展示的是SAP标准中哪些表允许被修改，即依据特性值的内容更新表里面的字段，例如：你想通过这个特性值来影响BOM里的数量，就需要用到“参照”表STOP。</p>
+<p><strong>特性的价格应用</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-ddcba1356e1a60ec29b809485aa65e24_720w.jpg" alt="img"></p>
+<p>例，如何用一个特性去影响销售价，有4个步骤：</p>
+<ul>
+<li>首先建立一个特征；</li>
+<li>为条件类型“VA01”或“VA00”创建条件记录，需求维护变式值，指定某个变式对应单价；</li>
+<li>将条件类型增加到SD的价格控制过程内；</li>
+<li>分配条件记录给特性值，或者写程式相关性通过计算及选择之后使其能够等同于价格条件里面的变式，当两者匹配之后就能够带出价格出来。</li>
+</ul>
+<p>完成以上步骤之后，就可以达到效果：当用户选择了某个配置之后或某个特性之后，系统自动将价格计算出来。</p>
+<p><strong>特性影响BOM数量</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-47fc798eb684c703181d97ac091c862d_720w.jpg" alt="img"></p>
+<p>如上是表述如何通过特性影响BOM的数量，业务场景：如依据客户的选择来决定你要用某个材料用几个，比如我们的内存，规格是8G的，但客户选择的是16G,这样自然我们的内存是8G*2，在这个情况下我们需要去创建一个特性，然后用这个特性去更改我们的BOM值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-bab2110e12201cdea3b9c974688e629c_720w.jpg" alt="img"></p>
+<p>之前所列是允许被更改的表结构清单，上面列出的是仅能被读取的。主要是我们的销售的一些表，或物料的一些表，这些就不要希望能用特性去修改里面的数据。</p>
+<p><strong>3 分类</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-988511e3a33747b997f9999c7fe603af_720w.jpg" alt="img"></p>
+<p>SAP的分类有很多的类型，有针对物料、工作中心、供应商、客户的、批次的分类。每种分类的类型对应的系统后台表结构。故类类型决定了分类能被运用到哪个具体的对象，当然SAP标准存在的分类类型基本上可以满足正常的使用需求，用户无须自已新增类型。</p>
+<p>在使用的过程中，常见的分类有001，或者200，300,或者023等，另外组织范围，可以决定特性是不是在这个“组织范围”内被显示出来。</p>
+<p>分类可以理解为特性的集合，举个例子，电脑类是由什么特性组的，是由CPU，硬盘等特性组成的。 或者人这个类，是由民族，性别等特性组成的。那具体的对象，比如我这个人，那就是一个具体的实物对象，我们把这个叫做类的实例化。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-681631fc346f5e05981ddfba61bac9db_720w.jpg" alt="img"></p>
+<p>分类类型300，是VC的主要类类型，还有一个类节点200，也是VC分类类型。他们的目的都是一样，即通过Super Bom,依据客户的需求去精确的找到所需要的组件。</p>
+<p>那300和200有什么区别是，一般我们认为300是用在成品类型的。200运用于BOM里项目类别为K的分类。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a4859c752f353ba001a455b13933f844_720w.jpg" alt="img"></p>
+<p>例子，有个销售需求，颜色是一个科选择特性，在BOM里面会维护一个类节点为K的分类，它会依据客户的选择之后会自动找到颜色所对应的一个物料。</p>
+<p>完成整套系统的配置，需要我们先创建一个300的成品分类。再创建一个200的分类，这个200的分类必须包含300里面的颜色的特性。完成后再把200的分类分配给对应的材料。这样做的好处：假设我们的颜色它有3种或4种5种，那么我们在BOM里面并不需要指定具体的物料号，而仅仅只需维护一行K类型的类节点。那通过销售订单的一个选择后系统会自动选择它所需要的材料，这种做法和我们传统的Super BOM不太一样。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-33c69bb92077751d8de28cbd134e040c_720w.jpg" alt="img"></p>
+<p><strong>总结：分类、特性、特性值</strong></p>
+<ul>
+<li>首先维护特性、特性值， 事务码： CT04；</li>
+<li>维护分类，将分类所需特性分配给类，事务码：CL02；</li>
+<li>将分类分配给具体的对象，一般为物料号。该物料的物料类型与常规物料类型不一样的，常规物料类型有成品，半成品，原材料等，此物料类型为可配置的物料类型；</li>
+<li>分配完后不会为物料指定对应的特征值，但可以指定（选择）物料的<strong>特征值</strong>能显示哪些，也就是说通过这个设置，可以完成不同的物料虽然分配是同一类，同一特性，但它允许客户选择的值可以不一样。 当然我们可以通过CU20，CU30去通过特性值查找哪一些物料有用到， 但如果查库存的话有些麻烦，这个后面会讲变式物料时提到。</li>
+</ul>
+<p><strong>4 相关性</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-6a11367b6229e55a7104a4482b3a99aa_720w.jpg" alt="img"></p>
+<p>相关性有4种类型，前提条件、选择条件、处理程序、约束。</p>
+<ul>
+<li><strong>相关性的目的：</strong>将分类或者特性，或特性值，跟BOM，Routing 做关联，使其 能过用户的选择之后，通过“相关性”来影响最终的值 和BOM项目</li>
+<li><strong>前提条件：</strong>指选择了某个值或者特性后才能出现。比如我选择了某个配件之后，另外的一个品牌才可以出现。再举个例了，选择了“市”之后，才能出现“省”，这样的一个前提条件。</li>
+<li><strong>选择条件：</strong>必须被选择, 当符合某种条件下，必须被选择。</li>
+<li><strong>处理程序：</strong>主要是写一段配置或代码。 讲变式表以及功能时上会用到。</li>
+<li><strong>约束：</strong>是判断多个对象配置的组合是不是合理的。比如说我们选不同的操作系统有Windows ,Linux的，那你在选Linux的时候，在选装软件时不能选微软Office；</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-07cca9881ea28f651a71d1318339693f_720w.jpg" alt="img"></p>
+<p>相关性的类型很多，它可以被运用于哪些对象是有规则的，如上图： 红色字母部分代表相关性的类型能被应用在什么对象上面。 从图上我们可以看到能被分配的对象有特征，特性值，类，配置参数文件，BOM，Routing等。</p>
+<p><strong>5 启用VC系统的前置因素-Super BOM</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9313882e48ada51610162938935d2c94_720w.jpg" alt="img"></p>
+<p>首先我们需要一个Super BOM,会几乎穷举所有可能的组合，会把所有的东西放到这个里面。比如我们的CPU，CPU有这个1.2GHz，1.8 GHz，2.4 GHz的多种类型的，硬盘有1T，2T，3T等，那我们会把这些都放进去，组成一个超级BOM。 那当然这个BOM是不能被直接运用的。 维护完成后，需要维护相关性，针对每种不同的值去指定它的相关性的规则。</p>
+<p>相关性方面有两个类型：本地相关性、全局相关性。 建议大家使用全局相关性，因为本地相关性只是对这个BOM生效，如果要运用到其他BOM里面去就会非常不方便或不被允许。在相关性的命名规则一定要注意，相关性的命名规则一定要有可辨识性，避免维护完后不知如何进行选择，导致后期工作量相当巨大。</p>
+<p><strong>6 启用VC系统的前置因素-配置参数文件</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-c3aef99cc899917f82ca985f3d32cae9_720w.jpg" alt="img"></p>
+<p>创建配置参数文件之前，要求我们的物料类型是可配置的一个类型，要求MRP3视图，或者基本视图2里面，要把可配置给标识上，当然有一点我们需要注意，就是我们的“生产类型”，因选配是按订单式生产的，不是库存式生产的。需要设置MRP的策略为25。</p>
+<p>创建配置参数文件的 事务码是：CU41 ， 如果是按计划订单或生产订单无展开BOM的时候，我们只需要输入物料去保存即可。完成以上的设置之后，那我们就可以在SAP里面创建对应的销售订单，系统会提示进行特性选择。</p>
+<p><strong>7 变量表</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2d59b792444a4f577155485ed08988c6_720w.jpg" alt="img"></p>
+<p>变量表是一个特征的组合，我们前面讲过约束，这个跟约束有点类似，我们会把特征值做在一个表里面，维护完之后我们会赋予他这个值，那我们用户在选择的时候，他只是能够选择这个表里面存在的内容。如果不在这个表里面，就是不符合规则。 维护表内容用CU60 ，CU61创建表结构大家看下面这个图 ， 右上角是维护好值的表。 下面红色部分是语法，然后会指定它的几个参数，一般会有几个输入和一个输出。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-853fa2d0bf9f68cdce1257aec002f04f_720w.jpg" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4f360f076d83333cf80c24a469a95b73_720w.jpg" alt="img"></p>
+<p>函数的应用，主要目的：依据某几个特性值来算出（ABAP）另外一个值，然后回写到这个界面里面。这个函数是通过CU65来创建，创建完后会出现激活按钮进行编辑ABAP程序，程序包含输入和输出特性，使用的语法和SE37里面是一样的。这种场景应用于比较复杂的运算，通过好几个值得到第3个值。 在特征的使用上，有些特征仅能被显示，一般是被运算出来的值。</p>
+<p><strong>8 计划订单&#x2F;生产订单-无BOM展开</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-e745a75b6c256aeee931aba737350cfb_720w.jpg" alt="img"></p>
+<p>在“配置参数文件”中，有三种选项：</p>
+<ul>
+<li>计划订单或生产订单</li>
+<li>销售订单集合</li>
+<li>订单BOM</li>
+</ul>
+<p>对应的展开的类型有：不展开，单层展开，多层展开 这些选择。 相互之间的搭配关系比较复杂的，从图上可以看到，就是我们的客户来了一个单后，它会做一个值的分配，所有的值的分配都是源自销售订单， 源自第一层。成品，半成品均可配置项，也就是多层可配置的情况。在这种情况下如果我们选择的是无BOM展开，那就意味着值分配是单一层的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-de9e5afed6c08c48477ceba8935540a2_720w.jpg" alt="img"></p>
+<p>从图上可以看到，我们的配置参数是在最上层的，那我们的半成品层其实是没有维护它的配置参数文件的。但是它的值的分配依然是生效的。它会从最上层继承下来。</p>
+<p>如果最上层没有指定连接器，而半成品层也是可配置的，如选择的是不展开BOM的方式，那也就是意味着你的原材料在连接器这一块是不可以被选择到的。所以针对这种情况下，我们要求我们的成品的分类一定要包含半成品分类的特性。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-c37c2d53b12a518f136c956945ff5d36_720w.jpg" alt="img"></p>
+<p><strong>9 计划订单&#x2F;生产订单-BOM展开</strong></p>
+<p><img src="https://pic3.zhimg.com/80/v2-a4c86bcb6ce3d638c150cfaae3705d0e_720w.jpg" alt="img"></p>
+<p>如有BOM展开，在这种情况下允许你的成品和半成品它的分类没有包含关系。而你的成品和半成品都可以选配。在做订单的时候会跳出两个产品的特性进行选配，即多层选配。</p>
+<p><strong>10 销售订单配置</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-51e06d7981f9073b1957bb53d11d8f6a_720w.jpg" alt="img"></p>
+<p>产品会一些配件或辅件，它是可以通过选择来进行配置的。这些辅件可能是不需要通过生产的，但需要通过用户的选择来加入，那这样我们的销售订单它在开始是一个行项目，但我们在选择完成后，它会把我们所选择的配置，所相关的组件给带出来，这就形成了一个销售集合。销售集合要求我们在维护这个BOM的时候就不能只是维护生产类型的BOM，那也要要维护我们5类型的BOM，也就是销售类型BOM。这里指的BOM类型有：生产BOM，销售BOM，研发BOM，成本BOM等等，这里讲的是销售BOM类型。 同样我们需要在这个销售BOM下面维护这个组件对应的“相关性”，以及与特性的关系。</p>
+<p>另外一个是订单BOM， 它会把选配的结果保存为订单BOM，我们正常维护BOM是CS01，CS02. 而订单BOM是CS61，CS62.也就是我们通过这个选配完成后，它会在系统里面去自动产生一个订单BOM。</p>
+<p><strong>11 物料变式</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-96f826c632f7be691f7339851d30b3ef_720w.jpg" alt="img"></p>
+<p>可配置物料的目的是为了节约我们的物料编码，减少BOM的维护的工作量。</p>
+<p>但是有一个部门不喜欢这个作业方式，比如我们的仓库。因为减少了物料的编码，那么仓库的管理难度会增加，因同样一个物料号，实际对应的配置，参数是不一样的。也就是在统计库存时候，这时用物料号去统计是没有任何意义的。如果有一天领导问你，某一种颜色的机器或者某一种配置的机器在仓库里有多少台？你很难去回答这个问题。所以就出现了这个“物料变式”。它的好处就是会将我们的成品进行实例化，那我们刚才讲，我们的配置物料在分配之后分类之后我们是不会给他赋予值。而物料变式它除了分配分类以后，它还会具体将对应的值输入进去，也就是我已经明确了这个物料号它代表的是哪一种配置参数。</p>
+<p>同时我也会在物料主数据里把这个物料所对应的这个可配置物料进行指定，就是做一个对应关系，那这样的好处就是我们可以在物料管理上进行严格区分，同时我们在BOM的时候也可以参照销售BOM进行生产，也就是减少了BOM的工作量，但是也没有给库存管理带来很大的问题。</p>
+<p><strong>12 SAP VC学习路径</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-02beafa0236263c04bdb93fe3aa4f473_720w.jpg" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-53a7953ce940b0ebe78437dbbf480486_720w.jpg" alt="img"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1081,1556 +1249,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/20/SAP%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/05/20/SAP%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">SAP系统变量与移动类型</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-05-20 14:12:00 / 修改时间：14:20:14" itemprop="dateCreated datePublished" datetime="2022-05-20T14:12:00+08:00">2022-05-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="系统变量"><a href="#系统变量" class="headerlink" title="系统变量"></a>系统变量</h2><p>SY-SUBRC: 系统执行某指令后,表示执行成功与否的变量,0表示成功</p>
-<p>SY-DBLNT: 被处理过的记录的笔数</p>
-<p>SY-UNAME: 当前使用者登入SAP的USERNAME</p>
-<p>SY-DATUM: 当前系统日期</p>
-<p>SY-UZEIT: 当前系统时间</p>
-<p>SY-TCODE: 当前执行程序的Transaction code</p>
-<p>SY-REPID: 当前程序名称</p>
-<p>SY-INDEX : 当前LOOP循环过的次数</p>
-<p>SY-TABIX: 当前处理的是internal table 的第几笔</p>
-<p>SY-TMAXL: Internal table的总笔数</p>
-<p>SY-SROWS: 屏幕总行数</p>
-<p>SY-SCOLS: 屏幕总列数</p>
-<p>SY-MANDT: 當前系統編號(CLIENT NUMBER)</p>
-<p>SY-VLINE: 画竖线</p>
-<p>SY-ULINE: 画横线</p>
-<p>SY-PAGNO: 当前页号</p>
-<p>SY-LINSZ: 当前报表宽度</p>
-<p>SY-LINCT: 当前报表长度</p>
-<p>SPACE: 空字符串</p>
-<p>SY-LSIND: 列表索引页</p>
-<p>SY-LISTI: 上一个列表的索引</p>
-<p>SY-LILLI: 绝对列表中选定行的行号</p>
-<p>SY-CUROW: 屏幕上的行</p>
-<p>SY-CUCOL: 光标列</p>
-<p>SY-CPAGE: 列表的当前显示页</p>
-<p>SY-STARO:真实行号</p>
-<p>SY-LISEL: 选择行的内容，长度为255</p>
-<p>SY-LINNO: 当前行</p>
-<p>SY-SUBRC：语句执行后的返回值，0表示成功</p>
-<p>SY-DATUM：当前服务器日期</p>
-<p>SY-UZEIT：当前服务器时间</p>
-<p>SY-ULINE：255长度的水平线</p>
-<p>SY-VLINE：垂直线</p>
-<p>SY-INDEX：循环说执行的次数</p>
-<p>SY-TABIX：内表循环的次数</p>
-<p>SY-DYNNR：当前Screen号</p>
-<p>SY-MANDT：当前登录的Client号</p>
-<p>SY-STEPL：返回当前操作的屏幕行号（Table Control）</p>
-<p>SY-LOOPC：当前表格控件在屏幕中的总行数（Table Control）</p>
-<p>SY-UCOMM：PAI所出发的功能代码</p>
-<p>SY-DYNNR：当前屏幕号</p>
-<p>SY-MSGID：Message Class</p>
-<p>SY-MSGNR：Message Number</p>
-<p>SY-MSGTY：Message Type</p>
-<p>SY-MSGV1~4：Message Variant</p>
-<p>SY-LINCT：REPROT语句中设定的LINE-COUNT</p>
-<p>SY-LINSZ：REPROT语句中设定的LINE-SIZE</p>
-<p>SY-SROWS：当前窗口的列表行数</p>
-<p>SY-SCOLS：当前窗口的列表栏目数</p>
-<p>SY-PAGNO：当前页的页码</p>
-<p>SY-LINNO：当前选定行的行号</p>
-<p>SY-COLNO：当前选定列的列号</p>
-<p>SY-LSIND：当前列表索引，第一级列表为1</p>
-<p>SY-LILLI：选择某行时光标行位置</p>
-<p>SY-CUROW：选择某行时光标列位置 </p>
-<p>SY-ABCDE 常量，A-Z字母表</p>
-<p>SY-BATCH 后台的程序运行</p>
-<p>SY-COLNO：当前选定列的列号</p>
-<p>SY-CPAGE 列表的当前显示页</p>
-<p>SY-CUCOL 屏幕，PAI 的水平光标位置</p>
-<p>SY-CUROW：选择某行时光标列位置</p>
-<p>sy-datar:在PAI中，如果屏幕上至少有一个输入字段的值被用户或其他数据传输所更改，则为“X”，否则为初始值。</p>
-<p>sy-datlo:用户的当前日期</p>
-<p>SY-DATUM 服务器日期</p>
-<p>SY-DYNNR 当前屏幕的编号</p>
-<p>SY-INDEX 循环的次数(DO While)</p>
-<p>SY-LANGU 当前登录语言</p>
-<p>SY-LILLI：选择某行时光标行位置</p>
-<p>SY-LINCT 当前报表长度 (REPROT语句中设定的LINE-COUNT)</p>
-<p>SY-LINNO 当前选定行的行号</p>
-<p>SY-LINSZ 当前报表宽度(REPROT语句中设定的LINE-SIZE)</p>
-<p>SY-LISEL 选择行的内容,长度为255</p>
-<p>SY-LISTI 上一个列表的索引</p>
-<p>SY-LOOPC：当前表格控件在屏幕中的总行数（Table Control）</p>
-<p>SY-LSIND：当前列表索引，第一级列表为1</p>
-<p>SY-MSGID 消息, 消息类</p>
-<p>SY-MSGTY 消息，消息类型</p>
-<p>SY-MSGNO 消息, 消息编号</p>
-<p>SY-MSGV1 消息,消息变量1</p>
-<p>SY-MSGV2 消息,消息变量2</p>
-<p>SY-MSGV3 消息,消息变量3</p>
-<p>SY-MSGV4 消息,消息变量4</p>
-<p>SY-PAGNO 当前页号</p>
-<p>SY-SCOLS：当前窗口的列表栏目数</p>
-<p>SY-SLSET 选择屏幕的变式名称</p>
-<p>SY-SROWS：当前窗口的列表行数</p>
-<p>SY-STARO 真实行号</p>
-<p>SY-STEPL：返回当前操作的屏幕行号（Table Control）</p>
-<p>SY-SUBRC 执行状态</p>
-<p>SY-TABIX 当前处理的内表的Index</p>
-<p>SY-TCODE 当前的事务代码</p>
-<p>SY-UCOMM：PAI所出发的功能代码</p>
-<p>SY-ULINE 水平线</p>
-<p>SY-UNAME 用户名</p>
-<p>SY-UZEIT 服务器时间</p>
-<p>SY-VLINE 垂直线</p>
-<p>附加几个系统常用函数</p>
-<p>SHIFT STRING：左移字符串。长度减1。</p>
-<p>CONCATENATE：连接字符串。</p>
-<p> SPLIT：拆分字符串。</p>
-<p>SEARCH：查询字符串。</p>
-<p>REPLACE：替换字符串。</p>
-<p>CONDENSE：删除多余的空格。</p>
-<p>TRANSLATE：转换字符格式，如将’ABC’转换为’ABC’</p>
-<p>CONVERT TEXT：创建一个可排序的字符串。</p>
-<p>OVERLAY：用一个字符串覆盖另一个字符串。</p>
-<p>STRLEN：字符串长度。</p>
-<p>ABS：取绝对值。</p>
-<p>COS、SIN、TAN：取三角函数值。</p>
-<p>ACOS、ASIN、ATAN：反三角函数。</p>
-<p>COSH、SINH、TANH：双曲函数。</p>
-<p>EXP：E的幂函数。</p>
-<p>LOG：底数为E的对数。</p>
-<p>LOG10：底数为10的对数。</p>
-<p>SQRT：平方根。</p>
-<p>SIGN：返回参数符号。</p>
-<p>TRUNC：返回参数的整数部分。</p>
-<p>FRAC：输入参数的小数部分。</p>
-<p>CEIL：返回不小于参数的最小整数。</p>
-<p>FLOOR：返回不大于参数的最小整数。</p>
-<h2 id="移动类型"><a href="#移动类型" class="headerlink" title="移动类型"></a>移动类型</h2><ul>
-<li>01 MB01 按采购订单的货物移动</li>
-<li>02 MB31 按生产订单的货物移动</li>
-<li>03 MB1A 货物提取（工单退料）</li>
-<li>04 MB1B 转移过帐</li>
-<li>05 MB1C 其他收货</li>
-<li>06 MB11 货物移动</li>
-<li>07 MB04 “物料供应”消耗的事后调整</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th><strong>移动类型</strong></th>
-<th><strong>移动类型文本</strong></th>
-<th><strong>含义</strong></th>
-<th><strong>事务码</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>101</td>
-<td>GR 收货</td>
-<td>直接收货</td>
-<td>MIGO&#x2F;CO11N</td>
-</tr>
-<tr>
-<td>102</td>
-<td>用于PO冲销的收货</td>
-<td>冲销直接收货</td>
-<td>MIGO&#x2F;CO11N</td>
-</tr>
-<tr>
-<td>103</td>
-<td>进入冻结库存的收货</td>
-<td>收入质检仓</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>104</td>
-<td>到冻结冲销的收货</td>
-<td>冲销收入质检仓（待检退货等）</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>105</td>
-<td>来自冻结库存的收货</td>
-<td>从质检仓收货入库</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>106</td>
-<td>来自冻结的收货冲销</td>
-<td>冲销入库异常及向供应商退货</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>121</td>
-<td>收货后续调整</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>122</td>
-<td>RE 向供应商退货</td>
-<td>向供应商退货（101、105）</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>123</td>
-<td>RE退货供应商冲销</td>
-<td>冲销向供应商退货（122）</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>124</td>
-<td>收货退货冻结库存</td>
-<td>冻结库存退货（103）</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>125</td>
-<td>收货退货冻结库存冲销</td>
-<td>冲销冻结库存退货（124）</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>131</td>
-<td>收货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>132</td>
-<td>收货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>141</td>
-<td>收货后续调整</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>142</td>
-<td>收货后续调整</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>161</td>
-<td>收货退货</td>
-<td>创建退货采购订单向供应商退货</td>
-<td></td>
-</tr>
-<tr>
-<td>162</td>
-<td>收货退货冲销</td>
-<td>冲销创建退货采购订单向供应商退货</td>
-<td></td>
-</tr>
-<tr>
-<td>201</td>
-<td>有关成本中心的发货</td>
-<td>向成本中心发料</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>202</td>
-<td>有关成本中心的收货</td>
-<td>成本中心退料或冲销成本中心发料</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>221</td>
-<td>有关项目的发货</td>
-<td>向项目发货</td>
-<td></td>
-</tr>
-<tr>
-<td>222</td>
-<td>有关项目的收货</td>
-<td>项目退货或冲销项目发货</td>
-<td></td>
-</tr>
-<tr>
-<td>231</td>
-<td>有关销售订单的发货</td>
-<td>销售订单的发货</td>
-<td></td>
-</tr>
-<tr>
-<td>232</td>
-<td>有关销售订单的收货</td>
-<td>销售订单的退货或重销销售订单的发货</td>
-<td></td>
-</tr>
-<tr>
-<td>241</td>
-<td>有关资产的发货</td>
-<td>向资产的发货</td>
-<td></td>
-</tr>
-<tr>
-<td>242</td>
-<td>有关资产的收货</td>
-<td>向资产的发货</td>
-<td></td>
-</tr>
-<tr>
-<td>251</td>
-<td>有关销售的发货</td>
-<td>有关销售的发货</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>252</td>
-<td>有关销售的收货</td>
-<td>有关销售的收货</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>261</td>
-<td>有关订单的发货</td>
-<td>工单领料</td>
-<td>MIGO&#x2F;MB1A</td>
-</tr>
-<tr>
-<td>262</td>
-<td>有关订单的收货</td>
-<td>工单退料（或冲销工单领料）</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>281</td>
-<td>有关网络的发货</td>
-<td>有关网络的发货</td>
-<td></td>
-</tr>
-<tr>
-<td>282</td>
-<td>有关网络的收货</td>
-<td>有关网络的收货</td>
-<td></td>
-</tr>
-<tr>
-<td>291</td>
-<td>发货的全部帐户分配</td>
-<td>向所有对象发货（可选择发货到对象的类型）</td>
-<td></td>
-</tr>
-<tr>
-<td>292</td>
-<td>收货的全部帐户分配</td>
-<td>向所有对象收货（可选择发货到对象的类型）</td>
-<td></td>
-</tr>
-<tr>
-<td>301</td>
-<td>TF工厂间的转移</td>
-<td>工厂间的转移（one step）</td>
-<td></td>
-</tr>
-<tr>
-<td>302</td>
-<td>TR工厂间的转储</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>303</td>
-<td>TF出库到工厂</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>304</td>
-<td>TR出库到工厂</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>305</td>
-<td>TF厂内库存转储计划</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>306</td>
-<td>TR厂内库存交易计划</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>309</td>
-<td>TF转储采购物料到物料</td>
-<td>TF转储采购物料到物料</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>310</td>
-<td>TR转储采购物料到物料</td>
-<td>TR转储采购物料到物料</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>311</td>
-<td>TF厂内移储</td>
-<td>TF厂内移储</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>312</td>
-<td>TR 厂内转储</td>
-<td>TR 厂内转储</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>313</td>
-<td>TF出库到库存地</td>
-<td>从出库库存到库存地</td>
-<td></td>
-</tr>
-<tr>
-<td>314</td>
-<td>TR出库到库存地</td>
-<td>冲销出库库存到库存地</td>
-<td></td>
-</tr>
-<tr>
-<td>315</td>
-<td>TF库存地库存转储计划</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>316</td>
-<td>TR库存地库存转储计划</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>317</td>
-<td>创建结构化物料</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>318</td>
-<td>RE创建结构化物料</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>319</td>
-<td>拆分结构化物料</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>320</td>
-<td>RE拆分结构化物料</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>321</td>
-<td>TF质量到非限制</td>
-<td>质检库存到非限制库存</td>
-<td></td>
-</tr>
-<tr>
-<td>322</td>
-<td>TR 质量到非限制</td>
-<td>冲销质检库存到非限制库存</td>
-<td></td>
-</tr>
-<tr>
-<td>323</td>
-<td>TF厂内质量</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>324</td>
-<td>TR厂内质量</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>325</td>
-<td>TF厂内冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>326</td>
-<td>TR厂内冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>331</td>
-<td>GI 到采样QI</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>332</td>
-<td>RE 到采样QI</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>333</td>
-<td>GI 到采样非限制</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>334</td>
-<td>RE 到采样非限制</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>335</td>
-<td>GI 到采样冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>336</td>
-<td>RE 到采样冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>340</td>
-<td>批次重估</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>341</td>
-<td>TF 非限制到限制</td>
-<td>从非限制库存移动到限制库存</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>342</td>
-<td>TF 限制到非限制</td>
-<td>从限制库存移动到非限制库存</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>343</td>
-<td>TF冻结到非限制</td>
-<td>冻结库存到非限制库存</td>
-<td></td>
-</tr>
-<tr>
-<td>344</td>
-<td>TR 冻结到非限制</td>
-<td>冲销冻结库存到非限制库存</td>
-<td></td>
-</tr>
-<tr>
-<td>349</td>
-<td>TF 冻结到QI</td>
-<td>冻结库存到质检库存</td>
-<td></td>
-</tr>
-<tr>
-<td>350</td>
-<td>TR冻结到QI</td>
-<td>冲销冻结库存到质检库存</td>
-<td></td>
-</tr>
-<tr>
-<td>351</td>
-<td>TF在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>352</td>
-<td>TR 在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>411</td>
-<td>TF库存地到库存地</td>
-<td>寄售转自有（K）、MTO到MTS</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>412</td>
-<td>TR库存地到库存地</td>
-<td>寄售转自有（K）、MTS到MTO</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>413</td>
-<td>TF库存地到销售订单</td>
-<td>销售订单库存之间转储</td>
-<td></td>
-</tr>
-<tr>
-<td>414</td>
-<td>TR库存地到销售订单</td>
-<td>销售订单库存之间转储</td>
-<td></td>
-</tr>
-<tr>
-<td>415</td>
-<td>TF 库存地到项目</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>416</td>
-<td>TR 库存地到项目</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>441</td>
-<td>TP 非限制到 tiedEmp</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>442</td>
-<td>TP tiedEmp.到非限制</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>451</td>
-<td>GI退货</td>
-<td>Returns  from customer without Shipping</td>
-<td>MB1C</td>
-</tr>
-<tr>
-<td>452</td>
-<td>RE 退货(冲销)</td>
-<td>冲销451</td>
-<td></td>
-</tr>
-<tr>
-<td>453</td>
-<td>总储备退回发出处</td>
-<td>总储备退回发出处</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>454</td>
-<td>总储备到退货</td>
-<td>总储备到退货</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>455</td>
-<td>TF库存转储退货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>456</td>
-<td>TR库存转储退货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>457</td>
-<td>TP 退货到总储备 QI</td>
-<td>客户退货的转回（质检库存）</td>
-<td></td>
-</tr>
-<tr>
-<td>458</td>
-<td>TP 总储备QI到退货</td>
-<td>客户退货的转回（质检库存）冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>459</td>
-<td>TP退货到总储备冻结</td>
-<td>客户退货的转回（冻结库存）</td>
-<td></td>
-</tr>
-<tr>
-<td>460</td>
-<td>TP 总储备冻结到退货</td>
-<td>客户退货的转回（冻结库存）冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>501</td>
-<td>无PO的收货</td>
-<td>无采购订单的收货</td>
-<td></td>
-</tr>
-<tr>
-<td>502</td>
-<td>RE无PO的收货</td>
-<td>无采购订单的退货</td>
-<td></td>
-</tr>
-<tr>
-<td>503</td>
-<td>收货到QI</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>504</td>
-<td>RE收货到数量</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>505</td>
-<td>收据到收货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>506</td>
-<td>RE收货到冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>511</td>
-<td>免费交货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>512</td>
-<td>无费用的RE交货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>521</td>
-<td>无订单的收货</td>
-<td>无订单的收货</td>
-<td></td>
-</tr>
-<tr>
-<td>522</td>
-<td>RE无生产订单的收货</td>
-<td>无订单的收货的冲减</td>
-<td></td>
-</tr>
-<tr>
-<td>523</td>
-<td>无生产订单的QI收货</td>
-<td>质检库存无订单的收货</td>
-<td></td>
-</tr>
-<tr>
-<td>524</td>
-<td>RE无生产订单的质量</td>
-<td>质检库存无订单的收货冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>525</td>
-<td>无生产订单的冻结收货</td>
-<td>冻结库存无订单的收货</td>
-<td></td>
-</tr>
-<tr>
-<td>526</td>
-<td>RE无生产订单冻结</td>
-<td>冻结库存无订单的收货冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>531</td>
-<td>副产品收货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>532</td>
-<td>RE副产品</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>541</td>
-<td>对转包库存的GI仓库</td>
-<td>对转包库存的GI仓库</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>542</td>
-<td>RE转包库存到仓库</td>
-<td>RE转包库存到仓库</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>543</td>
-<td>GI发货销售订单存货</td>
-<td>GI发货销售订单存货</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>544</td>
-<td>GI收货销售订单存货</td>
-<td>GI收货销售订单存货</td>
-<td>MIGO</td>
-</tr>
-<tr>
-<td>545</td>
-<td>副产品SC收货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>546</td>
-<td>GI 发货 SC 副产品</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>551</td>
-<td>GI报废</td>
-<td>GI报废（仓库物料报废）</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>552</td>
-<td>RE报废</td>
-<td>RE报废（仓库物料报废）</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>553</td>
-<td>GI报废QI</td>
-<td>质检库存报废</td>
-<td></td>
-</tr>
-<tr>
-<td>554</td>
-<td>RE报废QI</td>
-<td>质检库存报废冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>555</td>
-<td>GI报废冻结</td>
-<td>冻结库存报废</td>
-<td></td>
-</tr>
-<tr>
-<td>556</td>
-<td>RE报废冻结</td>
-<td>冻结库存报废冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>557</td>
-<td>GI调整转运</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>558</td>
-<td>GI调整转运</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>561</td>
-<td>库存余额的初始条目</td>
-<td>库存余额的初始条目</td>
-<td></td>
-</tr>
-<tr>
-<td>562</td>
-<td>RE初始条目库存余额</td>
-<td>RE初始条目库存余额（初始库存冲销）</td>
-<td></td>
-</tr>
-<tr>
-<td>563</td>
-<td>初始条目库存余额:QI</td>
-<td>质检限制性初始库存</td>
-<td></td>
-</tr>
-<tr>
-<td>564</td>
-<td>RE库存余额输入:QI</td>
-<td>质检初始库存冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>565</td>
-<td>库存余额输入:冻结</td>
-<td>冻结初始库存</td>
-<td></td>
-</tr>
-<tr>
-<td>566</td>
-<td>RE库存余额输入:冻结</td>
-<td>冻结初始库存冲销</td>
-<td></td>
-</tr>
-<tr>
-<td>571</td>
-<td>收货装配</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>572</td>
-<td>RE 收货装配</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>573</td>
-<td>收货 QI 装配</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>574</td>
-<td>RE 收货 QI 装配</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>575</td>
-<td>收货冻结装配</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>576</td>
-<td>RE 收货冻结装配</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>581</td>
-<td>收货副产品网络</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>582</td>
-<td>RE 副产品  网络</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>601</td>
-<td>GD发货: 交货(内销)</td>
-<td>GD发货: 交货(内销)</td>
-<td></td>
-</tr>
-<tr>
-<td>602</td>
-<td>RE交货冲销(内销)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>603</td>
-<td>TF出库到工厂</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>604</td>
-<td>TR出库到工厂</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>605</td>
-<td>TF厂内库存转储计划</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>606</td>
-<td>TR厂内库存交易计划</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>621</td>
-<td>GI返回式包装:借贷</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>622</td>
-<td>GI返回式包装:退货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>623</td>
-<td>GI发货:客户退货包装</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>624</td>
-<td>GI收货:客户退货包装</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>631</td>
-<td>GI寄售: 借贷</td>
-<td>寄售订单发货到办事处</td>
-<td></td>
-</tr>
-<tr>
-<td>632</td>
-<td>GI寄售: 退货</td>
-<td>寄售订单发货到办事处</td>
-<td></td>
-</tr>
-<tr>
-<td>633</td>
-<td>GI发货: 客户寄售</td>
-<td>寄售结算发货订单由办事处发货到客户处</td>
-<td></td>
-</tr>
-<tr>
-<td>634</td>
-<td>GI收货: 客户寄售</td>
-<td>冲销633</td>
-<td></td>
-</tr>
-<tr>
-<td>635</td>
-<td>TF托售出租</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>636</td>
-<td>TR寄售退货交货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>641</td>
-<td>TF在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>642</td>
-<td>TR 在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>643</td>
-<td>TF 至跨公司间</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>644</td>
-<td>TR 至跨公司间</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>645</td>
-<td>TF 跨公司</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>646</td>
-<td>TR 跨公司</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>647</td>
-<td>TF在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>648</td>
-<td>TR 在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>651</td>
-<td>GD退货 退回</td>
-<td>客户退货退回（限制性使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>652</td>
-<td>GD退货 退货冲销</td>
-<td>冲销发货过账（标准及免费换货客户退货退回发货仓）</td>
-<td></td>
-</tr>
-<tr>
-<td>653</td>
-<td>GD 退货  非限制</td>
-<td>客户退货退回（非限制性使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>654</td>
-<td>GD 退货 非限制 冲销</td>
-<td>冲销客户退货退回（非限制性使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>655</td>
-<td>GD 退货 QI</td>
-<td>客户退货退回（质检状态使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>656</td>
-<td>GD 退货 QI 冲销</td>
-<td>冲销客户退货退回（质检状态使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>657</td>
-<td>GD 退货冻结</td>
-<td>客户退货退回（冻结使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>658</td>
-<td>GD 退货冻结冲销</td>
-<td>冲销客户退货退回（冻结使用库存的转回）</td>
-<td></td>
-</tr>
-<tr>
-<td>661</td>
-<td>GI向供应商退货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>662</td>
-<td>RE退货到供应商冲销</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>671</td>
-<td>TR 在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>672</td>
-<td>TF在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>673</td>
-<td>TF 至跨公司间</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>674</td>
-<td>TR 至跨公司间</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>675</td>
-<td>TR 跨公司</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>676</td>
-<td>TF 跨公司</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>677</td>
-<td>TR 在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>678</td>
-<td>TF在途库存</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A1</td>
-<td>TF  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A2</td>
-<td>TR  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A3</td>
-<td>TF CC  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A4</td>
-<td>TR CC  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A5</td>
-<td>TF CC  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A6</td>
-<td>TR CC  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A7</td>
-<td>TF  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6A8</td>
-<td>TR  GI1</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B1</td>
-<td>TF  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B2</td>
-<td>TR  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B3</td>
-<td>TF CC  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B4</td>
-<td>TR CC  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B5</td>
-<td>TF CC  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B6</td>
-<td>TR CC  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B7</td>
-<td>TF  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6B8</td>
-<td>TR  GI2</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6K5</td>
-<td>TF GI2 托售</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6K6</td>
-<td>TR GI2 托售</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6W5</td>
-<td>TF GI1 托售</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>6W6</td>
-<td>TR GI1 托售</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>701</td>
-<td>GR实际盘点: 仓库</td>
-<td>盘盈</td>
-<td></td>
-</tr>
-<tr>
-<td>702</td>
-<td>GI实际盘点: 仓库</td>
-<td>盘亏</td>
-<td></td>
-</tr>
-<tr>
-<td>703</td>
-<td>GR实际盘点: QI</td>
-<td>质检物料盘盈</td>
-<td></td>
-</tr>
-<tr>
-<td>704</td>
-<td>GI实际盘点: QI</td>
-<td>质检物料盘亏</td>
-<td></td>
-</tr>
-<tr>
-<td>707</td>
-<td>GR实际盘点: 已冻结</td>
-<td>冻结物料盘盈</td>
-<td></td>
-</tr>
-<tr>
-<td>708</td>
-<td>GI实际盘点: 冻结</td>
-<td>冻结物料盘亏</td>
-<td></td>
-</tr>
-<tr>
-<td>711</td>
-<td>GI存货差异: 仓库</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>712</td>
-<td>GR存货差异: 仓库</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>713</td>
-<td>GI存货差异:QI</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>714</td>
-<td>GR存货差异: 质检</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>715</td>
-<td>GI存货差异: 退货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>716</td>
-<td>GR存货差异: 退货</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>717</td>
-<td>GI存货差异: 冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>718</td>
-<td>GR存货差异: 冻结</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>721</td>
-<td>SlsVal.rec.n.afftMgs</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>722</td>
-<td>SlsVal.iss.n.afftMgs</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>731</td>
-<td>SlsVal.rec.  afftgMgs</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>732</td>
-<td>SlsVal.iss.  afftgMgs</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>841</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>842</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>843</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>844</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>901</td>
-<td>GD发货: 交货(外销)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>902</td>
-<td>RE交货冲销(外销)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Z03</td>
-<td>有关内部订单的发货</td>
-<td>有关内部订单的发货</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>Z04</td>
-<td>有关内部订订单的收货</td>
-<td>有关内部订订单的收货</td>
-<td>MB1A</td>
-</tr>
-<tr>
-<td>Z09</td>
-<td>TF转储采购物料到物料</td>
-<td>TF转储采购物料到物料</td>
-<td>MB1B</td>
-</tr>
-<tr>
-<td>Z10</td>
-<td>TR转储采购物料到物料</td>
-<td>TR转储采购物料到物料</td>
-<td>MB1B</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2700,7 +1318,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
