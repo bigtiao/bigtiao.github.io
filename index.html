@@ -150,6 +150,145 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">SAP变式配置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-20 15:28:00 / 修改时间：15:32:14" itemprop="dateCreated datePublished" datetime="2022-06-20T15:28:00+08:00">2022-06-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
+<p>下面举个例子说明如何实现可配置 BOM.要实现可配置 BOM,首先需要一个可配置物料,什么叫可配置物料,可以理解为最终成品的父亲,关系图如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/mcn2u927lr.png" alt="img"></p>
+<p>从上图可看出,可配置物料里含有该产品系列中覆盖到的所有组成的材料,正常的成品物料与可配置物料存在依赖关系,通过设定好的相关性来生成最终的 BOM 结构.可配置物料的 BOM 在 SAP 中称为超级 BOM.下面按照以下步骤实现这个过程:</p>
+<p><strong>配置实现:</strong></p>
+<p>\1. 建立特性(事务码 CT04)所谓的特性,就是描述该成品的特性.在上图中是建立相关性要用到这个特性,我们通过产品的不同特性来决定最终BOM 的构成. </p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ctsfbj4e4y.jpeg" alt="img"></p>
+<p>我们建立一个关于颜色的特性，类型：字符格式，值分配：单一性项目，意思是只能单选。特性值我们设置2个，分别为红色和黄色。</p>
+<p>按照上述，我们依次建立2个特性，分别是Z101(颜色） 特性值Z1:红，Z2:黄；Z103(性别）特性值Z1:男，Z2：女。</p>
+<p>2.建立分类（CL02）</p>
+<p>在特性界面分配上述特性，即把我们上述建立的特性打包起来，再赋予给可配置物料物料。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3jkof4dptn.jpeg" alt="img"></p>
+<p>3.创建可配置物料（MM01）</p>
+<p>物料类型选KMAT可配置物料：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/li2zt5wnrs.jpeg" alt="img"></p>
+<p>项目类别组0002，策略组25</p>
+<p>4.创建超级BOM中的其他物料（MM01）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/rbjbqjt8ic.jpeg" alt="img"></p>
+<p>由于原材料需要在半成品中配置出来，所以需要勾选物料时可配置的</p>
+<p>5.把分类分配给物料（CL20N）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zzaye6aepy.jpeg" alt="img"></p>
+<p>6.创建相关性（CU01）</p>
+<p>相关性就是建立一个逻辑，让系统自动判断，当用户选择特性或填写特性值，自动匹配出我们所需的物料或物料的用量。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zucy1yh8qn.jpeg" alt="img"></p>
+<p>相关性类型选择(选择条件），点击编辑器，写入代码：Z101&#x3D;’Z1’，意思是当用户选择Z101颜色特性为红色的时候，我们的原材料1被选中，回到前面的前面，记得把状态更改为1下达。</p>
+<p>同样的道理，设置其余物料的相关性。</p>
+<p>7.创建超级BOM(CS01)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/wv0wrvr4cv.jpeg" alt="img"></p>
+<p>点绿色的箭头，把相关性维护到物料上</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/r7jyp0nfgi.png" alt="img"></p>
+<p>建立完毕后，可以看到OD标志（含相关性）被打上勾</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0qcko7q8l7.jpeg" alt="img"></p>
+<p>同样的方式，我们在半成品1中也进行设置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8nihjt65jh.jpeg" alt="img"></p>
+<p>创建完成后，用CS12展开整个可配置BOM的结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ziitg7bcq0.jpeg" alt="img"></p>
+<p>8.创建物料的可配置参数文件（CU41）</p>
+<p>主要是设定可配置物料在执行配置时候的界面参数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hdxde7yffa.jpeg" alt="img"></p>
+<p>9.检查和测试可配置物料（CU50）</p>
+<p>用于测试特性是否生效，成本核算是否正确，成本核算是否出来，前提还需要为相应的成品和半成品建立工艺路线。</p>
+<p>点右上角的配置按钮，输入特性值：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8kpyvwgcip.jpeg" alt="img"></p>
+<p>输入特性值后，点结果按钮显示配置出来的BOM结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/jyld9q8hhp.jpeg" alt="img"></p>
+<p>如上图所示，当我们输入颜色特性是Z1红色，性别特性是Z1女，显示的BOM结构是把超级BOM中的原材料2和原材料4，符合我们的相关性设置。</p>
+<p>再切换到特性界面，点成本核算按钮，成本核算变式选PPC4销售订单成本核算，传递控制选择PC01带工厂的传输，回车，可以看到产品成本：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/7jv67r939i.jpeg" alt="img"></p>
+<p>10.创建正常的成品物料（MM01）</p>
+<p>已有可配置物料，为什么不直接用可配置物料下达销售订单？由于可配置物料的物料类型是KMAT,默认不参与数量价值的更新，不能实现库存管理，所以，需要用一个正常的成品把可配置物料关联起来，MRP3视图中，需要制定关联到哪个可配置物料：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/sm6t8xnqn3.jpeg" alt="img"></p>
+<p>11.执行正常物料与可配置物料的连接（CS40）</p>
+<p>指定新建的成品与可配置物料的BOM建立连接</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/y5gohmx6q2.jpeg" alt="img"></p>
+<p>勾选保存即可。建立连接后的成品BOM查看只能用CS12查看，不能用CS03</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4kvhylxsc7.jpeg" alt="img"></p>
+<p>我们可以看到CS12展开的BOM,只显示了一个半成品1，那是因为创建该成品的时候，分类特性1个都没有填写。</p>
+<p>至此，我们所有基础数据已经准备完成，看看具体的销售订单和MRP的执行。</p>
+<p><strong>业务实现：</strong></p>
+<ol>
+<li>创建销售订单（VA01） 输入正常成品，会提示选择特性：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4dw4n53jf4.png" alt="img"></p>
+<ol>
+<li>执行MRP运算（MD41） 会产生相应的计划订单，产生的计划订单类型是KD个别客户订单</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/tup614zo32.jpeg" alt="img"></p>
+<ol>
+<li><p>展开订单树 可以看到与特性值对应的物料的计划订单&#x2F;采购申请按需求产生</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hy0acr1100.jpeg" alt="img"></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1151,104 +1290,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">致远OA遇坑记录</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-05-20 14:55:02 / 修改时间：15:10:41" itemprop="dateCreated datePublished" datetime="2022-05-20T14:55:02+08:00">2022-05-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%87%B4%E8%BF%9COA/" itemprop="url" rel="index"><span itemprop="name">致远OA</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
-<p><strong>如果数据源更换，Dee任务中的查询链接可能失效，需要重新修改保存重置链接。</strong></p>
-<p>2、数据源配置外部数据库需要注意数据库的权限，不然可能会出现只能查询出前50条的情况，这个在链接SCC数据库中的遇到过。</p>
-<h2 id="DEE任务"><a href="#DEE任务" class="headerlink" title="DEE任务"></a>DEE任务</h2><p><strong>1、在接收SAP任务回传时要主要看SAP接口是表还是结构，选择相对应的映射模块。</strong></p>
-<p><strong>2、Dee将接口传来的json解析为xml代码</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import static net.sf.json.JSONArray.fromObject;</span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">JSON json = toJSON(data);</span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>3、Dee将json解析为xml代码并按照部分字段排序：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line"></span><br><span class="line">import net.sf.json.JSONArray;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">JSONObject json = (JSONObject) toJSON(data);</span><br><span class="line">JSONArray intab = json.getJSONArray(&quot;intab&quot;);</span><br><span class="line"></span><br><span class="line">// 按posnr数字从小到大对intab排序</span><br><span class="line">intab.sort(new Comparator&lt;JSONObject&gt;() &#123;</span><br><span class="line">	public int compare(JSONObject o1, JSONObject o2) &#123;</span><br><span class="line">		return o1.optInt(&quot;posnr&quot;) - o2.optInt(&quot;posnr&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>4、Dee调用Dee任务代码</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line">import com.seeyon.v3x.dee.Parameters;</span><br><span class="line">import com.seeyon.v3x.dee.Document;</span><br><span class="line">import com.seeyon.v3x.dee.TransformException;</span><br><span class="line">import com.seeyon.v3x.dee.TransformFactory;</span><br><span class="line">import com.seeyon.v3x.dee.adapter.Adapter;</span><br><span class="line">import com.seeyon.v3x.dee.resource.DbDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.util.DocumentUtil;</span><br><span class="line">import java.sql.Connection;</span><br><span class="line">import java.sql.PreparedStatement;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line">import java.sql.SQLException;</span><br><span class="line">import java.sql.ResultSetMetaData;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Iterator;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.sql.Statement;</span><br><span class="line">import java.io.File;</span><br><span class="line">import org.dom4j.DocumentException;</span><br><span class="line">import com.seeyon.v3x.dee.Document.Element;</span><br><span class="line">import com.seeyon.v3x.dee.datasource.XMLDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.DEEClient;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Document  doc = formDataToDoc();</span><br><span class="line">Element root = doc.getRootElement();</span><br><span class="line">// 主表</span><br><span class="line">Element table = getChildByName(root,&quot;formmain_3647&quot;);</span><br><span class="line">Element row = getChildByName(table,&quot;row&quot;);</span><br><span class="line">Element shuzhi = row.getChild(&quot;field0074&quot;);</span><br><span class="line">Element shuzhi1 = row.getChild(&quot;field0060&quot;);</span><br><span class="line">Element fkzt = row.getChild(&quot;field0077&quot;);</span><br><span class="line">Object a=getElementValue(shuzhi);</span><br><span class="line">Object b=getElementValue(shuzhi1);</span><br><span class="line">Object fkzt1 = getElementValue(fkzt);</span><br><span class="line">double c=Double.parseDouble(b.toString());</span><br><span class="line">println(a);</span><br><span class="line">DEEClient deeClient = new DEEClient();</span><br><span class="line">Parameters parameters = doc.getContext().getParameters();</span><br><span class="line"></span><br><span class="line">if(a.equals(&quot;1&quot;)&amp;&amp;c&gt;0.00 &amp;&amp; fkzt1.equals(&#x27;01&#x27;))&#123;</span><br><span class="line">//银企费用报销费用审核-处理前</span><br><span class="line">deeClient.execute(&quot;-6384030398507104060&quot;,parameters);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">deeClient.execute(&quot;9192960576302960201&quot;,parameters);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>5、主机异常关闭导致Dee所有调用任务失败</strong></p>
-<p>现象是：重启A8进程后，所有的dee任务都失效，前台体现是任务监控是空，任务管理是空。</p>
-<p>主要原因是：关闭A8进程后，dee.mv.db没有正常shutdown，导致进程堵塞。</p>
-<p>解决办法是关闭对应的进程，或者直接重启服务器释放所有进程。</p>
-<p><strong>6、OA服务器链接不上数据库问题</strong></p>
-<p>因为我们的OA服务器与数据库是分离的，所以在A8进程启动时会首先校验数据源，这就导致在某些情况下会出现链接不到数据库的情况，主要情况如下：</p>
-<p>链接数据源超时。。。。（类似的控制台打印）</p>
-<p>解决此问题的方法：在数据库服务器中执行：netsh Winsock reset </p>
-<p>就是重置数据库服务器的所有基础网络，通过重置网络就可以恢复OA服务器 与数据库的链接。</p>
-<p><strong>7、跳号问题（怀疑是致远OA的bug）</strong></p>
-<p>跳号问题的表现原因是：比如在付款申请单中，发起一张单据，流水号在前台显示00001，但是审批结束后流水号实际就成了00002，出现了跳号。</p>
-<p>解决办法1：打补丁，截至2022-01-08还没有打上。</p>
-<p>解决办法2：改变流水号设置地方，出现这个问题主要是流水号利用公式写在表单上。改变流水号到操作设置里即可解决此问题。</p>
-<p><strong>8、Dee任务新增搜索</strong></p>
-<p>Dee任务搜索主要是靠后台搜索，所以需要拿到搜索框里的数据再去调用Dee任务去拿到搜索后的数据（后台搜索）。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONArray;</span><br><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">Object json = getParaByName(document,&quot;cap4_magic_condition&quot;);</span><br><span class="line">//截取字符串</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;cap4_magic_condition&quot;);</span><br><span class="line">if(data != null)&#123;</span><br><span class="line">  String name = null;</span><br><span class="line">  String meins = null;</span><br><span class="line">  for (int i = 0;i&lt; data.size();i++)&#123;</span><br><span class="line">     HashMap&lt;String,String&gt; dataMap = (HashMap&lt;String, String&gt;) data.get(i);</span><br><span class="line">     namekey = dataMap.get(&quot;fieldName&quot;);</span><br><span class="line">     name = dataMap.get(&quot;fieldValue&quot;);</span><br><span class="line">    if(namekey == &quot;NAME1&quot;)&#123;</span><br><span class="line">     setParam(document, &quot;NAME1&quot;, name);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    System.out.println(name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>主要是利用cap4_magic_condition的这个字段，然后还需要根据这个字段拿到的搜索数据进行参数的增加。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1318,7 +1359,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
