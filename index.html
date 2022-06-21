@@ -150,6 +150,76 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/21/ABAP%E5%8A%A8%E6%80%81%E5%86%85%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/21/ABAP%E5%8A%A8%E6%80%81%E5%86%85%E8%A1%A8/" class="post-title-link" itemprop="url">ABAP动态内表</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-21 18:21:00 / 修改时间：18:55:09" itemprop="dateCreated datePublished" datetime="2022-06-21T18:21:00+08:00">2022-06-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="ABAP动态内表"><a href="#ABAP动态内表" class="headerlink" title="ABAP动态内表"></a>ABAP动态内表</h3><p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&quot;新特性在ABAP7.5环境下使用</span><br><span class="line">TYPES:BEGIN OF GTY_DATA,</span><br><span class="line">      COL1 TYPE CHAR10,</span><br><span class="line">      COL2 TYPE CHAR10,</span><br><span class="line">      COL3 TYPE CHAR10,</span><br><span class="line">      COL4 TYPE CHAR10,</span><br><span class="line">      COL5 TYPE CHAR10,</span><br><span class="line">      COL6 TYPE CHAR10,</span><br><span class="line">      COL7 TYPE CHAR10,</span><br><span class="line">      COL8 TYPE CHAR10,</span><br><span class="line">      COL9 TYPE CHAR10,</span><br><span class="line">      COL10 TYPE CHAR10,</span><br><span class="line">      COL11 TYPE CHAR10,</span><br><span class="line">      COL12 TYPE CHAR10,</span><br><span class="line">  END OF GTY_DATA.</span><br><span class="line"></span><br><span class="line">DATA:GT_DATA TYPE TABLE OF GTY_DATA,</span><br><span class="line">      GS_DATA TYPE GTY_DATA.</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS:&lt;FS_RESULT&gt; TYPE STANDARD TABLE,</span><br><span class="line">               &lt;FS_TABLE&gt; TYPE STANDARD TABLE,</span><br><span class="line">               &lt;FS_LINE&gt; TYPE ANY,</span><br><span class="line">               &lt;FS_DATA&gt; TYPE GTY_DATA.</span><br><span class="line"></span><br><span class="line">DATA:LR_TABLE TYPE REF TO DATA,</span><br><span class="line">      LR_LINE TYPE REF TO DATA.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">*ALV字段列表。 &quot;构建fieldcat</span><br><span class="line">DATA: GT_FIELDCAT TYPE LVC_T_FCAT,</span><br><span class="line">      GS_FIELDCAT TYPE LVC_S_FCAT,</span><br><span class="line">      GS_LAYOUT   TYPE LVC_S_LAYO,</span><br><span class="line">      GT_EVENTS   TYPE SLIS_T_EVENT,</span><br><span class="line">      GS_EVENTS   TYPE SLIS_ALV_EVENT,</span><br><span class="line">      GS_VARIANT  TYPE DISVARIANT.</span><br><span class="line"></span><br><span class="line">PARAMETERS: P_ROW TYPE I DEFAULT 3,</span><br><span class="line">            P_COL TYPE I DEFAULT 3.</span><br><span class="line"></span><br><span class="line">START-OF-SELECTION.</span><br><span class="line">  PERFORM FRM_INIT_DATA.</span><br><span class="line">  PERFORM FRM_FETCH_DATA.</span><br><span class="line"></span><br><span class="line">  PERFORM FRM_DISPLAY_ALV.</span><br><span class="line"></span><br><span class="line">FORM FRM_INIT_DATA.</span><br><span class="line">  DO P_ROW TIMES.</span><br><span class="line">    DATA(LV_INDEX) = SY-INDEX.</span><br><span class="line">    &quot;快速创建并分配指针，添加空行,&lt;FS_DATA&gt;指向GT_DATA</span><br><span class="line">    APPEND INITIAL LINE TO GT_DATA ASSIGNING &lt;FS_DATA&gt;.</span><br><span class="line">    IF &lt;FS_DATA&gt; IS ASSIGNED.</span><br><span class="line">      DO 12 TIMES.</span><br><span class="line">        DATA(LV_COMP) = |COL&#123; SY-INDEX &#125;|.</span><br><span class="line">        &quot;填充&lt;FS_COMP&gt;指向&lt;FS_DATA&gt;</span><br><span class="line">        ASSIGN COMPONENT LV_COMP OF STRUCTURE &lt;FS_DATA&gt; TO FIELD-SYMBOL(&lt;FS_COMP&gt;).</span><br><span class="line">       IF SY-SUBRC = 0.</span><br><span class="line">         &lt;FS_COMP&gt; = |&#123; LV_COMP &#125;--&#123; LV_INDEX &#125;|.</span><br><span class="line">       ENDIF.</span><br><span class="line">      ENDDO.</span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDDO.</span><br><span class="line">  &quot;初始化列</span><br><span class="line">  DO P_COL TIMES.</span><br><span class="line">    LV_COMP = |COL&#123; SY-INDEX &#125;|.</span><br><span class="line">    DATA(LV_TEXT) = |列&#123; SY-INDEX &#125;|.</span><br><span class="line">    PERFORM FRM_FILL_FIELDCAT USING SY-INDEX LV_COMP LV_TEXT.</span><br><span class="line">  ENDDO.</span><br><span class="line">  ENDFORM.</span><br><span class="line"></span><br><span class="line">FORM FRM_FILL_FIELDCAT USING P_COL P_FIELDNAME P_TEXT.</span><br><span class="line">  APPEND INITIAL LINE TO GT_FIELDCAT ASSIGNING FIELD-SYMBOL(&lt;FS_FIELD&gt;).</span><br><span class="line">  IF &lt;FS_FIELD&gt; IS ASSIGNED.</span><br><span class="line">    &lt;FS_FIELD&gt;-COL_POS = P_COL.</span><br><span class="line">    &lt;FS_FIELD&gt;-FIELDNAME = P_FIELDNAME.</span><br><span class="line">    &lt;FS_FIELD&gt;-SCRTEXT_M = P_TEXT.</span><br><span class="line">  ENDIF.</span><br><span class="line">  ENDFORM.</span><br><span class="line"></span><br><span class="line">FORM FRM_FETCH_DATA.</span><br><span class="line">  SORT GT_FIELDCAT BY COL_POS.</span><br><span class="line"></span><br><span class="line">  &quot; 根据列创建动态内表</span><br><span class="line">  CALL METHOD CL_ALV_TABLE_CREATE=&gt;CREATE_DYNAMIC_TABLE</span><br><span class="line">    EXPORTING</span><br><span class="line">      IT_FIELDCATALOG = GT_FIELDCAT</span><br><span class="line">    IMPORTING</span><br><span class="line">      EP_TABLE        = LR_TABLE.</span><br><span class="line"></span><br><span class="line">  &quot; 将表对象分配给指针</span><br><span class="line">  ASSIGN LR_TABLE-&gt;* TO &lt;FS_TABLE&gt;.</span><br><span class="line"></span><br><span class="line">*  &quot; 根据表对象创建行对象</span><br><span class="line">*  CREATE DATA LR_LINE LIKE LINE OF &lt;FS_TABLE&gt;.</span><br><span class="line">*</span><br><span class="line">*  &quot; 将行对象分配给指针</span><br><span class="line">*  ASSIGN LR_LINE-&gt;* TO &lt;FS_LINE&gt;.</span><br><span class="line"></span><br><span class="line">&quot; &lt;FS_TABLE&gt;按照GT_DATA重新赋值，相同字段赋值gt_data的值，不同字段重新定义</span><br><span class="line">  &lt;FS_TABLE&gt; = CORRESPONDING #( GT_DATA ).</span><br><span class="line">  </span><br><span class="line">  &quot;直接赋值</span><br><span class="line">*DATA itab TYPE TABLE OF i.</span><br><span class="line">*itab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ). &quot;itab此时赋值为1,2,3</span><br><span class="line">*itab = VALUE #( ( 4 ) ( 5 ) ( 6 ) ). &quot; itab被覆盖，重新赋值4,5,6</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  ENDFORM.</span><br><span class="line"></span><br><span class="line">FORM FRM_DISPLAY_ALV.</span><br><span class="line">CALL FUNCTION &#x27;REUSE_ALV_GRID_DISPLAY_LVC&#x27;</span><br><span class="line">    EXPORTING</span><br><span class="line">      I_CALLBACK_PROGRAM = SY-CPROG</span><br><span class="line">      IT_FIELDCAT_LVC    = GT_FIELDCAT</span><br><span class="line">      I_DEFAULT          = &#x27;X&#x27;</span><br><span class="line">      I_SAVE             = &#x27;A&#x27;</span><br><span class="line">    TABLES</span><br><span class="line">      T_OUTTAB           = &lt;FS_TABLE&gt;.</span><br><span class="line"></span><br><span class="line">  ENDFORM.</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1167,97 +1237,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/" class="post-title-link" itemprop="url">致远OA查询请求REST</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-06-15 11:47:22 / 修改时间：11:55:16" itemprop="dateCreated datePublished" datetime="2022-06-15T11:47:22+08:00">2022-06-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%87%B4%E8%BF%9COA/" itemprop="url" rel="index"><span itemprop="name">致远OA</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>请求rest</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
-<ol start="2">
-<li>获取token</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
-<ol start="3">
-<li>根据rest请求</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
-<ol start="4">
-<li>塞data</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>拼接count和totalcount</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1327,7 +1306,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
