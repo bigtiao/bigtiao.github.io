@@ -175,7 +175,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-29 13:46:00 / 修改时间：13:56:05" itemprop="dateCreated datePublished" datetime="2022-06-29T13:46:00+08:00">2022-06-29</time>
+              <time title="创建时间：2022-06-29 13:46:00 / 修改时间：14:58:15" itemprop="dateCreated datePublished" datetime="2022-06-29T13:46:00+08:00">2022-06-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -199,19 +199,20 @@
 
       
           <p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="C:\Users\lenovo、\AppData\Roaming\Typora\typora-user-images\image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
 <p>输入相关数据后保存，</p>
 <p>系统提示：process order 900275584 created.</p>
 <p>执行事务代码COR3显示该工单</p>
-<p><img src="C:\Users\lenovo、\AppData\Roaming\Typora\typora-user-images\image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
 <p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
 <p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
 <p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
 <p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="C:\Users\lenovo、\AppData\Roaming\Typora\typora-user-images\image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="C:\Users\lenovo、\AppData\Roaming\Typora\typora-user-images\image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
 <p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
 <p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
 
       
     </div>
