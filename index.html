@@ -150,6 +150,111 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">评估类别、评估类和评估类型</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-30 18:52:00 / 修改时间：18:58:59" itemprop="dateCreated datePublished" datetime="2022-06-30T18:52:00+08:00">2022-06-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
+<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
+<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
+<p>  1）个别计价法一般用X按批次进行评估；</p>
+<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
+<ul>
+<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
+<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
+<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
+</ul>
+<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a target="_blank" rel="noopener" href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
+<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
+<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
+<p>  The valuation category defines the valuation types allowed for a material.</p>
+<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
+<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
+<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
+<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
+<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
+<hr>
+<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
+<p><strong>评估类的进一步解释：</strong></p>
+<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
+<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
+<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/30/SAP%E6%89%B9%E6%AC%A1%E7%AE%A1%E7%90%86%EF%BC%88%E5%88%86%E5%89%B2%E8%AF%84%E4%BC%B0%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -175,7 +280,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-30 18:25:00 / 修改时间：18:41:32" itemprop="dateCreated datePublished" datetime="2022-06-30T18:25:00+08:00">2022-06-30</time>
+              <time title="创建时间：2022-06-30 18:25:00 / 修改时间：18:49:42" itemprop="dateCreated datePublished" datetime="2022-06-30T18:25:00+08:00">2022-06-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,6 +336,8 @@
 <p>在MM02中启用批次分割的物料可以通过MM02看到。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220630184010779.png" alt="image-20220630184010779"></p>
 <p>工厂选择2000，评估类型直接就是批次类型，F4直接查看该物料的所有批次，根据批次即可查找该物料，工厂和批次下的价格，如果不填评估类型（批次），既是该物料在工厂下面所有的价值总和。</p>
+<p>在配置好后台以后，在物料配置页面中，只要会计1视图中的评估类别没有打X，那就是没有启用批次分割。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220630184938028.png" alt="image-20220630184938028"></p>
 
       
     </div>
@@ -991,79 +1098,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">SAP常见的几个接口技术区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-06-20 17:08:00 / 修改时间：17:09:12" itemprop="dateCreated datePublished" datetime="2022-06-20T17:08:00+08:00">2022-06-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>RFC</strong>是SAP接口技术中最简单和易用的一种方式，该方式开发比较简便，特别适合于外部报表开发，但对于<a target="_blank" rel="noopener" href="https://cloud.tencent.com/solution/bigdata?from=10680">大数据</a>量的查询效率相对较低。</p>
-<p><strong>BAPI</strong>基于RFC技术实现，被作为BO的Interface使用，是SAP提供的稳定而强大的业务接口，其增强和版本控制都在业务对象仓库中记录。BAPI效率相对比较高，这个主要体现在有些BAPI是用direct input的方式写的。但当你写的不只是一个LUW时，而每个LUW都比较简单，在这种情况下就用RFC开发比较快。</p>
-<p><strong>IDoc</strong>是一种数据交换格式，类似于XML的概念，是SAP标准的文件交换格式。IDoc基于文档，通常IDoc用于异步处理，可以处理批量数据。而RFC常用于同步处理，而且并不适用于批量数据的处理。同时在Monitor和Troubleshooting方面，IDoc功能非常强大。</p>
-<p><strong>ALE</strong>主要用于SAP系统内部数据交换。EDI主要用于外部或不同client 间数据交换。它们同时都可采用 IDoc 的方式作为数据的传输格式。</p>
-<p><strong>Web Services</strong>是一种松散耦合的组件，使用XML描述交换信息内容，可以保证信息的自描述性和自适应性。WS的分布与地理位置无关，这样就可将非核心业务外包给专门的服务提供商。WS基于开放标准与技术（XML &#x2F; SOAP &#x2F; UDDI等），使其特别适合于异构平台的多样性和可扩展性。</p>
-<p><strong>XI</strong>适配器(Adapter)进行XML格式与业务系统的特定类型的数据格式之间的转换。依据业务系统的数据格式的不同，适配器可以分为多种类型，比如 SOAP Adapter, JDBCAdapter, File Adapter, RFC Adapter, IDoc Adapter , WS Adapter和XI Adapter等。WS Adapter和XI Adapter是基于Web Service技术实现的。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1133,7 +1167,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
