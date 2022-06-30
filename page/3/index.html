@@ -150,6 +150,104 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">致远OA遇坑记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-20 14:55:02 / 修改时间：15:10:41" itemprop="dateCreated datePublished" datetime="2022-05-20T14:55:02+08:00">2022-05-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%87%B4%E8%BF%9COA/" itemprop="url" rel="index"><span itemprop="name">致远OA</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
+<p><strong>如果数据源更换，Dee任务中的查询链接可能失效，需要重新修改保存重置链接。</strong></p>
+<p>2、数据源配置外部数据库需要注意数据库的权限，不然可能会出现只能查询出前50条的情况，这个在链接SCC数据库中的遇到过。</p>
+<h2 id="DEE任务"><a href="#DEE任务" class="headerlink" title="DEE任务"></a>DEE任务</h2><p><strong>1、在接收SAP任务回传时要主要看SAP接口是表还是结构，选择相对应的映射模块。</strong></p>
+<p><strong>2、Dee将接口传来的json解析为xml代码</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import static net.sf.json.JSONArray.fromObject;</span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">JSON json = toJSON(data);</span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>3、Dee将json解析为xml代码并按照部分字段排序：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line"></span><br><span class="line">import net.sf.json.JSONArray;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">JSONObject json = (JSONObject) toJSON(data);</span><br><span class="line">JSONArray intab = json.getJSONArray(&quot;intab&quot;);</span><br><span class="line"></span><br><span class="line">// 按posnr数字从小到大对intab排序</span><br><span class="line">intab.sort(new Comparator&lt;JSONObject&gt;() &#123;</span><br><span class="line">	public int compare(JSONObject o1, JSONObject o2) &#123;</span><br><span class="line">		return o1.optInt(&quot;posnr&quot;) - o2.optInt(&quot;posnr&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>4、Dee调用Dee任务代码</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line">import com.seeyon.v3x.dee.Parameters;</span><br><span class="line">import com.seeyon.v3x.dee.Document;</span><br><span class="line">import com.seeyon.v3x.dee.TransformException;</span><br><span class="line">import com.seeyon.v3x.dee.TransformFactory;</span><br><span class="line">import com.seeyon.v3x.dee.adapter.Adapter;</span><br><span class="line">import com.seeyon.v3x.dee.resource.DbDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.util.DocumentUtil;</span><br><span class="line">import java.sql.Connection;</span><br><span class="line">import java.sql.PreparedStatement;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line">import java.sql.SQLException;</span><br><span class="line">import java.sql.ResultSetMetaData;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Iterator;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.sql.Statement;</span><br><span class="line">import java.io.File;</span><br><span class="line">import org.dom4j.DocumentException;</span><br><span class="line">import com.seeyon.v3x.dee.Document.Element;</span><br><span class="line">import com.seeyon.v3x.dee.datasource.XMLDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.DEEClient;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Document  doc = formDataToDoc();</span><br><span class="line">Element root = doc.getRootElement();</span><br><span class="line">// 主表</span><br><span class="line">Element table = getChildByName(root,&quot;formmain_3647&quot;);</span><br><span class="line">Element row = getChildByName(table,&quot;row&quot;);</span><br><span class="line">Element shuzhi = row.getChild(&quot;field0074&quot;);</span><br><span class="line">Element shuzhi1 = row.getChild(&quot;field0060&quot;);</span><br><span class="line">Element fkzt = row.getChild(&quot;field0077&quot;);</span><br><span class="line">Object a=getElementValue(shuzhi);</span><br><span class="line">Object b=getElementValue(shuzhi1);</span><br><span class="line">Object fkzt1 = getElementValue(fkzt);</span><br><span class="line">double c=Double.parseDouble(b.toString());</span><br><span class="line">println(a);</span><br><span class="line">DEEClient deeClient = new DEEClient();</span><br><span class="line">Parameters parameters = doc.getContext().getParameters();</span><br><span class="line"></span><br><span class="line">if(a.equals(&quot;1&quot;)&amp;&amp;c&gt;0.00 &amp;&amp; fkzt1.equals(&#x27;01&#x27;))&#123;</span><br><span class="line">//银企费用报销费用审核-处理前</span><br><span class="line">deeClient.execute(&quot;-6384030398507104060&quot;,parameters);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">deeClient.execute(&quot;9192960576302960201&quot;,parameters);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>5、主机异常关闭导致Dee所有调用任务失败</strong></p>
+<p>现象是：重启A8进程后，所有的dee任务都失效，前台体现是任务监控是空，任务管理是空。</p>
+<p>主要原因是：关闭A8进程后，dee.mv.db没有正常shutdown，导致进程堵塞。</p>
+<p>解决办法是关闭对应的进程，或者直接重启服务器释放所有进程。</p>
+<p><strong>6、OA服务器链接不上数据库问题</strong></p>
+<p>因为我们的OA服务器与数据库是分离的，所以在A8进程启动时会首先校验数据源，这就导致在某些情况下会出现链接不到数据库的情况，主要情况如下：</p>
+<p>链接数据源超时。。。。（类似的控制台打印）</p>
+<p>解决此问题的方法：在数据库服务器中执行：netsh Winsock reset </p>
+<p>就是重置数据库服务器的所有基础网络，通过重置网络就可以恢复OA服务器 与数据库的链接。</p>
+<p><strong>7、跳号问题（怀疑是致远OA的bug）</strong></p>
+<p>跳号问题的表现原因是：比如在付款申请单中，发起一张单据，流水号在前台显示00001，但是审批结束后流水号实际就成了00002，出现了跳号。</p>
+<p>解决办法1：打补丁，截至2022-01-08还没有打上。</p>
+<p>解决办法2：改变流水号设置地方，出现这个问题主要是流水号利用公式写在表单上。改变流水号到操作设置里即可解决此问题。</p>
+<p><strong>8、Dee任务新增搜索</strong></p>
+<p>Dee任务搜索主要是靠后台搜索，所以需要拿到搜索框里的数据再去调用Dee任务去拿到搜索后的数据（后台搜索）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONArray;</span><br><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">Object json = getParaByName(document,&quot;cap4_magic_condition&quot;);</span><br><span class="line">//截取字符串</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;cap4_magic_condition&quot;);</span><br><span class="line">if(data != null)&#123;</span><br><span class="line">  String name = null;</span><br><span class="line">  String meins = null;</span><br><span class="line">  for (int i = 0;i&lt; data.size();i++)&#123;</span><br><span class="line">     HashMap&lt;String,String&gt; dataMap = (HashMap&lt;String, String&gt;) data.get(i);</span><br><span class="line">     namekey = dataMap.get(&quot;fieldName&quot;);</span><br><span class="line">     name = dataMap.get(&quot;fieldValue&quot;);</span><br><span class="line">    if(namekey == &quot;NAME1&quot;)&#123;</span><br><span class="line">     setParam(document, &quot;NAME1&quot;, name);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    System.out.println(name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>主要是利用cap4_magic_condition的这个字段，然后还需要根据这个字段拿到的搜索数据进行参数的增加。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/20/SAP%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1954,18 +2052,18 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
