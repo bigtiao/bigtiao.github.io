@@ -15,87 +15,41 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP NOTE安装过程</title>
-    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
-<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
-<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
-<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
-<p><strong>2.更改系统选项</strong></p>
-<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
-<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
-<p><strong>3.导入note</strong></p>
-<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
-<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
-<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
-<p> <strong>4.新建传输号</strong></p>
-<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
-<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+    <title>OLTP与OLAP的区别</title>
+    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
+<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
+<ul>
+<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
+<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
+</ul>
+<p><strong>2、实时性要求不同：</strong></p>
+<ul>
+<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
+<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
+</ul>
+<p><strong>3、数据量不同：</strong></p>
+<ul>
+<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
+<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
+</ul>
+<p><strong>4、用户和系统的面向性不同：</strong></p>
+<ul>
+<li>OLTP是面向顾客的,用于事务和查询处理。</li>
+<li>OLAP是面向市场的,用于数据分析。</li>
+</ul>
+<p><strong>5、数据库设计不同：</strong></p>
+<ul>
+<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
+<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
 ]]></content>
       <categories>
-        <category>SAP</category>
+        <category>数据</category>
       </categories>
       <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference</title>
-    <url>/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/</url>
-    <content><![CDATA[<p>相比较于一般的数据类型（例如 I, P, F, N, C, D, T等）的变量，Field Symbol和Data Reference类型的变量是ABAP中两个相关复杂的类型。理解和使用这两种变量，对于编写高性能、高灵活性的ABAP程序是十分重要的。</p>
-<h3 id="1-含义解析"><a href="#1-含义解析" class="headerlink" title="1.含义解析"></a>1.含义解析</h3><p>Field Symbol：类似于C语言中的“指针”。初始状态为Unassigned。Field Symbol类型的变量自身并不对占用存储空间，仅“指向”被Assgined变量的地址空间。<br>Data Reference: 一种变量类型。初始状态为Initial。当被创建（实例化）成具体的类型时，系统会为其分配相应的存储空间。通过 ‘ -&gt;* ’ 的方式访问，将值从地址空间传输到变量中（显示）。若要改变Data Reference变量中的值，需要配合Field Symbol使用。即使用Field Symbol指向Data Reference变量所存储的地址空间，并用Field Symbol对其进行操作。<br>下图给出了配合Field Symbol操作Data Reference的一个例子 </p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20190308131010318.png" alt="在这里插入图片描述"></p>
-<h3 id="2-使用Field-Symbol提升访问效率"><a href="#2-使用Field-Symbol提升访问效率" class="headerlink" title="2.使用Field Symbol提升访问效率"></a>2.使用Field Symbol提升访问效率</h3><p>因为Field Symbol并不会占用内存空间，因此在操作变量时，可以使用Field Symbol来提升运行效率。常用的Field Symbol的场景有以下几种 -</p>
-<p>Read table &lt; itab &gt; assigning &lt; fs &gt;<br>Loop at &lt; itab &gt; assigning &lt; fs &gt;<br>Assign &lt; data object &gt; to &lt; fs &gt;<br>Assign component &lt;component name&#x2F;component index&gt; to &lt; fs &gt;<br>Append initial line to &lt; itab &gt; assigning &lt; fs &gt;</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* Field Symbol to prioritize the accessing of internal table</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">DATA: lt_sflight TYPE STANDARD TABLE OF sflight,</span><br><span class="line">      ls_sflight TYPE sflight.</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ls_sflight&gt; TYPE sflight.</span><br><span class="line"></span><br><span class="line">SELECT * FROM sflight INTO TABLE lt_sflight UP TO 10 ROWS.</span><br><span class="line"></span><br><span class="line">* extra effort to copy data into variable ls_sflight</span><br><span class="line">LOOP AT lt_sflight INTO ls_sflight.</span><br><span class="line">  WRITE: / ls_sflight-carrid, ls_sflight-connid, ls_sflight-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br><span class="line">* access the address directly</span><br><span class="line">LOOP AT lt_sflight ASSIGNING &lt;ls_sflight&gt;.</span><br><span class="line">  WRITE: / &lt;ls_sflight&gt;-carrid, &lt;ls_sflight&gt;-connid, &lt;ls_sflight&gt;-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-使用Data-Reference动态创建变量"><a href="#3-使用Data-Reference动态创建变量" class="headerlink" title="3.使用Data Reference动态创建变量"></a>3.使用Data Reference动态创建变量</h3><p>使用Data Reference的主要场景是针对于unknown的变量类型，用于ABAP的动态编程。创建所需要的变量时并不能确定具体的类型（但这里并不是指“漫无边际”的不确定，需要变量&#x2F;结构&#x2F;内表是确定的，而所需要的具体类型是不确定的） -</p>
-<p>创建时，并无法确定具体类型的“变量 variable”<br>创建时，并无法确定具体类型的“结构 structure”<br>创建时，并无法确定具体类型的“内表 internal table”<br>下面给出了，三个不同场景的具体例子：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 1. Un known data reference(creation of data variable)</span><br><span class="line">**********************************************************************</span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;I&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  &lt;fs&gt; = &#x27;100&#x27;.</span><br><span class="line">ENDIF.</span><br><span class="line"></span><br><span class="line">WRITE: &lt;fs&gt;.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 2. Un known data reference(creation of structure)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT SINGLE * FROM (p_var) INTO &lt;fs&gt;.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line">    FIELD-SYMBOLS: &lt;fs_field&gt; TYPE any.</span><br><span class="line"></span><br><span class="line">    DO .</span><br><span class="line">      ASSIGN COMPONENT sy-index OF STRUCTURE &lt;fs&gt; TO &lt;fs_field&gt;.</span><br><span class="line">      IF sy-subrc = 0.</span><br><span class="line">        WRITE: / &lt;fs_field&gt;.</span><br><span class="line">      ELSE.</span><br><span class="line">        EXIT.</span><br><span class="line">      ENDIF.</span><br><span class="line">    ENDDO.</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 3. Un known data reference(creation of table)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE TABLE OF (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ft_table&gt; TYPE ANY TABLE.</span><br><span class="line"></span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;ft_table&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT * FROM (p_var) INTO TABLE &lt;ft_table&gt; UP TO 10 ROWS.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line"></span><br><span class="line">    cl_salv_table=&gt;factory( IMPORTING r_salv_table = DATA(lr_salv)</span><br><span class="line">                            CHANGING t_table      = &lt;ft_table&gt; ).</span><br><span class="line">    lr_salv-&gt;display( ).</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-Field-Symbol使用总结"><a href="#4-Field-Symbol使用总结" class="headerlink" title="4.Field Symbol使用总结"></a>4.Field Symbol使用总结</h3><p>Field <a href="https://so.csdn.net/so/search?q=Symbol&spm=1001.2101.3001.7020">Symbol</a>（以下简称FS），主要作用是程序更加灵活，有时可以实现一般做法无法实现的功能，比如动态ALV内表，LOOP时使用FS还可以提高程序效率。FS缺点是影响程序可读性，为修改和维护代码造成困难，而且有时错误是<a href="https://so.csdn.net/so/search?q=%E7%BC%96%E8%AF%91%E5%99%A8&spm=1001.2101.3001.7020">编译器</a>检查不出来的，只有运行时才会发生错误。下面是FS的一些使用总结。</p>
-<p>首先请牢记，FS必须和某个变量，结构或者内表绑定后才能使用，这点和C语言里的指针（在ABAP里最接近指针的是TYPE REF TO）是不同的，在使用FS前必须分配给某个变量，不然会发生FS未分配的运行时错误。注意如果LOOP内表时ASSIGNING到FS.，那么之后假如有REFRESH内表的操作的话，FS也会再次回到初始未被ASSIGN的状态，这时如果使用FS也会发生FS未分配的RUNTIME ERROR。</p>
-<p>ASSIGN ‘200’ TO<fs1>.意思是指向常量的<fs1>，之后不可更改值，比如执行<fs1> &#x3D; ‘300’会发生运行时错误。如果想实现改值的效果，那么需要ASSIGN一个变量给FS：</p>
-<p>DATA gv_abc(6).</p>
-<p>gv_abc &#x3D; ‘200’.</p>
-<p>ASSGIN gv_abc TO <fs1>.</p>
-<p><fs1> &#x3D; ‘300’.</p>
-<p>这时<fs1>就从200变更为300了，另外如果直接改变变量的值，那么<fs1>也会发生变化。比如上例里gv_abc &#x3D; ‘400’，那么<fs1>也随之变为400，因为<fs1>和gv_abc是绑定了的。</p>
-<p>假设定义了<fs1>和<fs2>两个FS，分别ASSGIN到两个变量，变量A和变量B。</p>
-<p>ASSIGN <fs1> TO <fs2>的意思是，让<fs2>也指向<fs1>所指向的地方，即两个FS都指向变量A；而<fs2>&#x3D; <fs1>的意思是，把<fs1>所指向的变量A的值赋给<fs2>所指向的变量B的值，<fs1>依然指向变量A，<fs2>依然指向变量B。</p>
-<p>LOOP 内表 INTO 结构（工作区）和LOOP内表ASSIGNING &lt;结构&gt;的比较。</p>
-<p>LOOP内表INTO结构时，系统会把先把当前行的数据复制到结构，如果结构的值改了，还需要使用MODIFY语句把更改后的值传回内表。也就是说，结构是内表里的数据的一个副本，操作这个副本并不会影响内表里的数据。带表头的内表也是类似，LOOP内表时，把内表数据复制到表头。</p>
-<p>为了提高效率，可以使用FS，FS直接指向内表数据，省去了复制数据到结构的过程，修改FS的值也就是相当于直接修改内表里的数据，不需要再使用MODIFY语句。</p>
-<p>这里额外提一点，有一些人喜欢在ENDLOOP前使用CLEAR清空结构，首先这是没有必要的，为了提高效率，LOOP内的语句应该越精简越好，其次如果是LOOP到FS的写法，是不能使用CLEAR清空FS的，因为刚刚说了FS是直接指向内表数据，如果清空了FS，那相当于把内表内对应的那行数据也给清空了。</p>
-<p>此外，像LOOP AT 内表 INTO &lt;结构&gt;的写法，初学者容易混淆，其实这里的&lt;结构&gt;是指向一个结构，这种写法和LOOP 内表 INTO 结构没什么区别。</p>
-<p>READ TABLE 内表 INTO 结构和READ TABLE 内表 ASSIGNING &lt;结构&gt;的比较。</p>
-<p>效率上的区别同LOOP的情况，这里说下READ TABLE和LOOP不同的地方，主要差别是，LOOP 是不会失败的，而READ TABLE是可能失败的，一旦READ失败，那么结构或&lt;结构&gt;的值依然是上次READ成功的值（而不是清空），所以READ使用完建议根据情况CLEAR结构或&lt;结构&gt;。</p>
-<p>确定结构的FS和不确定结构的FS。</p>
-<p>FIELD-SYMBOLS <gs_ab> TYPE ty_ab. “ty_ab是个结构，有一个字段为col1</p>
-<p>FIELD-SYMBOLS <gs_ab> TYPE ANY.</p>
-<p>前者是指定了结构，后者是不指定结构。</p>
-<p>之后在为<gs_ab>赋值时，</p>
-<p>ASSIGN COMPONNET ‘COL1’ OF STUCTURE <gs_ab>TO <fs1>.</p>
-<p><fs1> &#x3D; ‘AAA’.</p>
-<p>此种写法对确定结构的定义和未确定结构的定义的<gs_ab>都可行。</p>
-<p> 但是有确定结构定义的<gs_ab>可以直接使用<gs_ab>-col1 &#x3D; ‘AAA’来赋值。</p>
-<p>一般如果能事先知道结构的话，还是应该用确定结构的方式来定义FS，不确定结构的定义通常用于动态处理。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
+        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
@@ -182,109 +136,56 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP会计凭证类型总结</title>
-    <url>/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="1、SAP凭证类型作用"><a href="#1、SAP凭证类型作用" class="headerlink" title="1、SAP凭证类型作用"></a>1、SAP凭证类型作用</h2><p>传统的财务的系统凭证类型如收付转三类凭证类型，而SAP的凭证类型是用来区分业务的。</p>
-<ul>
-<li>凭证类型决定记账编号范围，常见的Tcode中FBN1维护编号范围，OBH1+OBH2复制编号范围</li>
-<li>凭证类型决定了过账的会计科目的账户类型（S、A、D、K、M）</li>
-<li>凭证类型决定了记账的默认汇率，默认的是M类型的汇率类型。</li>
-<li>凭证类型决定了凭证抬头的参考号码+凭证抬头文本是否必输。</li>
-<li>凭证类型决定允许负数记账、贸易伙伴必输、公司间过账等参数。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204059594.png" alt="在这里插入图片描述"></p>
-<h2 id="2、SAP常见凭证类型"><a href="#2、SAP常见凭证类型" class="headerlink" title="2、SAP常见凭证类型"></a>2、SAP常见凭证类型</h2><p>如上所述，SAP的凭证类型是用来区分业务，一般项目采用SAP默认的凭证类型清单即可满足业务需求。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204149149.png" alt="在这里插入图片描述"></p>
-<h2 id="3、OBU1：FI相应事务代码默认凭证类型"><a href="#3、OBU1：FI相应事务代码默认凭证类型" class="headerlink" title="3、OBU1：FI相应事务代码默认凭证类型"></a>3、OBU1：FI相应事务代码默认凭证类型</h2><p>通过OBU1可更改大部分FI事务代码的默认凭证类型，但是FB50&#x2F;FB60&#x2F;FB70这几个事务代码的凭证类型是不能直接更改的</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204235953.png" alt="img"></p>
-<h2 id="4、OBZO：更改感兴趣业务的凭证类型"><a href="#4、OBZO：更改感兴趣业务的凭证类型" class="headerlink" title="4、OBZO：更改感兴趣业务的凭证类型"></a>4、OBZO：更改感兴趣业务的凭证类型</h2><p>通过OBZO即可实现对FB50、60、70默认凭证类型的更改</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204259797.png" alt="在这里插入图片描述"></p>
-<ul>
-<li>第一步：FB50&#x2F;FB60&#x2F;FB70这些默认的凭证不允许修改，但可通过设置OBZO就可以修改了，可能需要打NOTES-323113，也可以通过用户参数BAR默认FB50的凭证类型</li>
-<li>你第二步：实施Notes-339765<br>优先级问题</li>
-</ul>
-<p>OBZO维护的默认凭证类型<br>用户参数BAR维护的凭证类型<br>程序写死的SA、KR、DR</p>
-<h2 id="5、OMBA：后勤货物移动默认凭证类型"><a href="#5、OMBA：后勤货物移动默认凭证类型" class="headerlink" title="5、OMBA：后勤货物移动默认凭证类型"></a>5、OMBA：后勤货物移动默认凭证类型</h2><p>OMJJ对各种移动类型默认可使用的事务，然后通过OMBA对事务进行默认凭证类型。我们来举个栗子来，比如WI盘点凭证，你们看看各自的SAP系统是WI还是WA凭证类型，取决于你的盘点流程是采用标准的MI07还是借用701&#x2F;702通过MIGO_GI来处理。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204352139.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204407986.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204423577.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204437214.png" alt="在这里插入图片描述"></p>
-<h2 id="6、OMR4：发票默认的凭证类型"><a href="#6、OMR4：发票默认的凭证类型" class="headerlink" title="6、OMR4：发票默认的凭证类型"></a>6、OMR4：发票默认的凭证类型</h2><p>CKMI就是物料帐结算的事务代码，默认的是ML</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204457539.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204509783.png" alt="在这里插入图片描述"></p>
-<p>MIR7采购部预制发票</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620453342.png" alt="在这里插入图片描述"></p>
-<p>MIRO采购部直接发票过账</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204554606.png" alt="在这里插入图片描述"></p>
-<p>MR21标准价格变更</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620490257.png" alt="在这里插入图片描述"></p>
-<p>MR22移动价格变更</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205017877.png" alt="在这里插入图片描述"></p>
-<p>MR8M取消供应商发票</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205250457.png" alt="在这里插入图片描述"></p>
-<p>MRKO供应商寄售的凭证类型</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205348662.png" alt="在这里插入图片描述"></p>
-<h2 id="7、VOFA：销售开票默认凭证类型"><a href="#7、VOFA：销售开票默认凭证类型" class="headerlink" title="7、VOFA：销售开票默认凭证类型"></a>7、VOFA：销售开票默认凭证类型</h2><p>销售开票凭证类型会对应不同的会计凭证类型</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205639312.png" alt="在这里插入图片描述"></p>
-<h2 id="8、OKO7：订单结算默认凭证类型"><a href="#8、OKO7：订单结算默认凭证类型" class="headerlink" title="8、OKO7：订单结算默认凭证类型"></a>8、OKO7：订单结算默认凭证类型</h2><p>只要生产订单、销售订单、WBS结算、内部订单结算的凭证类型都在这默认。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205705570.png" alt="在这里插入图片描述"></p>
-<h2 id="9、OB59：外币评估默认凭证类型"><a href="#9、OB59：外币评估默认凭证类型" class="headerlink" title="9、OB59：外币评估默认凭证类型"></a>9、OB59：外币评估默认凭证类型</h2><p>通过外币评估方法直接定义凭证类型。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620573211.png" alt="在这里插入图片描述"></p>
-<h2 id="10、FBKP：清账程序默认凭证类型"><a href="#10、FBKP：清账程序默认凭证类型" class="headerlink" title="10、FBKP：清账程序默认凭证类型"></a>10、FBKP：清账程序默认凭证类型</h2><p>比如说你是否意识到F.13自动清账产生的会计凭证凭证类型？</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205756623.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620584369.png" alt="在这里插入图片描述"></p>
-<h2 id="11、GRIR重分类默认的凭证类型"><a href="#11、GRIR重分类默认的凭证类型" class="headerlink" title="11、GRIR重分类默认的凭证类型"></a>11、GRIR重分类默认的凭证类型</h2><p>这个SAP就没有地方来默认凭证类型了</p>
-<p>直接在源程序上写了一段话，这也算隐式增强吧！</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205945790.png" alt="在这里插入图片描述"></p>
-<h2 id="12、FAGLF101往来重分类默认凭证类型"><a href="#12、FAGLF101往来重分类默认凭证类型" class="headerlink" title="12、FAGLF101往来重分类默认凭证类型"></a>12、FAGLF101往来重分类默认凭证类型</h2><p>往来重分类必然会用到评估范围，通过新增评估方法达到新增评估范围的作用，即可实现对往来重分类默认不同的会计科目。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210011282.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
-<p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
+    <title>SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference</title>
+    <url>/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/</url>
+    <content><![CDATA[<p>相比较于一般的数据类型（例如 I, P, F, N, C, D, T等）的变量，Field Symbol和Data Reference类型的变量是ABAP中两个相关复杂的类型。理解和使用这两种变量，对于编写高性能、高灵活性的ABAP程序是十分重要的。</p>
+<h3 id="1-含义解析"><a href="#1-含义解析" class="headerlink" title="1.含义解析"></a>1.含义解析</h3><p>Field Symbol：类似于C语言中的“指针”。初始状态为Unassigned。Field Symbol类型的变量自身并不对占用存储空间，仅“指向”被Assgined变量的地址空间。<br>Data Reference: 一种变量类型。初始状态为Initial。当被创建（实例化）成具体的类型时，系统会为其分配相应的存储空间。通过 ‘ -&gt;* ’ 的方式访问，将值从地址空间传输到变量中（显示）。若要改变Data Reference变量中的值，需要配合Field Symbol使用。即使用Field Symbol指向Data Reference变量所存储的地址空间，并用Field Symbol对其进行操作。<br>下图给出了配合Field Symbol操作Data Reference的一个例子 </p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20190308131010318.png" alt="在这里插入图片描述"></p>
+<h3 id="2-使用Field-Symbol提升访问效率"><a href="#2-使用Field-Symbol提升访问效率" class="headerlink" title="2.使用Field Symbol提升访问效率"></a>2.使用Field Symbol提升访问效率</h3><p>因为Field Symbol并不会占用内存空间，因此在操作变量时，可以使用Field Symbol来提升运行效率。常用的Field Symbol的场景有以下几种 -</p>
+<p>Read table &lt; itab &gt; assigning &lt; fs &gt;<br>Loop at &lt; itab &gt; assigning &lt; fs &gt;<br>Assign &lt; data object &gt; to &lt; fs &gt;<br>Assign component &lt;component name&#x2F;component index&gt; to &lt; fs &gt;<br>Append initial line to &lt; itab &gt; assigning &lt; fs &gt;</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* Field Symbol to prioritize the accessing of internal table</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">DATA: lt_sflight TYPE STANDARD TABLE OF sflight,</span><br><span class="line">      ls_sflight TYPE sflight.</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ls_sflight&gt; TYPE sflight.</span><br><span class="line"></span><br><span class="line">SELECT * FROM sflight INTO TABLE lt_sflight UP TO 10 ROWS.</span><br><span class="line"></span><br><span class="line">* extra effort to copy data into variable ls_sflight</span><br><span class="line">LOOP AT lt_sflight INTO ls_sflight.</span><br><span class="line">  WRITE: / ls_sflight-carrid, ls_sflight-connid, ls_sflight-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br><span class="line">* access the address directly</span><br><span class="line">LOOP AT lt_sflight ASSIGNING &lt;ls_sflight&gt;.</span><br><span class="line">  WRITE: / &lt;ls_sflight&gt;-carrid, &lt;ls_sflight&gt;-connid, &lt;ls_sflight&gt;-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-使用Data-Reference动态创建变量"><a href="#3-使用Data-Reference动态创建变量" class="headerlink" title="3.使用Data Reference动态创建变量"></a>3.使用Data Reference动态创建变量</h3><p>使用Data Reference的主要场景是针对于unknown的变量类型，用于ABAP的动态编程。创建所需要的变量时并不能确定具体的类型（但这里并不是指“漫无边际”的不确定，需要变量&#x2F;结构&#x2F;内表是确定的，而所需要的具体类型是不确定的） -</p>
+<p>创建时，并无法确定具体类型的“变量 variable”<br>创建时，并无法确定具体类型的“结构 structure”<br>创建时，并无法确定具体类型的“内表 internal table”<br>下面给出了，三个不同场景的具体例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 1. Un known data reference(creation of data variable)</span><br><span class="line">**********************************************************************</span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;I&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  &lt;fs&gt; = &#x27;100&#x27;.</span><br><span class="line">ENDIF.</span><br><span class="line"></span><br><span class="line">WRITE: &lt;fs&gt;.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 2. Un known data reference(creation of structure)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT SINGLE * FROM (p_var) INTO &lt;fs&gt;.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line">    FIELD-SYMBOLS: &lt;fs_field&gt; TYPE any.</span><br><span class="line"></span><br><span class="line">    DO .</span><br><span class="line">      ASSIGN COMPONENT sy-index OF STRUCTURE &lt;fs&gt; TO &lt;fs_field&gt;.</span><br><span class="line">      IF sy-subrc = 0.</span><br><span class="line">        WRITE: / &lt;fs_field&gt;.</span><br><span class="line">      ELSE.</span><br><span class="line">        EXIT.</span><br><span class="line">      ENDIF.</span><br><span class="line">    ENDDO.</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 3. Un known data reference(creation of table)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE TABLE OF (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ft_table&gt; TYPE ANY TABLE.</span><br><span class="line"></span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;ft_table&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT * FROM (p_var) INTO TABLE &lt;ft_table&gt; UP TO 10 ROWS.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line"></span><br><span class="line">    cl_salv_table=&gt;factory( IMPORTING r_salv_table = DATA(lr_salv)</span><br><span class="line">                            CHANGING t_table      = &lt;ft_table&gt; ).</span><br><span class="line">    lr_salv-&gt;display( ).</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Field-Symbol使用总结"><a href="#4-Field-Symbol使用总结" class="headerlink" title="4.Field Symbol使用总结"></a>4.Field Symbol使用总结</h3><p>Field <a href="https://so.csdn.net/so/search?q=Symbol&spm=1001.2101.3001.7020">Symbol</a>（以下简称FS），主要作用是程序更加灵活，有时可以实现一般做法无法实现的功能，比如动态ALV内表，LOOP时使用FS还可以提高程序效率。FS缺点是影响程序可读性，为修改和维护代码造成困难，而且有时错误是<a href="https://so.csdn.net/so/search?q=%E7%BC%96%E8%AF%91%E5%99%A8&spm=1001.2101.3001.7020">编译器</a>检查不出来的，只有运行时才会发生错误。下面是FS的一些使用总结。</p>
+<p>首先请牢记，FS必须和某个变量，结构或者内表绑定后才能使用，这点和C语言里的指针（在ABAP里最接近指针的是TYPE REF TO）是不同的，在使用FS前必须分配给某个变量，不然会发生FS未分配的运行时错误。注意如果LOOP内表时ASSIGNING到FS.，那么之后假如有REFRESH内表的操作的话，FS也会再次回到初始未被ASSIGN的状态，这时如果使用FS也会发生FS未分配的RUNTIME ERROR。</p>
+<p>ASSIGN ‘200’ TO<fs1>.意思是指向常量的<fs1>，之后不可更改值，比如执行<fs1> &#x3D; ‘300’会发生运行时错误。如果想实现改值的效果，那么需要ASSIGN一个变量给FS：</p>
+<p>DATA gv_abc(6).</p>
+<p>gv_abc &#x3D; ‘200’.</p>
+<p>ASSGIN gv_abc TO <fs1>.</p>
+<p><fs1> &#x3D; ‘300’.</p>
+<p>这时<fs1>就从200变更为300了，另外如果直接改变变量的值，那么<fs1>也会发生变化。比如上例里gv_abc &#x3D; ‘400’，那么<fs1>也随之变为400，因为<fs1>和gv_abc是绑定了的。</p>
+<p>假设定义了<fs1>和<fs2>两个FS，分别ASSGIN到两个变量，变量A和变量B。</p>
+<p>ASSIGN <fs1> TO <fs2>的意思是，让<fs2>也指向<fs1>所指向的地方，即两个FS都指向变量A；而<fs2>&#x3D; <fs1>的意思是，把<fs1>所指向的变量A的值赋给<fs2>所指向的变量B的值，<fs1>依然指向变量A，<fs2>依然指向变量B。</p>
+<p>LOOP 内表 INTO 结构（工作区）和LOOP内表ASSIGNING &lt;结构&gt;的比较。</p>
+<p>LOOP内表INTO结构时，系统会把先把当前行的数据复制到结构，如果结构的值改了，还需要使用MODIFY语句把更改后的值传回内表。也就是说，结构是内表里的数据的一个副本，操作这个副本并不会影响内表里的数据。带表头的内表也是类似，LOOP内表时，把内表数据复制到表头。</p>
+<p>为了提高效率，可以使用FS，FS直接指向内表数据，省去了复制数据到结构的过程，修改FS的值也就是相当于直接修改内表里的数据，不需要再使用MODIFY语句。</p>
+<p>这里额外提一点，有一些人喜欢在ENDLOOP前使用CLEAR清空结构，首先这是没有必要的，为了提高效率，LOOP内的语句应该越精简越好，其次如果是LOOP到FS的写法，是不能使用CLEAR清空FS的，因为刚刚说了FS是直接指向内表数据，如果清空了FS，那相当于把内表内对应的那行数据也给清空了。</p>
+<p>此外，像LOOP AT 内表 INTO &lt;结构&gt;的写法，初学者容易混淆，其实这里的&lt;结构&gt;是指向一个结构，这种写法和LOOP 内表 INTO 结构没什么区别。</p>
+<p>READ TABLE 内表 INTO 结构和READ TABLE 内表 ASSIGNING &lt;结构&gt;的比较。</p>
+<p>效率上的区别同LOOP的情况，这里说下READ TABLE和LOOP不同的地方，主要差别是，LOOP 是不会失败的，而READ TABLE是可能失败的，一旦READ失败，那么结构或&lt;结构&gt;的值依然是上次READ成功的值（而不是清空），所以READ使用完建议根据情况CLEAR结构或&lt;结构&gt;。</p>
+<p>确定结构的FS和不确定结构的FS。</p>
+<p>FIELD-SYMBOLS <gs_ab> TYPE ty_ab. “ty_ab是个结构，有一个字段为col1</p>
+<p>FIELD-SYMBOLS <gs_ab> TYPE ANY.</p>
+<p>前者是指定了结构，后者是不指定结构。</p>
+<p>之后在为<gs_ab>赋值时，</p>
+<p>ASSIGN COMPONNET ‘COL1’ OF STUCTURE <gs_ab>TO <fs1>.</p>
+<p><fs1> &#x3D; ‘AAA’.</p>
+<p>此种写法对确定结构的定义和未确定结构的定义的<gs_ab>都可行。</p>
+<p> 但是有确定结构定义的<gs_ab>可以直接使用<gs_ab>-col1 &#x3D; ‘AAA’来赋值。</p>
+<p>一般如果能事先知道结构的话，还是应该用确定结构的方式来定义FS，不确定结构的定义通常用于动态处理。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
       </categories>
       <tags>
         <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>OLTP与OLAP的区别</title>
-    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
-<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
-<ul>
-<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
-<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
-</ul>
-<p><strong>2、实时性要求不同：</strong></p>
-<ul>
-<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
-<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
-</ul>
-<p><strong>3、数据量不同：</strong></p>
-<ul>
-<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
-<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
-</ul>
-<p><strong>4、用户和系统的面向性不同：</strong></p>
-<ul>
-<li>OLTP是面向顾客的,用于事务和查询处理。</li>
-<li>OLAP是面向市场的,用于数据分析。</li>
-</ul>
-<p><strong>5、数据库设计不同：</strong></p>
-<ul>
-<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
-<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
@@ -400,6 +301,160 @@
       </tags>
   </entry>
   <entry>
+    <title>SAP NOTE安装过程</title>
+    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
+<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
+<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
+<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
+<p><strong>2.更改系统选项</strong></p>
+<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
+<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
+<p><strong>3.导入note</strong></p>
+<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
+<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
+<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
+<p> <strong>4.新建传输号</strong></p>
+<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
+<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP会计凭证类型总结</title>
+    <url>/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1、SAP凭证类型作用"><a href="#1、SAP凭证类型作用" class="headerlink" title="1、SAP凭证类型作用"></a>1、SAP凭证类型作用</h2><p>传统的财务的系统凭证类型如收付转三类凭证类型，而SAP的凭证类型是用来区分业务的。</p>
+<ul>
+<li>凭证类型决定记账编号范围，常见的Tcode中FBN1维护编号范围，OBH1+OBH2复制编号范围</li>
+<li>凭证类型决定了过账的会计科目的账户类型（S、A、D、K、M）</li>
+<li>凭证类型决定了记账的默认汇率，默认的是M类型的汇率类型。</li>
+<li>凭证类型决定了凭证抬头的参考号码+凭证抬头文本是否必输。</li>
+<li>凭证类型决定允许负数记账、贸易伙伴必输、公司间过账等参数。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204059594.png" alt="在这里插入图片描述"></p>
+<h2 id="2、SAP常见凭证类型"><a href="#2、SAP常见凭证类型" class="headerlink" title="2、SAP常见凭证类型"></a>2、SAP常见凭证类型</h2><p>如上所述，SAP的凭证类型是用来区分业务，一般项目采用SAP默认的凭证类型清单即可满足业务需求。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204149149.png" alt="在这里插入图片描述"></p>
+<h2 id="3、OBU1：FI相应事务代码默认凭证类型"><a href="#3、OBU1：FI相应事务代码默认凭证类型" class="headerlink" title="3、OBU1：FI相应事务代码默认凭证类型"></a>3、OBU1：FI相应事务代码默认凭证类型</h2><p>通过OBU1可更改大部分FI事务代码的默认凭证类型，但是FB50&#x2F;FB60&#x2F;FB70这几个事务代码的凭证类型是不能直接更改的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204235953.png" alt="img"></p>
+<h2 id="4、OBZO：更改感兴趣业务的凭证类型"><a href="#4、OBZO：更改感兴趣业务的凭证类型" class="headerlink" title="4、OBZO：更改感兴趣业务的凭证类型"></a>4、OBZO：更改感兴趣业务的凭证类型</h2><p>通过OBZO即可实现对FB50、60、70默认凭证类型的更改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204259797.png" alt="在这里插入图片描述"></p>
+<ul>
+<li>第一步：FB50&#x2F;FB60&#x2F;FB70这些默认的凭证不允许修改，但可通过设置OBZO就可以修改了，可能需要打NOTES-323113，也可以通过用户参数BAR默认FB50的凭证类型</li>
+<li>你第二步：实施Notes-339765<br>优先级问题</li>
+</ul>
+<p>OBZO维护的默认凭证类型<br>用户参数BAR维护的凭证类型<br>程序写死的SA、KR、DR</p>
+<h2 id="5、OMBA：后勤货物移动默认凭证类型"><a href="#5、OMBA：后勤货物移动默认凭证类型" class="headerlink" title="5、OMBA：后勤货物移动默认凭证类型"></a>5、OMBA：后勤货物移动默认凭证类型</h2><p>OMJJ对各种移动类型默认可使用的事务，然后通过OMBA对事务进行默认凭证类型。我们来举个栗子来，比如WI盘点凭证，你们看看各自的SAP系统是WI还是WA凭证类型，取决于你的盘点流程是采用标准的MI07还是借用701&#x2F;702通过MIGO_GI来处理。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204352139.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204407986.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204423577.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204437214.png" alt="在这里插入图片描述"></p>
+<h2 id="6、OMR4：发票默认的凭证类型"><a href="#6、OMR4：发票默认的凭证类型" class="headerlink" title="6、OMR4：发票默认的凭证类型"></a>6、OMR4：发票默认的凭证类型</h2><p>CKMI就是物料帐结算的事务代码，默认的是ML</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204457539.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204509783.png" alt="在这里插入图片描述"></p>
+<p>MIR7采购部预制发票</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620453342.png" alt="在这里插入图片描述"></p>
+<p>MIRO采购部直接发票过账</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204554606.png" alt="在这里插入图片描述"></p>
+<p>MR21标准价格变更</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620490257.png" alt="在这里插入图片描述"></p>
+<p>MR22移动价格变更</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205017877.png" alt="在这里插入图片描述"></p>
+<p>MR8M取消供应商发票</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205250457.png" alt="在这里插入图片描述"></p>
+<p>MRKO供应商寄售的凭证类型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205348662.png" alt="在这里插入图片描述"></p>
+<h2 id="7、VOFA：销售开票默认凭证类型"><a href="#7、VOFA：销售开票默认凭证类型" class="headerlink" title="7、VOFA：销售开票默认凭证类型"></a>7、VOFA：销售开票默认凭证类型</h2><p>销售开票凭证类型会对应不同的会计凭证类型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205639312.png" alt="在这里插入图片描述"></p>
+<h2 id="8、OKO7：订单结算默认凭证类型"><a href="#8、OKO7：订单结算默认凭证类型" class="headerlink" title="8、OKO7：订单结算默认凭证类型"></a>8、OKO7：订单结算默认凭证类型</h2><p>只要生产订单、销售订单、WBS结算、内部订单结算的凭证类型都在这默认。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205705570.png" alt="在这里插入图片描述"></p>
+<h2 id="9、OB59：外币评估默认凭证类型"><a href="#9、OB59：外币评估默认凭证类型" class="headerlink" title="9、OB59：外币评估默认凭证类型"></a>9、OB59：外币评估默认凭证类型</h2><p>通过外币评估方法直接定义凭证类型。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620573211.png" alt="在这里插入图片描述"></p>
+<h2 id="10、FBKP：清账程序默认凭证类型"><a href="#10、FBKP：清账程序默认凭证类型" class="headerlink" title="10、FBKP：清账程序默认凭证类型"></a>10、FBKP：清账程序默认凭证类型</h2><p>比如说你是否意识到F.13自动清账产生的会计凭证凭证类型？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205756623.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620584369.png" alt="在这里插入图片描述"></p>
+<h2 id="11、GRIR重分类默认的凭证类型"><a href="#11、GRIR重分类默认的凭证类型" class="headerlink" title="11、GRIR重分类默认的凭证类型"></a>11、GRIR重分类默认的凭证类型</h2><p>这个SAP就没有地方来默认凭证类型了</p>
+<p>直接在源程序上写了一段话，这也算隐式增强吧！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205945790.png" alt="在这里插入图片描述"></p>
+<h2 id="12、FAGLF101往来重分类默认凭证类型"><a href="#12、FAGLF101往来重分类默认凭证类型" class="headerlink" title="12、FAGLF101往来重分类默认凭证类型"></a>12、FAGLF101往来重分类默认凭证类型</h2><p>往来重分类必然会用到评估范围，通过新增评估方法达到新增评估范围的作用，即可实现对往来重分类默认不同的会计科目。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210011282.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
+<p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP工单创建自动释放</title>
+    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p>输入相关数据后保存，</p>
+<p>系统提示：process order 900275584 created.</p>
+<p>执行事务代码COR3显示该工单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
+<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
+<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
+<p>去后台如下配置路径，检查该PSP的配置信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
+<p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP生产订单BOM组件修改ABAP函数</title>
+    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
+<p>​    一般SAP有2种方式可以处理：</p>
+<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
+<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
+<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
+<p>IT_METHODS是选择调用接口的对象与方法名，</p>
+<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
+<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
+<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
+<p>应用情况如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
+<p>即完成生产订单BOM数量的修改。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP批次管理（分割评估）</title>
     <url>/2022/06/30/SAP%E6%89%B9%E6%AC%A1%E7%AE%A1%E7%90%86%EF%BC%88%E5%88%86%E5%89%B2%E8%AF%84%E4%BC%B0%EF%BC%89/</url>
     <content><![CDATA[<h3 id="批次分割评估："><a href="#批次分割评估：" class="headerlink" title="批次分割评估："></a><strong>批次分割评估：</strong></h3><p><strong>业务场景：</strong>企业要求各批次物料成本价格不一样。此时可以采用分割批次来实现不同成本。</p>
@@ -446,32 +501,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP工单创建自动释放</title>
-    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
-<p>输入相关数据后保存，</p>
-<p>系统提示：process order 900275584 created.</p>
-<p>执行事务代码COR3显示该工单</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
-<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
-<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
-<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
-<p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
-<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
-<p>或者直接用：OPKP事务码。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP常见的几个接口技术区别</title>
     <url>/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<p><strong>RFC</strong>是SAP接口技术中最简单和易用的一种方式，该方式开发比较简便，特别适合于外部报表开发，但对于<a href="https://cloud.tencent.com/solution/bigdata?from=10680">大数据</a>量的查询效率相对较低。</p>
@@ -480,35 +509,6 @@
 <p><strong>ALE</strong>主要用于SAP系统内部数据交换。EDI主要用于外部或不同client 间数据交换。它们同时都可采用 IDoc 的方式作为数据的传输格式。</p>
 <p><strong>Web Services</strong>是一种松散耦合的组件，使用XML描述交换信息内容，可以保证信息的自描述性和自适应性。WS的分布与地理位置无关，这样就可将非核心业务外包给专门的服务提供商。WS基于开放标准与技术（XML &#x2F; SOAP &#x2F; UDDI等），使其特别适合于异构平台的多样性和可扩展性。</p>
 <p><strong>XI</strong>适配器(Adapter)进行XML格式与业务系统的特定类型的数据格式之间的转换。依据业务系统的数据格式的不同，适配器可以分为多种类型，比如 SOAP Adapter, JDBCAdapter, File Adapter, RFC Adapter, IDoc Adapter , WS Adapter和XI Adapter等。WS Adapter和XI Adapter是基于Web Service技术实现的。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP生产订单BOM组件修改ABAP函数</title>
-    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
-<p>​    一般SAP有2种方式可以处理：</p>
-<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
-<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
-<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
-<p>IT_METHODS是选择调用接口的对象与方法名，</p>
-<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
-<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
-<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
-<p>应用情况如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
-<p>即完成生产订单BOM数量的修改。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -975,6 +975,28 @@
       </tags>
   </entry>
   <entry>
+    <title>SAP统驭科目理解</title>
+    <url>/2022/06/08/SAP%E7%BB%9F%E9%A9%AD%E7%A7%91%E7%9B%AE%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h3 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h3><p>首先统驭科目就是特别总账科目，只是用在SAP应收、应付业务中，起了个名称为特别总账，主要用于解决与一个客户、供应商发生不同业务，需要记账再不同的会计科目上。</p>
+<p>可以说：统驭科目是一座桥，链接着总账和明细账，它是一个需要和明细账核对的总账科目，与明细账平行，但是不能单独记账。常常用于客户（D）、供应商（K）、资产类科目（A）记账。</p>
+<p>再次理解：统驭科目（reconciliation account）指的就是将明细科目归集起来的意思，统驭科目类型分三类：供应商类别（K）、客户类别（D）、固定资产类别（A），主要针对应收账款、应付账款、固定资产等模块过入的金额，他们的交易时不通过总账模块进行的，但再各自模块完成的同时，会将相应的金额过入总账。</p>
+<p>举例：公司向供应商（中百超市）采购3千元的商品，正常的财务记账方式如下：</p>
+<p><strong>借：办公费用3千元          贷：应付账款3千元</strong></p>
+<p>但采购人员不会像财务人员那样记账。通常将业务理解为支付中百超市3千元用于采购办公用品一批。</p>
+<p>在实际的SAP系统中，采购收货后产生物料凭证（并关联产生会计凭证），系统就会自动在财务这边生成一笔凭证（财务并没有手工记账），之所以自动生成，时因为科目“应收账款”设为了供应商“中百超市”的统驭科目。当然，实际运作中由于收货和发票并不同步，所以会有中间科目过渡。但在理解时可以将中间记账科目简化，假设时同步完成。直接产生借费用，贷应付。费用科目可以在采购订单中手工指定。而应付科目就是通过供应商统驭科目的方式实现的。<strong>设为统驭科目的会计科目就不能在手工记账了，只能通过其他的模块（如：AR（应收账款）&#x2F;AP（应付账款）&#x2F;SD&#x2F;MM）自动记账</strong>。</p>
+<p>设置一个统驭科目的步骤：</p>
+<p>1、新建一个科目FSS0（如：应收账款或应付账款）并指定它的“统驭科目类型”为“客户&#x2F;供应商&#x2F;资产”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220608143011488.png" alt="image-20220608143011488"></p>
+<p>2、在创建客户活供应商主数据时，在其“统驭科目”（公司代码标签下）选择刚才新建的那个会计科目，这样，以后对这个客户或供应商进行记账的话，从AR&#x2F;AP&#x2F;SD&#x2F;MM那边记“***供应商”的同时，也会自动在GL中记一笔，并记在“应收账款活应付账款”上。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP月结步骤</title>
     <url>/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
@@ -1021,19 +1043,125 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP统驭科目理解</title>
-    <url>/2022/06/08/SAP%E7%BB%9F%E9%A9%AD%E7%A7%91%E7%9B%AE%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h3 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h3><p>首先统驭科目就是特别总账科目，只是用在SAP应收、应付业务中，起了个名称为特别总账，主要用于解决与一个客户、供应商发生不同业务，需要记账再不同的会计科目上。</p>
-<p>可以说：统驭科目是一座桥，链接着总账和明细账，它是一个需要和明细账核对的总账科目，与明细账平行，但是不能单独记账。常常用于客户（D）、供应商（K）、资产类科目（A）记账。</p>
-<p>再次理解：统驭科目（reconciliation account）指的就是将明细科目归集起来的意思，统驭科目类型分三类：供应商类别（K）、客户类别（D）、固定资产类别（A），主要针对应收账款、应付账款、固定资产等模块过入的金额，他们的交易时不通过总账模块进行的，但再各自模块完成的同时，会将相应的金额过入总账。</p>
-<p>举例：公司向供应商（中百超市）采购3千元的商品，正常的财务记账方式如下：</p>
-<p><strong>借：办公费用3千元          贷：应付账款3千元</strong></p>
-<p>但采购人员不会像财务人员那样记账。通常将业务理解为支付中百超市3千元用于采购办公用品一批。</p>
-<p>在实际的SAP系统中，采购收货后产生物料凭证（并关联产生会计凭证），系统就会自动在财务这边生成一笔凭证（财务并没有手工记账），之所以自动生成，时因为科目“应收账款”设为了供应商“中百超市”的统驭科目。当然，实际运作中由于收货和发票并不同步，所以会有中间科目过渡。但在理解时可以将中间记账科目简化，假设时同步完成。直接产生借费用，贷应付。费用科目可以在采购订单中手工指定。而应付科目就是通过供应商统驭科目的方式实现的。<strong>设为统驭科目的会计科目就不能在手工记账了，只能通过其他的模块（如：AR（应收账款）&#x2F;AP（应付账款）&#x2F;SD&#x2F;MM）自动记账</strong>。</p>
-<p>设置一个统驭科目的步骤：</p>
-<p>1、新建一个科目FSS0（如：应收账款或应付账款）并指定它的“统驭科目类型”为“客户&#x2F;供应商&#x2F;资产”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220608143011488.png" alt="image-20220608143011488"></p>
-<p>2、在创建客户活供应商主数据时，在其“统驭科目”（公司代码标签下）选择刚才新建的那个会计科目，这样，以后对这个客户或供应商进行记账的话，从AR&#x2F;AP&#x2F;SD&#x2F;MM那边记“***供应商”的同时，也会自动在GL中记一笔，并记在“应收账款活应付账款”上。</p>
+    <title>简介</title>
+    <url>/2022/05/19/hello-world/</url>
+    <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
+<p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>SE21创建_复制包均报错</title>
+    <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
+<p>创建 ZGST_CO_PCA</p>
+<p>继续</p>
+<p>Software component HOME is not modifiable</p>
+<p>&amp;软件组件HOME不可修改</p>
+<p>&amp;复制Z001，也会出现同样的报错。</p>
+<h3 id="1-1-2-I-incident"><a href="#1-1-2-I-incident" class="headerlink" title="1.1.2 *I**incident*"></a><strong>1.1.2</strong> <em><strong>*I*</strong></em><em><strong>*incident*</strong></em></h3><h4 id="1-1-2-1-Error-when-creating-development-package"><a href="#1-1-2-1-Error-when-creating-development-package" class="headerlink" title="1.1.2.1 *Error when creating development package*"></a><strong>1.1.2.1</strong> <em><strong>*Error when creating development package*</strong></em></h4><p>When I tried to create a new development package with transaction code ‘SE21’, the following error occured: Software component HOME is not modifiable (Message no. TR463). The parameters were the same as those I set on another server last year. (And I tried it again on that sever, it still works now). Then I tried to copy a development package that existed in the sever, the same error occured. The following is the parameters:</p>
+<p>Application Component: Empty</p>
+<p>Software Component: HOME</p>
+<p>Transport Layer: ZDS4</p>
+<p>Superpackage: Empty</p>
+<p>Package Type: Development Package</p>
+<p>Package encapsulated: Not checked</p>
+<h4 id="1-1-2-2-Note"><a href="#1-1-2-2-Note" class="headerlink" title="1.1.2.2 *Note*"></a><strong>1.1.2.2</strong> <em><strong>*Note*</strong></em></h4><p><em><strong>*2404403 - You get an error “System setting does not allow you to change &amp; &amp; &amp;.” when you try to edit an object*</strong></em></p>
+<p><em><strong>*Symptom*</strong></em></p>
+<p>When you try to edit some object in your system or you do some other actions which are to change some objects, you get the following error:</p>
+<p>System setting does not allow you to change &amp; &amp; &amp;.(<Program ID> <Object Type>  <Object Name>).</p>
+<p>Message no. TR006</p>
+<p><em><strong>*Diagnosis*</strong></em></p>
+<p>The object <Program ID> <Object Type>  <Object Name> is assigned to the software component <Component Name> through its package.</p>
+<p>This software component is not modifiable in this SAP System.</p>
+<p><em><strong>*System Response*</strong></em></p>
+<p>The function terminates.</p>
+<p>Procedure for System Administration</p>
+<p>Check whether you can modify software component <Component Name></p>
+<p>You can set the modifiability of software components in the Transport Organizer Tools under Administration -&gt;Set System Change Option. </p>
+<p><em><strong>*Environment*</strong></em></p>
+<p>ABAP System, Release independent</p>
+<p><em><strong>*Resolution*</strong></em></p>
+<p>Firstly, please specify the package name of the object through the object attributes or table TADIR.</p>
+<p>Then you can go to SE80 to get the the software component of the assigned package.</p>
+<p>Now you must make the following settings to be able to do the needful change in the system.</p>
+<p>SE06-&gt;System change options </p>
+<p>The following settings must be made.</p>
+<p>Global settings: “modifiable”</p>
+<p>You must also set the software component of the assigned package to “modifiable” or “Restrict Modifiable” , for example:</p>
+<p>Ü The software component LOCAL (“Local Developments (No Automatic Transport)”) must be “Modifiable” for the package $TMP.</p>
+<p>Ü The software component HOME (“Developments Without Delivery to Customers”) must be “Modifiable” for a package with the software component HOME.</p>
+<p>Ü All other software components must be set to “Modifiable” or “Restrict Modifibility” correspondingly.</p>
+<p><em><strong>*Namespace&#x2F;name range*</strong></em></p>
+<p>Ü The namespace “General SAP Name range” and “Customer name range” must be set to “modifiable”.</p>
+<p>Ü All other namespaces&#x2F;name ranges can be set to “Not Modifiable”.</p>
+<p>For example, when you edit the object “ZLOGON_SCREEN_INFO” in SE61, you may got error TR006 or TR045.To resolve the error, you need to change the settings below:</p>
+<p>Ü SE06-&gt;System Change Options-&gt;Global Settings:Modifiable</p>
+<p>Ü Software Component-&gt;Local or Home-&gt;Modifiable</p>
+<p>Ü Namespace&#x2F;Name Range-&gt;Customer Name Range: Modifiable </p>
+<p>Keywords</p>
+<p>TR045, TR 045, TR 006, system settings</p>
+<h3 id="1-1-3-解决过程"><a href="#1-1-3-解决过程" class="headerlink" title="1.1.3 *解决过程*"></a><strong>1.1.3</strong> <em><strong>*解决过程*</strong></em></h3><p>SE06</p>
+<p>系统更改选项</p>
+<p>点击</p>
+<p>客户开发-&gt;HOME-&gt;修改为可修改</p>
+<p>这里的状态不对，如下修改：</p>
+<p>保存</p>
+<p>SE21创建包即可</p>
+<h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP脚本录制与回放功能</title>
+    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
+    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
+<p>​    一、开启SAP脚本录制功能</p>
+<p>​    事务代码：RZ11</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
+<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
+<p> 进入“参数详细信息”界面后，点击“更改值”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
+<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
+<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
+<p>​    二、SAP脚本录制功能测试</p>
+<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
+<p>​    1.打开录制，点下图红色按钮</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
+<p> 2.输入事务代码“&#x2F;nMM02”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
+<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
+<p>​    3.录制结束，停止录制</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
+<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
+<p>​    5.使用记事本格式或装vb打开录制脚本</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
+<p>​    获取脚本引擎的方法，如下：</p>
+<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
+<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
+<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
+<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
+<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
+<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
+
+<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
+<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
+<ol start="9">
+<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
+</ol>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2537,131 +2665,170 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP脚本录制与回放功能</title>
-    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
-    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
-<p>​    一、开启SAP脚本录制功能</p>
-<p>​    事务代码：RZ11</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
-<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
-<p> 进入“参数详细信息”界面后，点击“更改值”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
-<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
-<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
-<p>​    二、SAP脚本录制功能测试</p>
-<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
-<p>​    1.打开录制，点下图红色按钮</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
-<p> 2.输入事务代码“&#x2F;nMM02”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
-<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
-<p>​    3.录制结束，停止录制</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
-<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
-<p>​    5.使用记事本格式或装vb打开录制脚本</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
-<p>​    获取脚本引擎的方法，如下：</p>
-<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
-<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
-<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
-<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
-<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
-<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
-
-<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
-<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
-<ol start="9">
-<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
+    <title>会计凭证理解</title>
+    <url>/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="1、会计凭证分类"><a href="#1、会计凭证分类" class="headerlink" title="1、会计凭证分类"></a>1、会计凭证分类</h2><p>会计凭证主要按照其用途和填制程序分类，可以分为原始凭证和记账凭证两类。</p>
+<p>区别：</p>
+<p>（一）原始凭证：俗称单据，实在静静业务发生或完成时取得或填制的，用以记录、证明经济业务已经发生或完成的书面证据，时进行会计核算的原始依据。</p>
+<p>原始凭证一般实在经济业务发生时直接取得或填制的，记载着大量的经济信息，又是证明经济业务发生的初始文件，具有较强的法律效力，所以它时一种很重要的凭证。</p>
+<p>原始凭证按照其来源不同，可分为外来原始凭证和自制原始凭证。</p>
+<p>（二）记账凭证：俗称传票，时会计人员根据审核后的原始凭证的经济内容确定会计分录而编制的一种凭证，时直接登账的依据。原始凭证来自各个不同的方面，表明经济业务的具体内容，因而其种类繁多，格式不易，不能清楚地表明其归类的会计科目和记账方向，不经过必要的归纳和整理，难以达到记账的要求。</p>
+<p>记账凭证按照其反应的经济业务的内容不同，可以分为<strong>收款凭证、付款凭证和转账凭证</strong>。</p>
+<ol>
+<li>收款凭证</li>
 </ol>
+<p>收款凭证时用以记录现金、银行存款收入业务的记账凭证。</p>
+<p>具体可以分为<strong>现金收款凭证</strong>、银行存款收款凭证。实际工作中，一般时由出纳人员根据有关人员审批批准后的收款收据编制而成的。</p>
+<ol start="2">
+<li>付款凭证</li>
+</ol>
+<p>付款凭证时用以记录现金、银行存款支付业务的记账凭证，具体可以分为<strong>现金付款凭证、银行存款付款凭证</strong>，实际工作中，它是由出纳人员根据有关人员审核批准的付款单据编制而成。</p>
+<ol start="3">
+<li>转账凭证</li>
+</ol>
+<p>转账凭证时用以记录不涉及现金、银行存在首付的其他经济业务，即转账业务，它是根据有关转账业务的原始凭证编制而成的。</p>
+<h2 id="2、会计记账凭证对应科目"><a href="#2、会计记账凭证对应科目" class="headerlink" title="2、会计记账凭证对应科目"></a>2、会计记账凭证对应科目</h2><p>会计科目时按照经济业务的内容和经济管理的要求，对会计要素的具体内容进行分类核算的科目，称为会计科目。</p>
+<h4 id="会计记账凭证对应科目"><a href="#会计记账凭证对应科目" class="headerlink" title="会计记账凭证对应科目"></a>会计记账凭证对应科目</h4><p>记账凭证的基本功时根据借贷记账法的记账规则，编制会计分录。</p>
+<p>编制会计分录时，必须填写会计科目，要符合如下要求：</p>
+<p>1、字迹必须清晰、工整。</p>
+<p>2、一级科目、二级科目或明细科目填写齐全，对应关系清楚，金额正确无误</p>
+<p>3、书写时，文字不要占满格，一般占格高度1&#x2F;2，上面留空格，便于更正差错。</p>
+<p>4、必须使用统一会计制度规定的会计科目，不得自创，以保证核算口径一致。</p>
+<h4 id="会计记账凭证科目的详细"><a href="#会计记账凭证科目的详细" class="headerlink" title="会计记账凭证科目的详细"></a>会计记账凭证科目的详细</h4><p>会计科目只不过时一个企业经营资料的统计分类而已，所以如果懂得会计科目的性质及结构系统，每一个管理员不但能看懂财务报表，还能设计会计科目，使会计资料成为很好的管理信息。</p>
+<p>会计科目时会计人员做记录的基础，在结构上共分五大类：即（1）资产（2）负债（3）资本（4）收益（5）费用（成本）</p>
+<p>一、资产：指企业所拥有的一切有价资源，其中又可分为流动资产、固定资产、其它资产等三小类。流动资产指现金及企业希望变成现金的资产。例如银行存款、应收账款、存货等。固定资产是指企业不希望出售，而是长期使用的资产，如土地、房屋、机器等。其它资产指无形资产、未分摊费用、保证金等。</p>
+<p>二、负债：指企业的债务，其中又可分为流动负债、长期负债和其他负债。流动负债是指一年以下负债，长期负债是指一年以上的负债，而其他负债是指斐财务行目标的所发生的负债，如存入保证金、代收款及各项损失准备等。</p>
+<p>三、资本：又名股东权益，是企业中属于股东的部分，所以等于资产与负债之差。资本可分股本及盈余两类，股本是股东所投资的部分，盈余是企业所赚的部分。</p>
+<p>四、收益：是指企业的出售产品或提供服务所发生的收入，可分营业收入及营业外收入两小类，营业收入是企业预定营业范围内的收入，而营业外收入是指预定营业范围外的收入，如非金融业的利息收入等。</p>
+<p>五、费用：是指因收益而发生的支出，其中又分四小类：直接成本、销售费用、管理费用、营业外费用。</p>
+<p>直接成本：是该项支出可直接归属于某项营业收入者，如销货成本、材料成本等。</p>
+<p>销售费用：是指为达成营业的目的而发生的支出，但无法直接归属于某项营业收入者。</p>
+<p>管理费用：是指维持企业运作所必须支付的费用，如管理人员薪酬、租金支出等。</p>
+<p>营业外费用：是指财务费用及投资损失等非属达成营业收入而必要的支出。</p>
 ]]></content>
       <categories>
-        <category>SAP</category>
+        <category>财务</category>
       </categories>
       <tags>
-        <tag>SAP</tag>
+        <tag>财务</tag>
       </tags>
   </entry>
   <entry>
-    <title>简介</title>
-    <url>/2022/05/19/hello-world/</url>
-    <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
-<p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>SE21创建_复制包均报错</title>
-    <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
-    <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
-<p>创建 ZGST_CO_PCA</p>
-<p>继续</p>
-<p>Software component HOME is not modifiable</p>
-<p>&amp;软件组件HOME不可修改</p>
-<p>&amp;复制Z001，也会出现同样的报错。</p>
-<h3 id="1-1-2-I-incident"><a href="#1-1-2-I-incident" class="headerlink" title="1.1.2 *I**incident*"></a><strong>1.1.2</strong> <em><strong>*I*</strong></em><em><strong>*incident*</strong></em></h3><h4 id="1-1-2-1-Error-when-creating-development-package"><a href="#1-1-2-1-Error-when-creating-development-package" class="headerlink" title="1.1.2.1 *Error when creating development package*"></a><strong>1.1.2.1</strong> <em><strong>*Error when creating development package*</strong></em></h4><p>When I tried to create a new development package with transaction code ‘SE21’, the following error occured: Software component HOME is not modifiable (Message no. TR463). The parameters were the same as those I set on another server last year. (And I tried it again on that sever, it still works now). Then I tried to copy a development package that existed in the sever, the same error occured. The following is the parameters:</p>
-<p>Application Component: Empty</p>
-<p>Software Component: HOME</p>
-<p>Transport Layer: ZDS4</p>
-<p>Superpackage: Empty</p>
-<p>Package Type: Development Package</p>
-<p>Package encapsulated: Not checked</p>
-<h4 id="1-1-2-2-Note"><a href="#1-1-2-2-Note" class="headerlink" title="1.1.2.2 *Note*"></a><strong>1.1.2.2</strong> <em><strong>*Note*</strong></em></h4><p><em><strong>*2404403 - You get an error “System setting does not allow you to change &amp; &amp; &amp;.” when you try to edit an object*</strong></em></p>
-<p><em><strong>*Symptom*</strong></em></p>
-<p>When you try to edit some object in your system or you do some other actions which are to change some objects, you get the following error:</p>
-<p>System setting does not allow you to change &amp; &amp; &amp;.(<Program ID> <Object Type>  <Object Name>).</p>
-<p>Message no. TR006</p>
-<p><em><strong>*Diagnosis*</strong></em></p>
-<p>The object <Program ID> <Object Type>  <Object Name> is assigned to the software component <Component Name> through its package.</p>
-<p>This software component is not modifiable in this SAP System.</p>
-<p><em><strong>*System Response*</strong></em></p>
-<p>The function terminates.</p>
-<p>Procedure for System Administration</p>
-<p>Check whether you can modify software component <Component Name></p>
-<p>You can set the modifiability of software components in the Transport Organizer Tools under Administration -&gt;Set System Change Option. </p>
-<p><em><strong>*Environment*</strong></em></p>
-<p>ABAP System, Release independent</p>
-<p><em><strong>*Resolution*</strong></em></p>
-<p>Firstly, please specify the package name of the object through the object attributes or table TADIR.</p>
-<p>Then you can go to SE80 to get the the software component of the assigned package.</p>
-<p>Now you must make the following settings to be able to do the needful change in the system.</p>
-<p>SE06-&gt;System change options </p>
-<p>The following settings must be made.</p>
-<p>Global settings: “modifiable”</p>
-<p>You must also set the software component of the assigned package to “modifiable” or “Restrict Modifiable” , for example:</p>
-<p>Ü The software component LOCAL (“Local Developments (No Automatic Transport)”) must be “Modifiable” for the package $TMP.</p>
-<p>Ü The software component HOME (“Developments Without Delivery to Customers”) must be “Modifiable” for a package with the software component HOME.</p>
-<p>Ü All other software components must be set to “Modifiable” or “Restrict Modifibility” correspondingly.</p>
-<p><em><strong>*Namespace&#x2F;name range*</strong></em></p>
-<p>Ü The namespace “General SAP Name range” and “Customer name range” must be set to “modifiable”.</p>
-<p>Ü All other namespaces&#x2F;name ranges can be set to “Not Modifiable”.</p>
-<p>For example, when you edit the object “ZLOGON_SCREEN_INFO” in SE61, you may got error TR006 or TR045.To resolve the error, you need to change the settings below:</p>
-<p>Ü SE06-&gt;System Change Options-&gt;Global Settings:Modifiable</p>
-<p>Ü Software Component-&gt;Local or Home-&gt;Modifiable</p>
-<p>Ü Namespace&#x2F;Name Range-&gt;Customer Name Range: Modifiable </p>
-<p>Keywords</p>
-<p>TR045, TR 045, TR 006, system settings</p>
-<h3 id="1-1-3-解决过程"><a href="#1-1-3-解决过程" class="headerlink" title="1.1.3 *解决过程*"></a><strong>1.1.3</strong> <em><strong>*解决过程*</strong></em></h3><p>SE06</p>
-<p>系统更改选项</p>
-<p>点击</p>
-<p>客户开发-&gt;HOME-&gt;修改为可修改</p>
-<p>这里的状态不对，如下修改：</p>
-<p>保存</p>
-<p>SE21创建包即可</p>
-<h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
+    <title>你真的了解ELT和ETL吗</title>
+    <url>/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/</url>
+    <content><![CDATA[<p>ETL 和 ELT 有很多共同点，从本质上讲，每种集成方法都可以将数据从源端抽取到数据仓库中，<strong>两者的区别在于数据在哪里进行转换</strong>。 接下来，我们一起详细地分析一下 ETL 和 ELT各自的优缺点，看看在你们现在的业务中用哪种方式处理数据比较合适。</p>
+<h2 id="01-ETL"><a href="#01-ETL" class="headerlink" title="01 ETL"></a><strong>01 ETL</strong></h2><p><strong><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0ff508bcb0fc59847ca432a23449311a.jpg" alt="img"></strong></p>
+<p><strong>ETL - 抽取、转换、加载</strong></p>
+<p>从不同的数据源抽取信息，将其转换为根据业务定义的格式，然后将其加载到其他数据库或数据仓库中。另一种 ETL 集成方法是反向 ETL，它将结构化数据从数据仓库中加载到业务数据库中，如我们常用数据仓库加工好的报表，推送到报表系统的数据库中。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4b2ad6e50c2b1f00b89011ce3b773ec3.jpg" alt="img"></p>
+<p><strong>ELT - 抽取、加载、转换</strong></p>
+<p>同样的从一个或多个数据源中抽取数据，然后将其加载到目标数据仓库中，此时不需要进行数据格式的转换。在 ELT 过程中，数据的转换发生在目标数据仓库中。ELT 对远程资源的要求较少，只需要它们的原始数据即可。</p>
+<h2 id="03-ELT的演变"><a href="#03-ELT的演变" class="headerlink" title="03 ELT的演变"></a><strong>03 ELT的演变</strong></h2><p>ELT 已经存在了一段时间，但 Hadoop 等大数据技术出现后，更加活跃了。像以前转换 PB 级原始数据这样的大型任务无法处理，现在可以被分成小作业，进行处理，然后再加载到目标数据库中。同时，处理能力也提高了，尤其是以私有云集群的方式，把处理、加工数据可以在一个数据仓库中完成了。</p>
+<h2 id="04-ELT的工作原理"><a href="#04-ELT的工作原理" class="headerlink" title="04 ELT的工作原理"></a><strong>04 ELT的工作原理</strong></h2><p>与 ETL 不同，ELT是从多个数据源收集信息，将其加载到数据仓库（或者数据湖）中，然后将其转换为可操作的商业智能的过程。</p>
+<p><strong>抽取</strong>——在ELT和ETL两种数据管理方法中的原理相似。一般我们会采用增量抽取，对于一些维表数据量比较小的也会采用全量抽取。</p>
+<p><strong>加载</strong>——这是 ELT 和 ETL 开始不同的地方了。ELT 不是在抽取大量原始数据的过程中将其转换，而是将所有数据都加在到湖仓中，然后统一进行转换，这样做加快了抽取的效率，但也意味着数据变得有用之前还有很多工作要做。</p>
+<p><strong>转换</strong>——数据湖或数据仓库对数据进行规范化，将部分或全部数据保留在湖仓中，并可用于定制报告。存储海量数据的开销更高，但也是为了后续能够更加快速的进行数据挖掘和报表展现，也就是我们常说的用空间换时间。</p>
+<h2 id="05-什么时候我们选择ELT"><a href="#05-什么时候我们选择ELT" class="headerlink" title="05 什么时候我们选择ELT"></a><strong>05 什么时候我们选择ELT</strong></h2><p>这取决于公司现有的网络和技术架构、预算以及它已经利用云和大数据技术的程度。如果是有下面三个需求场景时，那么ELT就是正确的选择~</p>
+<p><strong>1. 当抽取速度是第一选择时</strong></p>
+<p>因为 ELT 不必等待数据在抽取过程中进行转换后再加载，那么抽取过程要快得多。</p>
+<p><strong>2. 当需要随时访问原始数据时</strong></p>
+<p>有很多场景，我们需要保留所有历史数据，分析师可以根据时间、销售模式、季节性趋势或任何对业务变得重要的新兴指标进行挖掘。由于数据在加载之前未进行转换，因此您可以访问所有原始数据。比如，数据仓库一般都有一个原始数据层，很多数据科学家更喜欢访问原始数据，而业务用户更喜欢使用分析后的应用层或者模型层数据。</p>
+<p><strong>3. 当需要随时可扩展数据湖仓时</strong></p>
+<p>当您使用 Hadoop 或云数据仓库等数据处理引擎时，ELT 可以利用本机处理能力实现更高的可扩展性。</p>
+<h2 id="06-数据湖是不是很好的ELT落脚点"><a href="#06-数据湖是不是很好的ELT落脚点" class="headerlink" title="06 数据湖是不是很好的ELT落脚点"></a><strong>06 数据湖是不是很好的ELT落脚点</strong></h2><p>首先，<strong>我们思考一下数仓为什么会出现？</strong>其实是数据量的飞速增长，以至于当时的数据存储计算引擎，不能很好的满足分析需求；于是数仓概念和经典的理论出现了，很好的解决了当时的问题，用“规范+存储”来解决了当时的问题。</p>
+<p>那么现在大数据时代，随着技术的不断发展，很多新技术出现了，大批量的存储和计算不再是那么难了，那么我们放弃数仓那一套是否可行呢？从一哥现在处理的业务看，如果你的业务系统相对较单一，没有几十个业务系统每天往数仓里灌数据，那么数据湖可以满足你的需求，并且对于“数据驱动”更“敏捷”。如果一线的业务系统较复杂，那么现在使用数据湖也会一不小心会变成“<strong>数据沼泽</strong>”。</p>
+<p>数据湖治理策略没有明确前，还不要急着就上数据湖，并不是适用于每个公司的业务场景的！</p>
+<h2 id="07-结语"><a href="#07-结语" class="headerlink" title="07 结语"></a><strong>07 结语</strong></h2><p>ELT和ETL都有各自的应用场景，可以说现在大数据环境下，很多已经是ELT架构了，<strong>所以这也是我近几年一直不看好很多厂商在推“拖拉拽”的ETL工具或者平台，未来肯定是需要一种通用语言来实现所有的ELT过程</strong>。</p>
+<p>同样，<strong>数据湖是趋势，但现在依然不成熟</strong>，不要看网上很多一线大厂的技术文章中提到了很多数据湖的概念和技术应用，但是请结合自己公司的业务场景，暂时先谨慎选择！</p>
 ]]></content>
       <categories>
-        <category>SAP</category>
+        <category>数据</category>
       </categories>
       <tags>
-        <tag>SAP</tag>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何定义需求的优先级</title>
+    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/</url>
+    <content><![CDATA[<p>如何定义需求的优先级&#x3D;考验你决策取舍的能力</p>
+<p>楼里有些回答写的过于花哨了，看完似乎懂了很多，但其实参考性太差，可行性不高</p>
+<p>最后还是开会时候拍脑袋定优先级</p>
+<p>我总结了一些朴素但实用的需求优先级排序思路：</p>
+<p><strong>遇到多个需求时，先认真问自己三个问题</strong></p>
+<ul>
+<li><strong>1、这个需求紧不紧急？</strong></li>
+</ul>
+<p>牢记！造成严重的流程卡点的需求最紧急，如果无法确定是否严重，可以根据卡点辐射的用户量去佐证到底紧不紧急。</p>
+<ul>
+<li><strong>2、这个需求对你核心指标的贡献程度如何？</strong></li>
+</ul>
+<p>这个其实考验到你拆分、估算的能力。比如我们近期的<a href="https://www.zhihu.com/search?q=%E5%8C%97%E6%9E%81%E6%98%9F&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">北极星</a>指标是提升从A环节→B环节的转化率，那么在其它投入都近乎相等的情况下，需求1预计能提升5%，而需求2预计能提升7%，结果当然不言而喻。</p>
+<ul>
+<li><strong>3、这个需求涉及的工作量大不大？</strong></li>
+</ul>
+<p>还是上面那个例子，如果需求1预计能提升5%，需求2预计能提升7%，但需求2的工作量是需求1的3-4倍，并且需要投入双倍的人力，导致本期其它的需求也会被需求2的影响，面临资源不足的情况，那么这种情况下，考虑到ROI必然是先做需求1。</p>
+<p>如果你的需求是有调研问卷数据支撑的话，还可以引入一个产品需求分析的经典模型<strong>「KANO分析模型」</strong>，进行系统的需求梳理，对需求进行分析和提炼，分为<a href="https://www.zhihu.com/search?q=%E5%85%B4%E5%A5%8B%E6%80%A7&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">兴奋性</a>、期望型、无差异、必备型。不展开说了，可以看看我之前的文章，写的很详细了。</p>
+<p><img src="https://pic2.zhimg.com/v2-cdc39aa326057d2f4cad31769b720ea1_720w.jpg?source=3af55fa1" alt="img"></p>
+<p>KANO 模型是东京理工大学教授狩野纪昭发明的对用户需求分类和优先排序的有用工具，以分析用户需求对用户满意的影响为基础，体现了产品性能和用户满意之间的非线性关系。</p>
+<h3 id="1、了解需求属性分类"><a href="#1、了解需求属性分类" class="headerlink" title="1、了解需求属性分类"></a>1、了解需求属性分类</h3><p>通过对需求的满意度、具备度二维分析，KANO将需求划分为必备型、期望型、魅力型、无差异型、反向型五类，分别以英文字母M、O、A、I、R表示。</p>
+<ul>
+<li>必备型需求(M)：需求满足时，用户不会感到满意。需求不满足时，用户会很不满意。</li>
+<li>期望型需求(O)：需求满足时，用户会感到很满意。需求不满足时，用户会很不满意。</li>
+<li>魅力型需求(A)：该需求超过用户对产品本来的期望，使得用户的满意度急剧上升。即使表现得不完善，用户的满意度也不受影响。</li>
+<li>无差异型需求(I)：需求被满足或未被满足，都不会对用户的满意度造成影响。</li>
+<li>反向型需求(R)：该需求与用户的满意度呈反向相关，满足该要求，反而会使用户的满意度下降。</li>
+</ul>
+<h3 id="2、better-worse系数"><a href="#2、better-worse系数" class="headerlink" title="2、better-worse系数"></a>2、better-worse系数</h3><p>Better系数&#x3D;（期望数+魅力数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
+<p>Worse系数&#x3D; -1*（期望数+必备数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
+<p>Better系数越接近1，表示该具备度越高该需求对用户满意度提升的影响效果越大。Worse系数越接近-1，表示具备度越低该需求对用户满意度造成的负面影响越大。</p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>怎么才有数据分析思路</title>
+    <url>/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/</url>
+    <content><![CDATA[<p>直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：<br>1）使用大众点评优惠吸引用户结账<br>2）直接使用微信或支付宝结账</p>
+<p>这两类结账方式，表面看是商家的促销行为不同。但是，从长远来看，第一类餐厅更容易胜出。</p>
+<p>这是为什么呢？</p>
+<p>因为第一类餐厅的结账模式是建立在互联网产品基础设施（大众点评或者百度糯米）之上，通过与互联网产品结合，可以积累用户的消费信息，例如消费评论。这就好比线下商店老板比不过淘宝卖家一样，因为淘宝卖家有自己客户的详细购物信息，更了解自己的客户。</p>
+<p>更有远见的餐厅老板，会雇佣聪明的数据分析师，来整合挖掘餐厅线下软件（订餐管理软件）和 线上用户信息（如大众点评的评论），从而<strong>为制定餐厅未来的运营决策提供依据。</strong><br>然而，很多传统的公司并没有意识去积累用户的消费数据，更别说对数据进行分析来指导公司运营了。说到底，其根本原因是公司的负责人没有数据分析思维。</p>
+<p><strong>那么，什么是数据分析思维呢？</strong><br>数据分析思维是通过各种方法收集用户的数据，了解用户需求，然后改进你的个人决策，不断迭代。</p>
+<p><strong>如何建立数据分析思维呢？</strong><br>对于数据分析师来说，刚开始肯定是能做一些有趣的分析，但是长期做数据分析工作，想法总会枯竭，寻找分析思路就变得异常痛苦。可以这么说，<strong>分析思路直接奠定了数据分析结论的准确性和实用性。</strong>因此，懂得如何寻找数据分析思路是每个数据分析师必须具备的能力。</p>
+<p>面对一个业务场景，我们如何能够寻找到正确的数据分析思路呢？在我看来，所谓正确的分析思路，本质上就是站在一定高度的业务思维逻辑，因此数据分析思路更多考量的还是一名数据分析师对业务的理解和眼界。今天给大家分享一些可以提升自己分析思路的5个方法，希望能给你们带来帮助。</p>
+<p>由浅至深分成4项：<strong>角色扮演、业务指标、现成模型、维度分析</strong><br>**<br>01 角色扮演**</p>
+<p>这个方法就是尝试把自己“扮演”成公司不同的角色，站在他人的视角上来寻找有哪些需要进行数据分析的点。用这种方式能够找到的数据分析思路往往是对方最需要的，自然也就具有更高的价值。</p>
+<p>比如，你可以把自己扮演成公司的销售、投资人、运营、财务、客户、供应商等，站在这些视角寻找有哪些有帮助的分析思路。<br>之前在一家公司，把自己放在销售的角色上，发现公司对于潜在客户的收集和分析非常缺失，这样就影响了整个公司的销售效果。于是从这个角度出发，专门去相关网站爬取数据，通过地域、规模、员工人数等方面去分析，找出最有可能购买我们服务的潜在客户。最后这个分析结果得到销售团队的极度认可，提升了公司销售业绩。<br>用这种方法做角色扮演的时候大家<strong>一定要尽量贴近角色的日常生活，只有这样才能发现最有价值的分析思路。</strong></p>
+<p><strong>02 业务指标</strong></p>
+<p>这个是非常常见的分析方法。比如公司这个月的销售指标下降了，那么你就着手去分析指标下降的原因；同样，如果指标上升了，也去分析原因。一个公司的指标往往比较标准，比如利润率，销售额，客户增长等等。所以这样的方法比较通用，也比较简单。<br>在分析指标时有一点一定要注意，<strong>就是除了分析出原因外，还有就是要给出解决方案。</strong>比如分析发现客户数近期有下降，那么除了给出原因外，还要给出增加客户数的方法以及这些方法背后的数据模型推理，形成一个完整的故事。</p>
+<p><strong>03 运用一些现成的模型</strong></p>
+<p>大家想好方向之后会遇到一个问题，那就是到底应该从几个维度用什么样子的模型来做分析呢？这个时候就体现一名数据分析师的基本功了。其实数据模型中包含了很多对于基础数据分析的思路，这些思路虽然比较单一，但哪个出彩的思路不是由单一的组合而成呢？<br>除了熟悉模型外，熟练的掌握数据分析的工具也能很大的帮助数据分析的验证。数据分析思路是需要打磨的，特别是刚刚产出的分析思路更<strong>需要通过数据去验证和调整。</strong>这个时候一个方便快速的数据分析工具会起到很重要的作用。下面就给大家分享一个具体的数据分析思维方法。</p>
+<p><strong>04 维度分析法</strong></p>
+<p>我们先了解一下维度分析法：维度是描述对象的参数，在具体分析中，我们可以把它认为是分析事物的角度。销量是一种角度、活跃率是一种角度，时间也是一种角度，所以它们都能算维度。<br>当我们有了维度后，就能够通过不同的维度组合，形成数据模型。数据模型不是一个高深的概念，它就是一个数据立方体。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192214bhxvtxvg8vbheuxq.png" alt="img"></p>
+<p>上图就是三个维度组成的数据模型／数据立方体。分别是产品类型、时间、地区。我们既能获得电子产品在上海地区的2010二季度的销量，也能知道书籍在江苏地区的2010一季度销量。<br>数据模型将复杂的数据以结构化的形式有序的组织起来。我们之前谈到的指标，都可以作为维度使用。下面是范例：<br>将用户类型、活跃度、时间三个维度组合，观察不同用户群体在产品上的使用情况，是否A群体使用的时长更明显？<br>将商品类型、订单金额、地区三个维度组合，观察不同地区的不同商品是否存在销量差异？<br>数据模型可以从不同的角度和层面来观察数据，这样提高了分析的灵活性，满足不同的分析需求、这个过程叫做OLAP（联机分析处理）。当然它涉及到更复杂的数据建模和数据仓库等，我们不用详细知道。‍</p>
+<p>数据模型还有几种常见的技巧、叫做钻取、上卷、切片。</p>
+<ul>
+<li>选取就是将维度继续细分。比如浙江省细分成杭州市、温州市、宁波市等，2010年一季度变成1月、2月、3月。</li>
+<li>上卷则是钻取的相反概念，将维度聚合，比如浙江、上海、江苏聚合成浙江沪维度。</li>
+<li>切片是选中特定的维度，比如只选上海维度、或者只选2010年一季度维度。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192228s6r6dirxwswqox6b.png" alt="img"></p>
+<p>上图的树状结构代表钻取（source和time的细分），然后通过对Route的air切片获得具体数据。<br>聪明的你可能已经想到，我们常用的数据透视表就是一种维度分析，将需要分析的维度放到行列组合进行求和、计数、平均值等计算。放一张曾经用到的案例图片：用城市维度和工作年限维度，计算平均工资。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192246a44289c49c85xu9v.png" alt="img"></p>
+<p>除了Excel、BI、R、Python都能用维度分析法。BI是相对最简便的。谈到维度法，想要强调的是分析的核心思维之一：对比，不同维度的对比，这大概是对新人快速提高的最佳捷径之一。<br>总结一下：<strong>我们通过业务建立和筛选出指标，将指标作为维度，利用维度进行分析。</strong><br>这里我想强调，数据分析并不是一个结果，只是过程。还记得“如果你不能衡量它，那么你就不能有效增长它”这句话吗？<strong>数据分析的最终目的就是增长业务。</strong>如果数据分析需要绩效指标，一定不会是分析的对错，而是最终数据提升的结果。<br>数据分析是需要反馈的，当我分析出某项要素左右业务结果，那么就去验证它。告诉运营和产品人员，看看改进后的数据怎么样，一切以结果为准。如果结果并没有改善，那么就应该反思分析过程了。</p>
+<p>作者：miao君<br>链接：<a href="https://www.zhihu.com/question/284174976/answer/835282007">https://www.zhihu.com/question/284174976/answer/835282007</a><br>来源：知乎</p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
@@ -2772,97 +2939,6 @@
       </tags>
   </entry>
   <entry>
-    <title>会计凭证理解</title>
-    <url>/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="1、会计凭证分类"><a href="#1、会计凭证分类" class="headerlink" title="1、会计凭证分类"></a>1、会计凭证分类</h2><p>会计凭证主要按照其用途和填制程序分类，可以分为原始凭证和记账凭证两类。</p>
-<p>区别：</p>
-<p>（一）原始凭证：俗称单据，实在静静业务发生或完成时取得或填制的，用以记录、证明经济业务已经发生或完成的书面证据，时进行会计核算的原始依据。</p>
-<p>原始凭证一般实在经济业务发生时直接取得或填制的，记载着大量的经济信息，又是证明经济业务发生的初始文件，具有较强的法律效力，所以它时一种很重要的凭证。</p>
-<p>原始凭证按照其来源不同，可分为外来原始凭证和自制原始凭证。</p>
-<p>（二）记账凭证：俗称传票，时会计人员根据审核后的原始凭证的经济内容确定会计分录而编制的一种凭证，时直接登账的依据。原始凭证来自各个不同的方面，表明经济业务的具体内容，因而其种类繁多，格式不易，不能清楚地表明其归类的会计科目和记账方向，不经过必要的归纳和整理，难以达到记账的要求。</p>
-<p>记账凭证按照其反应的经济业务的内容不同，可以分为<strong>收款凭证、付款凭证和转账凭证</strong>。</p>
-<ol>
-<li>收款凭证</li>
-</ol>
-<p>收款凭证时用以记录现金、银行存款收入业务的记账凭证。</p>
-<p>具体可以分为<strong>现金收款凭证</strong>、银行存款收款凭证。实际工作中，一般时由出纳人员根据有关人员审批批准后的收款收据编制而成的。</p>
-<ol start="2">
-<li>付款凭证</li>
-</ol>
-<p>付款凭证时用以记录现金、银行存款支付业务的记账凭证，具体可以分为<strong>现金付款凭证、银行存款付款凭证</strong>，实际工作中，它是由出纳人员根据有关人员审核批准的付款单据编制而成。</p>
-<ol start="3">
-<li>转账凭证</li>
-</ol>
-<p>转账凭证时用以记录不涉及现金、银行存在首付的其他经济业务，即转账业务，它是根据有关转账业务的原始凭证编制而成的。</p>
-<h2 id="2、会计记账凭证对应科目"><a href="#2、会计记账凭证对应科目" class="headerlink" title="2、会计记账凭证对应科目"></a>2、会计记账凭证对应科目</h2><p>会计科目时按照经济业务的内容和经济管理的要求，对会计要素的具体内容进行分类核算的科目，称为会计科目。</p>
-<h4 id="会计记账凭证对应科目"><a href="#会计记账凭证对应科目" class="headerlink" title="会计记账凭证对应科目"></a>会计记账凭证对应科目</h4><p>记账凭证的基本功时根据借贷记账法的记账规则，编制会计分录。</p>
-<p>编制会计分录时，必须填写会计科目，要符合如下要求：</p>
-<p>1、字迹必须清晰、工整。</p>
-<p>2、一级科目、二级科目或明细科目填写齐全，对应关系清楚，金额正确无误</p>
-<p>3、书写时，文字不要占满格，一般占格高度1&#x2F;2，上面留空格，便于更正差错。</p>
-<p>4、必须使用统一会计制度规定的会计科目，不得自创，以保证核算口径一致。</p>
-<h4 id="会计记账凭证科目的详细"><a href="#会计记账凭证科目的详细" class="headerlink" title="会计记账凭证科目的详细"></a>会计记账凭证科目的详细</h4><p>会计科目只不过时一个企业经营资料的统计分类而已，所以如果懂得会计科目的性质及结构系统，每一个管理员不但能看懂财务报表，还能设计会计科目，使会计资料成为很好的管理信息。</p>
-<p>会计科目时会计人员做记录的基础，在结构上共分五大类：即（1）资产（2）负债（3）资本（4）收益（5）费用（成本）</p>
-<p>一、资产：指企业所拥有的一切有价资源，其中又可分为流动资产、固定资产、其它资产等三小类。流动资产指现金及企业希望变成现金的资产。例如银行存款、应收账款、存货等。固定资产是指企业不希望出售，而是长期使用的资产，如土地、房屋、机器等。其它资产指无形资产、未分摊费用、保证金等。</p>
-<p>二、负债：指企业的债务，其中又可分为流动负债、长期负债和其他负债。流动负债是指一年以下负债，长期负债是指一年以上的负债，而其他负债是指斐财务行目标的所发生的负债，如存入保证金、代收款及各项损失准备等。</p>
-<p>三、资本：又名股东权益，是企业中属于股东的部分，所以等于资产与负债之差。资本可分股本及盈余两类，股本是股东所投资的部分，盈余是企业所赚的部分。</p>
-<p>四、收益：是指企业的出售产品或提供服务所发生的收入，可分营业收入及营业外收入两小类，营业收入是企业预定营业范围内的收入，而营业外收入是指预定营业范围外的收入，如非金融业的利息收入等。</p>
-<p>五、费用：是指因收益而发生的支出，其中又分四小类：直接成本、销售费用、管理费用、营业外费用。</p>
-<p>直接成本：是该项支出可直接归属于某项营业收入者，如销货成本、材料成本等。</p>
-<p>销售费用：是指为达成营业的目的而发生的支出，但无法直接归属于某项营业收入者。</p>
-<p>管理费用：是指维持企业运作所必须支付的费用，如管理人员薪酬、租金支出等。</p>
-<p>营业外费用：是指财务费用及投资损失等非属达成营业收入而必要的支出。</p>
-]]></content>
-      <categories>
-        <category>财务</category>
-      </categories>
-      <tags>
-        <tag>财务</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何定义需求的优先级</title>
-    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/</url>
-    <content><![CDATA[<p>如何定义需求的优先级&#x3D;考验你决策取舍的能力</p>
-<p>楼里有些回答写的过于花哨了，看完似乎懂了很多，但其实参考性太差，可行性不高</p>
-<p>最后还是开会时候拍脑袋定优先级</p>
-<p>我总结了一些朴素但实用的需求优先级排序思路：</p>
-<p><strong>遇到多个需求时，先认真问自己三个问题</strong></p>
-<ul>
-<li><strong>1、这个需求紧不紧急？</strong></li>
-</ul>
-<p>牢记！造成严重的流程卡点的需求最紧急，如果无法确定是否严重，可以根据卡点辐射的用户量去佐证到底紧不紧急。</p>
-<ul>
-<li><strong>2、这个需求对你核心指标的贡献程度如何？</strong></li>
-</ul>
-<p>这个其实考验到你拆分、估算的能力。比如我们近期的<a href="https://www.zhihu.com/search?q=%E5%8C%97%E6%9E%81%E6%98%9F&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">北极星</a>指标是提升从A环节→B环节的转化率，那么在其它投入都近乎相等的情况下，需求1预计能提升5%，而需求2预计能提升7%，结果当然不言而喻。</p>
-<ul>
-<li><strong>3、这个需求涉及的工作量大不大？</strong></li>
-</ul>
-<p>还是上面那个例子，如果需求1预计能提升5%，需求2预计能提升7%，但需求2的工作量是需求1的3-4倍，并且需要投入双倍的人力，导致本期其它的需求也会被需求2的影响，面临资源不足的情况，那么这种情况下，考虑到ROI必然是先做需求1。</p>
-<p>如果你的需求是有调研问卷数据支撑的话，还可以引入一个产品需求分析的经典模型<strong>「KANO分析模型」</strong>，进行系统的需求梳理，对需求进行分析和提炼，分为<a href="https://www.zhihu.com/search?q=%E5%85%B4%E5%A5%8B%E6%80%A7&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">兴奋性</a>、期望型、无差异、必备型。不展开说了，可以看看我之前的文章，写的很详细了。</p>
-<p><img src="https://pic2.zhimg.com/v2-cdc39aa326057d2f4cad31769b720ea1_720w.jpg?source=3af55fa1" alt="img"></p>
-<p>KANO 模型是东京理工大学教授狩野纪昭发明的对用户需求分类和优先排序的有用工具，以分析用户需求对用户满意的影响为基础，体现了产品性能和用户满意之间的非线性关系。</p>
-<h3 id="1、了解需求属性分类"><a href="#1、了解需求属性分类" class="headerlink" title="1、了解需求属性分类"></a>1、了解需求属性分类</h3><p>通过对需求的满意度、具备度二维分析，KANO将需求划分为必备型、期望型、魅力型、无差异型、反向型五类，分别以英文字母M、O、A、I、R表示。</p>
-<ul>
-<li>必备型需求(M)：需求满足时，用户不会感到满意。需求不满足时，用户会很不满意。</li>
-<li>期望型需求(O)：需求满足时，用户会感到很满意。需求不满足时，用户会很不满意。</li>
-<li>魅力型需求(A)：该需求超过用户对产品本来的期望，使得用户的满意度急剧上升。即使表现得不完善，用户的满意度也不受影响。</li>
-<li>无差异型需求(I)：需求被满足或未被满足，都不会对用户的满意度造成影响。</li>
-<li>反向型需求(R)：该需求与用户的满意度呈反向相关，满足该要求，反而会使用户的满意度下降。</li>
-</ul>
-<h3 id="2、better-worse系数"><a href="#2、better-worse系数" class="headerlink" title="2、better-worse系数"></a>2、better-worse系数</h3><p>Better系数&#x3D;（期望数+魅力数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
-<p>Worse系数&#x3D; -1*（期望数+必备数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
-<p>Better系数越接近1，表示该具备度越高该需求对用户满意度提升的影响效果越大。Worse系数越接近-1，表示具备度越低该需求对用户满意度造成的负面影响越大。</p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何搭建一套完整的数据指标体系概述</title>
     <url>/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/</url>
     <content><![CDATA[<p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
@@ -2905,73 +2981,280 @@
       </tags>
   </entry>
   <entry>
-    <title>你真的了解ELT和ETL吗</title>
-    <url>/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/</url>
-    <content><![CDATA[<p>ETL 和 ELT 有很多共同点，从本质上讲，每种集成方法都可以将数据从源端抽取到数据仓库中，<strong>两者的区别在于数据在哪里进行转换</strong>。 接下来，我们一起详细地分析一下 ETL 和 ELT各自的优缺点，看看在你们现在的业务中用哪种方式处理数据比较合适。</p>
-<h2 id="01-ETL"><a href="#01-ETL" class="headerlink" title="01 ETL"></a><strong>01 ETL</strong></h2><p><strong><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0ff508bcb0fc59847ca432a23449311a.jpg" alt="img"></strong></p>
-<p><strong>ETL - 抽取、转换、加载</strong></p>
-<p>从不同的数据源抽取信息，将其转换为根据业务定义的格式，然后将其加载到其他数据库或数据仓库中。另一种 ETL 集成方法是反向 ETL，它将结构化数据从数据仓库中加载到业务数据库中，如我们常用数据仓库加工好的报表，推送到报表系统的数据库中。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4b2ad6e50c2b1f00b89011ce3b773ec3.jpg" alt="img"></p>
-<p><strong>ELT - 抽取、加载、转换</strong></p>
-<p>同样的从一个或多个数据源中抽取数据，然后将其加载到目标数据仓库中，此时不需要进行数据格式的转换。在 ELT 过程中，数据的转换发生在目标数据仓库中。ELT 对远程资源的要求较少，只需要它们的原始数据即可。</p>
-<h2 id="03-ELT的演变"><a href="#03-ELT的演变" class="headerlink" title="03 ELT的演变"></a><strong>03 ELT的演变</strong></h2><p>ELT 已经存在了一段时间，但 Hadoop 等大数据技术出现后，更加活跃了。像以前转换 PB 级原始数据这样的大型任务无法处理，现在可以被分成小作业，进行处理，然后再加载到目标数据库中。同时，处理能力也提高了，尤其是以私有云集群的方式，把处理、加工数据可以在一个数据仓库中完成了。</p>
-<h2 id="04-ELT的工作原理"><a href="#04-ELT的工作原理" class="headerlink" title="04 ELT的工作原理"></a><strong>04 ELT的工作原理</strong></h2><p>与 ETL 不同，ELT是从多个数据源收集信息，将其加载到数据仓库（或者数据湖）中，然后将其转换为可操作的商业智能的过程。</p>
-<p><strong>抽取</strong>——在ELT和ETL两种数据管理方法中的原理相似。一般我们会采用增量抽取，对于一些维表数据量比较小的也会采用全量抽取。</p>
-<p><strong>加载</strong>——这是 ELT 和 ETL 开始不同的地方了。ELT 不是在抽取大量原始数据的过程中将其转换，而是将所有数据都加在到湖仓中，然后统一进行转换，这样做加快了抽取的效率，但也意味着数据变得有用之前还有很多工作要做。</p>
-<p><strong>转换</strong>——数据湖或数据仓库对数据进行规范化，将部分或全部数据保留在湖仓中，并可用于定制报告。存储海量数据的开销更高，但也是为了后续能够更加快速的进行数据挖掘和报表展现，也就是我们常说的用空间换时间。</p>
-<h2 id="05-什么时候我们选择ELT"><a href="#05-什么时候我们选择ELT" class="headerlink" title="05 什么时候我们选择ELT"></a><strong>05 什么时候我们选择ELT</strong></h2><p>这取决于公司现有的网络和技术架构、预算以及它已经利用云和大数据技术的程度。如果是有下面三个需求场景时，那么ELT就是正确的选择~</p>
-<p><strong>1. 当抽取速度是第一选择时</strong></p>
-<p>因为 ELT 不必等待数据在抽取过程中进行转换后再加载，那么抽取过程要快得多。</p>
-<p><strong>2. 当需要随时访问原始数据时</strong></p>
-<p>有很多场景，我们需要保留所有历史数据，分析师可以根据时间、销售模式、季节性趋势或任何对业务变得重要的新兴指标进行挖掘。由于数据在加载之前未进行转换，因此您可以访问所有原始数据。比如，数据仓库一般都有一个原始数据层，很多数据科学家更喜欢访问原始数据，而业务用户更喜欢使用分析后的应用层或者模型层数据。</p>
-<p><strong>3. 当需要随时可扩展数据湖仓时</strong></p>
-<p>当您使用 Hadoop 或云数据仓库等数据处理引擎时，ELT 可以利用本机处理能力实现更高的可扩展性。</p>
-<h2 id="06-数据湖是不是很好的ELT落脚点"><a href="#06-数据湖是不是很好的ELT落脚点" class="headerlink" title="06 数据湖是不是很好的ELT落脚点"></a><strong>06 数据湖是不是很好的ELT落脚点</strong></h2><p>首先，<strong>我们思考一下数仓为什么会出现？</strong>其实是数据量的飞速增长，以至于当时的数据存储计算引擎，不能很好的满足分析需求；于是数仓概念和经典的理论出现了，很好的解决了当时的问题，用“规范+存储”来解决了当时的问题。</p>
-<p>那么现在大数据时代，随着技术的不断发展，很多新技术出现了，大批量的存储和计算不再是那么难了，那么我们放弃数仓那一套是否可行呢？从一哥现在处理的业务看，如果你的业务系统相对较单一，没有几十个业务系统每天往数仓里灌数据，那么数据湖可以满足你的需求，并且对于“数据驱动”更“敏捷”。如果一线的业务系统较复杂，那么现在使用数据湖也会一不小心会变成“<strong>数据沼泽</strong>”。</p>
-<p>数据湖治理策略没有明确前，还不要急着就上数据湖，并不是适用于每个公司的业务场景的！</p>
-<h2 id="07-结语"><a href="#07-结语" class="headerlink" title="07 结语"></a><strong>07 结语</strong></h2><p>ELT和ETL都有各自的应用场景，可以说现在大数据环境下，很多已经是ELT架构了，<strong>所以这也是我近几年一直不看好很多厂商在推“拖拉拽”的ETL工具或者平台，未来肯定是需要一种通用语言来实现所有的ELT过程</strong>。</p>
-<p>同样，<strong>数据湖是趋势，但现在依然不成熟</strong>，不要看网上很多一线大厂的技术文章中提到了很多数据湖的概念和技术应用，但是请结合自己公司的业务场景，暂时先谨慎选择！</p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>怎么才有数据分析思路</title>
-    <url>/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/</url>
-    <content><![CDATA[<p>直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：<br>1）使用大众点评优惠吸引用户结账<br>2）直接使用微信或支付宝结账</p>
-<p>这两类结账方式，表面看是商家的促销行为不同。但是，从长远来看，第一类餐厅更容易胜出。</p>
-<p>这是为什么呢？</p>
-<p>因为第一类餐厅的结账模式是建立在互联网产品基础设施（大众点评或者百度糯米）之上，通过与互联网产品结合，可以积累用户的消费信息，例如消费评论。这就好比线下商店老板比不过淘宝卖家一样，因为淘宝卖家有自己客户的详细购物信息，更了解自己的客户。</p>
-<p>更有远见的餐厅老板，会雇佣聪明的数据分析师，来整合挖掘餐厅线下软件（订餐管理软件）和 线上用户信息（如大众点评的评论），从而<strong>为制定餐厅未来的运营决策提供依据。</strong><br>然而，很多传统的公司并没有意识去积累用户的消费数据，更别说对数据进行分析来指导公司运营了。说到底，其根本原因是公司的负责人没有数据分析思维。</p>
-<p><strong>那么，什么是数据分析思维呢？</strong><br>数据分析思维是通过各种方法收集用户的数据，了解用户需求，然后改进你的个人决策，不断迭代。</p>
-<p><strong>如何建立数据分析思维呢？</strong><br>对于数据分析师来说，刚开始肯定是能做一些有趣的分析，但是长期做数据分析工作，想法总会枯竭，寻找分析思路就变得异常痛苦。可以这么说，<strong>分析思路直接奠定了数据分析结论的准确性和实用性。</strong>因此，懂得如何寻找数据分析思路是每个数据分析师必须具备的能力。</p>
-<p>面对一个业务场景，我们如何能够寻找到正确的数据分析思路呢？在我看来，所谓正确的分析思路，本质上就是站在一定高度的业务思维逻辑，因此数据分析思路更多考量的还是一名数据分析师对业务的理解和眼界。今天给大家分享一些可以提升自己分析思路的5个方法，希望能给你们带来帮助。</p>
-<p>由浅至深分成4项：<strong>角色扮演、业务指标、现成模型、维度分析</strong><br>**<br>01 角色扮演**</p>
-<p>这个方法就是尝试把自己“扮演”成公司不同的角色，站在他人的视角上来寻找有哪些需要进行数据分析的点。用这种方式能够找到的数据分析思路往往是对方最需要的，自然也就具有更高的价值。</p>
-<p>比如，你可以把自己扮演成公司的销售、投资人、运营、财务、客户、供应商等，站在这些视角寻找有哪些有帮助的分析思路。<br>之前在一家公司，把自己放在销售的角色上，发现公司对于潜在客户的收集和分析非常缺失，这样就影响了整个公司的销售效果。于是从这个角度出发，专门去相关网站爬取数据，通过地域、规模、员工人数等方面去分析，找出最有可能购买我们服务的潜在客户。最后这个分析结果得到销售团队的极度认可，提升了公司销售业绩。<br>用这种方法做角色扮演的时候大家<strong>一定要尽量贴近角色的日常生活，只有这样才能发现最有价值的分析思路。</strong></p>
-<p><strong>02 业务指标</strong></p>
-<p>这个是非常常见的分析方法。比如公司这个月的销售指标下降了，那么你就着手去分析指标下降的原因；同样，如果指标上升了，也去分析原因。一个公司的指标往往比较标准，比如利润率，销售额，客户增长等等。所以这样的方法比较通用，也比较简单。<br>在分析指标时有一点一定要注意，<strong>就是除了分析出原因外，还有就是要给出解决方案。</strong>比如分析发现客户数近期有下降，那么除了给出原因外，还要给出增加客户数的方法以及这些方法背后的数据模型推理，形成一个完整的故事。</p>
-<p><strong>03 运用一些现成的模型</strong></p>
-<p>大家想好方向之后会遇到一个问题，那就是到底应该从几个维度用什么样子的模型来做分析呢？这个时候就体现一名数据分析师的基本功了。其实数据模型中包含了很多对于基础数据分析的思路，这些思路虽然比较单一，但哪个出彩的思路不是由单一的组合而成呢？<br>除了熟悉模型外，熟练的掌握数据分析的工具也能很大的帮助数据分析的验证。数据分析思路是需要打磨的，特别是刚刚产出的分析思路更<strong>需要通过数据去验证和调整。</strong>这个时候一个方便快速的数据分析工具会起到很重要的作用。下面就给大家分享一个具体的数据分析思维方法。</p>
-<p><strong>04 维度分析法</strong></p>
-<p>我们先了解一下维度分析法：维度是描述对象的参数，在具体分析中，我们可以把它认为是分析事物的角度。销量是一种角度、活跃率是一种角度，时间也是一种角度，所以它们都能算维度。<br>当我们有了维度后，就能够通过不同的维度组合，形成数据模型。数据模型不是一个高深的概念，它就是一个数据立方体。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192214bhxvtxvg8vbheuxq.png" alt="img"></p>
-<p>上图就是三个维度组成的数据模型／数据立方体。分别是产品类型、时间、地区。我们既能获得电子产品在上海地区的2010二季度的销量，也能知道书籍在江苏地区的2010一季度销量。<br>数据模型将复杂的数据以结构化的形式有序的组织起来。我们之前谈到的指标，都可以作为维度使用。下面是范例：<br>将用户类型、活跃度、时间三个维度组合，观察不同用户群体在产品上的使用情况，是否A群体使用的时长更明显？<br>将商品类型、订单金额、地区三个维度组合，观察不同地区的不同商品是否存在销量差异？<br>数据模型可以从不同的角度和层面来观察数据，这样提高了分析的灵活性，满足不同的分析需求、这个过程叫做OLAP（联机分析处理）。当然它涉及到更复杂的数据建模和数据仓库等，我们不用详细知道。‍</p>
-<p>数据模型还有几种常见的技巧、叫做钻取、上卷、切片。</p>
+    <title>深度好文：关于数仓建设及数据治理的超全概括</title>
+    <url>/2022/07/08/%E6%B7%B1%E5%BA%A6%E5%A5%BD%E6%96%87%EF%BC%9A%E5%85%B3%E4%BA%8E%E6%95%B0%E4%BB%93%E5%BB%BA%E8%AE%BE%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%B2%BB%E7%90%86%E7%9A%84%E8%B6%85%E5%85%A8%E6%A6%82%E6%8B%AC/</url>
+    <content><![CDATA[<p>在谈数仓之前，先来看下面几个问题：</p>
+<h3 id="数仓为什么要分层？"><a href="#数仓为什么要分层？" class="headerlink" title="数仓为什么要分层？"></a>数仓为什么要分层？</h3><ol>
+<li>用空间换时间，通过大量的预处理来提升应用系统的用户体验（效率），因此数据仓库会存在大量冗余的数据；不分层的话，如果源业务系统的业务规则发生变化将会影响整个数据清洗过程，工作量巨大。</li>
+<li>通过数据分层管理可以简化数据清洗的过程，因为把原来一步的工作分到了多个步骤去完成，相当于把一个复杂的工作拆成了多个简单的工作，把一个大的黑盒变成了一个白盒，每一层的处理逻辑都相对简单和容易理解，这样我们比较容易保证每一个步骤的正确性，当数据发生错误的时候，往往我们只需要局部调整某个步骤即可。</li>
+</ol>
+<p>数据仓库之父 Bill Inmon对数据仓库做了定义——面向主题的、集成的、相对稳定的、反映历史变化的数据集合，用于支持管理决策。从定义上来看，数据仓库的关键词为面向主题、集成、稳定、反映历史变化、支持管理决策，而这些关键词的实现就体现在分层架构内。</p>
+<p>一个好的分层架构，有以下好处：</p>
+<ol>
+<li><strong>清晰数据结构</strong>：每一个数据分层都有对应的作用域，在使用数据的时候能更方便的定位和理解。</li>
+<li><strong>数据血缘追踪</strong>：提供给业务人员或下游系统的数据服务时都是目标数据，目标数据的数据来源一般都来自于多张表数据。若出现目标数据异常时，清晰的血缘关系可以快速定位问题所在。而且，血缘管理也是元数据管理重要的一部分。</li>
+<li><strong>减少重复开发</strong>：数据的逐层加工原则，下层包含了上层数据加工所需要的全量数据，这样的加工方式避免了每个数据开发人员都重新从源系统抽取数据进行加工。</li>
+<li><strong>数据关系条理化</strong>：源系统间存在复杂的数据关系，比如客户信息同时存在于核心系统、信贷系统、理财系统、资金系统，取数时该如何决策呢？数据仓库会对相同主题的数据进行统一建模，把复杂的数据关系梳理成条理清晰的数据模型，使用时就可避免上述问题了。</li>
+<li><strong>屏蔽原始数据的影响</strong>：数据的逐层加工原则，上层的数据都由下一层的数据加工获取，不允许跳级取数。而原始数据位于数仓的最底层，离应用层数据还有多层的数据加工，所以加工应用层数据的过程中就会把原始数据的变更消除掉，保持应用层的稳定性。</li>
+</ol>
+<h3 id="数仓分几层最好？"><a href="#数仓分几层最好？" class="headerlink" title="数仓分几层最好？"></a>数仓分几层最好？</h3><p>目前市场上主流的分层方式眼花缭乱，不过看事情不能只看表面，还要看到内在的规律，<strong>不能为了分层而分层</strong>，没有最好的，只有适合的。</p>
+<p>分层是以解决当前业务快速的数据支撑为目的，为未来抽象出共性的框架并能够赋能给其他业务线，同时为业务发展提供稳定、准确的数据支撑，并能够按照已有的模型为新业务发展提供方向，也就是数据驱动和赋能。</p>
+<h3 id="如何搭建一个好的数仓？"><a href="#如何搭建一个好的数仓？" class="headerlink" title="如何搭建一个好的数仓？"></a>如何搭建一个好的数仓？</h3><ol>
+<li><strong>稳定</strong>：数据产出稳定且有保障。</li>
+<li><strong>可信</strong>：数据干净、数据质量高。</li>
+<li><strong>丰富</strong>：数据涵盖的业务足够广泛。</li>
+<li><strong>透明</strong>：数据构成体系足够透明。</li>
+</ol>
+<h2 id="数仓设计"><a href="#数仓设计" class="headerlink" title="数仓设计"></a>数仓设计</h2><p>数仓设计的3个维度：</p>
 <ul>
-<li>选取就是将维度继续细分。比如浙江省细分成杭州市、温州市、宁波市等，2010年一季度变成1月、2月、3月。</li>
-<li>上卷则是钻取的相反概念，将维度聚合，比如浙江、上海、江苏聚合成浙江沪维度。</li>
-<li>切片是选中特定的维度，比如只选上海维度、或者只选2010年一季度维度。</li>
+<li><strong>功能架构</strong>：结构层次清晰。</li>
+<li><strong>数据架构</strong>：数据质量有保障。</li>
+<li><strong>技术架构</strong>：易扩展、易用。</li>
 </ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192228s6r6dirxwswqox6b.png" alt="img"></p>
-<p>上图的树状结构代表钻取（source和time的细分），然后通过对Route的air切片获得具体数据。<br>聪明的你可能已经想到，我们常用的数据透视表就是一种维度分析，将需要分析的维度放到行列组合进行求和、计数、平均值等计算。放一张曾经用到的案例图片：用城市维度和工作年限维度，计算平均工资。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192246a44289c49c85xu9v.png" alt="img"></p>
-<p>除了Excel、BI、R、Python都能用维度分析法。BI是相对最简便的。谈到维度法，想要强调的是分析的核心思维之一：对比，不同维度的对比，这大概是对新人快速提高的最佳捷径之一。<br>总结一下：<strong>我们通过业务建立和筛选出指标，将指标作为维度，利用维度进行分析。</strong><br>这里我想强调，数据分析并不是一个结果，只是过程。还记得“如果你不能衡量它，那么你就不能有效增长它”这句话吗？<strong>数据分析的最终目的就是增长业务。</strong>如果数据分析需要绩效指标，一定不会是分析的对错，而是最终数据提升的结果。<br>数据分析是需要反馈的，当我分析出某项要素左右业务结果，那么就去验证它。告诉运营和产品人员，看看改进后的数据怎么样，一切以结果为准。如果结果并没有改善，那么就应该反思分析过程了。</p>
-<p>作者：miao君<br>链接：<a href="https://www.zhihu.com/question/284174976/answer/835282007">https://www.zhihu.com/question/284174976/answer/835282007</a><br>来源：知乎</p>
+<h3 id="数仓架构"><a href="#数仓架构" class="headerlink" title="数仓架构"></a>数仓架构</h3><p>按照数据流入流出的过程，数据仓库架构可分为：<strong>源数据</strong>、<strong>数据仓库</strong>、<strong>数据应用</strong>。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/297aea6b440fa45ca1dba17135b4dd7e.png" alt="img"></p>
+<p>数据仓库</p>
+<p>数据仓库的数据来源于不同的源数据，并提供多样的数据应用，数据自下而上流入数据仓库后向上层开放应用，而数据仓库只是中间集成化数据管理的一个平台。</p>
+<p><strong>源数据</strong>：此层数据无任何更改，直接沿用外围系统数据结构和数据，不对外开放；为临时存储层，是接口数据的临时存储区域，为后一步的数据处理做准备。</p>
+<p><strong>数据仓库</strong>：也称为细节层，DW层的数据应该是一致的、准确的、干净的数据，即对源系统数据进行了清洗（去除了杂质）后的数据。</p>
+<p><strong>数据应用</strong>：前端应用直接读取的数据源；根据报表、专题分析需求而计算生成的数据。</p>
+<p>数据仓库从各数据源获取数据及在数据仓库内的数据转换和流动都可以认为是ETL（<strong>抽取Extra, 转化Transfer, 装载Load</strong>）的过程，ETL是数据仓库的流水线，也可以认为是数据仓库的血液，它维系着数据仓库中数据的新陈代谢，而数据仓库日常的管理和维护工作的大部分精力就是保持ETL的正常和稳定。</p>
+<p>建设数据仓库犹如创造一条新的生命，分层架构只是这条生命的逻辑骨架而已。想要在骨架上长出血肉，就必须进行合适的数据建模，数据仓库的强壮还是孱弱，健美还是丑陋，就取决于建模的结果。</p>
+<h3 id="数仓建模方法"><a href="#数仓建模方法" class="headerlink" title="数仓建模方法"></a>数仓建模方法</h3><p>数据仓库的建模方法有很多种，每一种建模方法代表了哲学上的一个观点，代表了一种归纳、概括世界的一种方法。常见的有 <strong>范式建模法、维度建模法、实体建模法</strong>等，每种方法从本质上将是从不同的角度看待业务中的问题。</p>
+<h4 id="1-范式建模法"><a href="#1-范式建模法" class="headerlink" title="1. 范式建模法"></a>1. 范式建模法</h4><p>范式建模法其实是我们在构建数据模型常用的一个方法，该方法的主要由 Inmon 所提倡，主要解决关系型数据库的数据存储，利用的一种技术层面上的方法。目前，我们在关系型数据库中的建模方法，大部分采用的是三范式建模法。</p>
+<p>范式 是符合某一种级别的关系模式的集合。构造数据库必须遵循一定的规则，而在关系型数据库中这种规则就是范式，这一过程也被称为规范化。目前关系数据库有六种范式：第一范式（1NF）、第二范式（2NF）、第三范式（3NF）、Boyce-Codd范式（BCNF）、第四范式（4NF）和第五范式（5NF）。</p>
+<p>在数据仓库的模型设计中，一般采用第三范式。一个符合第三范式的关系必须具有以下三个条件 :</p>
+<ul>
+<li>每个属性值唯一，不具有多义性 ;</li>
+<li>每个非主属性必须完全依赖于整个主键，而非主键的一部分 ;</li>
+<li>每个非主属性不能依赖于其他关系中的属性，因为这样的话，这种属性应该归到其他关系中去。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b77fe0772f99c363984d086836d84626.png" alt="img"></p>
+<p>范式建模</p>
+<p>根据 Inmon 的观点，数据仓库模型的建设方法和业务系统的企业数据模型类似。在业务系统中，企业数据模型决定了数据的来源，而企业数据模型也分为两个层次，即主题域模型和逻辑模型。同样，主题域模型可以看成是业务模型的概念模型，而逻辑模型则是域模型在关系型数据库上的实例化。</p>
+<h4 id="2-实体建模法"><a href="#2-实体建模法" class="headerlink" title="2. 实体建模法"></a>2. 实体建模法</h4><p>实体建模法并不是数据仓库建模中常见的一个方法，它来源于哲学的一个流派。从哲学的意义上说，客观世界应该是可以细分的，客观世界应该可以分成由一个个实体，以及实体与实体之间的关系组成。那么我们在数据仓库的建模过程中完全可以引入这个抽象的方法，将整个业务也可以划分成一个个的实体，而每个实体之间的关系，以及针对这些关系的说明就是我们数据建模需要做的工作。</p>
+<p>虽然实体法粗看起来好像有一些抽象，其实理解起来很容易。即我们可以将任何一个业务过程划分成 3 个部分，<strong>实体，事件，说明</strong>，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/57d96b64ffa2cbd3f4246dbe901d9456.png" alt="img"></p>
+<p>实体建模</p>
+<p>上图表述的是一个抽象的含义，如果我们描述一个简单的事实：“小明开车去学校上学”。以这个业务事实为例，我们可以把“小明”，“学校”看成是一个实体，“上学”描述的是一个业务过程，我们在这里可以抽象为一个具体“事件”，而“开车去”则可以看成是事件“上学”的一个说明。</p>
+<h4 id="3-维度建模法"><a href="#3-维度建模法" class="headerlink" title="3. 维度建模法"></a>3. 维度建模法</h4><p>维度模型是数据仓库领域另一位大师Ralph Kimall所倡导，他的《数据仓库工具箱》是数据仓库工程领域最流行的数仓建模经典。维度建模以分析决策的需求出发构建模型，构建的数据模型为分析需求服务，因此它重点解决用户如何更快速完成分析需求，同时还有较好的大规模复杂查询的响应性能。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0576134712f68a0a39023f34e8a4a023.png" alt="img"></p>
+<p>星形模型</p>
+<p>典型的代表是我们比较熟知的星形模型（Star-schema），以及在一些特殊场景下适用的雪花模型（Snow-schema）。</p>
+<p>维度建模中比较重要的概念就是 事实表（Fact table）和维度表（Dimension table）。其最简单的描述就是，按照事实表、维度表来构建数据仓库、数据集市。</p>
+<p>目前在互联网公司最常用的建模方法就是维度建模。</p>
+<p><strong>维度建模怎么建：</strong></p>
+<p>在实际业务中，给了我们一堆数据，我们怎么拿这些数据进行数仓建设呢，数仓工具箱作者根据自身60多年的实际业务经验，给我们总结了如下四步。</p>
+<p>数仓工具箱中的维度建模四步走：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/404be01fbe86c6ca3d57efd49be4ee05.png" alt="img"></p>
+<p>维度建模四步走</p>
+<p>这四步是环环相扣，步步相连。下面详细拆解下每个步骤怎么做</p>
+<p><strong>1、选择业务过程</strong></p>
+<ul>
+<li>维度建模是紧贴业务的，所以必须以业务为根基进行建模，那么选择业务过程，顾名思义就是在整个业务流程中选取我们需要建模的业务，根据运营提供的需求及日后的易扩展性等进行选择业务。比如商城，整个商城流程分为商家端，用户端，平台端，运营需求是总订单量，订单人数，及用户的购买情况等，我们选择业务过程就选择用户端的数据，商家及平台端暂不考虑。业务选择非常重要，因为后面所有的步骤都是基于此业务数据展开的。</li>
+</ul>
+<p><strong>2、声明粒度</strong></p>
+<ul>
+<li>先举个例子：对于用户来说，一个用户有一个身份证号，一个户籍地址，多个手机号，多张银行卡，那么与用户粒度相同的粒度属性有身份证粒度，户籍地址粒度，比用户粒度更细的粒度有手机号粒度，银行卡粒度，存在一对一的关系就是相同粒度。为什么要提相同粒度呢，因为维度建模中要求我们，在<strong>同一事实表</strong>中，必须具有<strong>相同的粒度</strong>，同一事实表中不要混用多种不同的粒度，不同的粒度数据建立不同的事实表。并且从给定的业务过程获取数据时，强烈建议从关注原子粒度开始设计，也就是从最细粒度开始，因为原子粒度能够承受无法预期的用户查询。但是上卷汇总粒度对查询性能的提升很重要的，所以对于有明确需求的数据，我们建立针对需求的上卷汇总粒度，对需求不明朗的数据我们建立原子粒度。</li>
+</ul>
+<p><strong>3、确认维度</strong></p>
+<ul>
+<li>维度表是作为业务分析的入口和描述性标识，所以也被称为数据仓库的“灵魂”。在一堆的数据中怎么确认哪些是维度属性呢，如果该列是对具体值的描述，是一个文本或常量，某一约束和行标识的参与者，此时该属性往往是维度属性，数仓工具箱中告诉我们<strong>牢牢掌握事实表的粒度，就能将所有可能存在的维度区分开</strong>，并且要<strong>确保维度表中不能出现重复数据，应使维度主键唯一</strong></li>
+</ul>
+<p><strong>4、确认事实</strong></p>
+<ul>
+<li>事实表是用来度量的，基本上都以数量值表示，事实表中的每行对应一个度量，每行中的数据是一个特定级别的细节数据，称为粒度。维度建模的核心原则之一<strong>是同一事实表中的所有度量必须具有相同的粒度</strong>。这样能确保不会出现重复计算度量的问题。有时候往往不能确定该列数据是事实属性还是维度属性。记住<strong>最实用的事实就是数值类型和可加类事实</strong>。所以可以通过分析该列是否是一种包含多个值并作为计算的参与者的度量，这种情况下该列往往是事实。</li>
+</ul>
+<p><strong>其中粒度是非常重要的</strong>，粒度用于确定事实表的行表示什么，建议从关注原子级别的粒度数据开始设计，因为原子粒度能够承受无法预估的用户查询，而且原子数据可以以各种可能的方式进行上卷，而一旦选择了高粒度，则无法满足用户下钻细节的需求。</p>
+<p><strong>事实是整个维度建模的核心</strong>，其中雪花模型或者星型模型都是基于一张事实表通过外健关联维表进行扩展，生成一份能够支撑可预知查询需求的模型宽表，而且最后的查询也是落在事实表中进行。</p>
+<h2 id="实际业务中数仓分层"><a href="#实际业务中数仓分层" class="headerlink" title="实际业务中数仓分层"></a>实际业务中数仓分层</h2><p>数仓分层要结合公司业务进行，并且需要清晰明确各层职责，要保证数据层的稳定又要屏蔽对下游影响，一般采用如下分层结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4bc29f0794a1040e43fbaa7e13435225.png" alt="img"></p>
+<p>数据分层架构</p>
+<h3 id="数据层具体实现"><a href="#数据层具体实现" class="headerlink" title="数据层具体实现"></a>数据层具体实现</h3><blockquote>
+<p>使用四张图说明每层的具体实现</p>
+</blockquote>
+<ul>
+<li><strong>数据源层ODS</strong></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/16140484aac109442bfb2a6b148ebebf.png" alt="img"></p>
+<p>数据源层</p>
+<p>数据源层主要将各个业务数据导入到大数据平台，作为业务数据的快照存储。</p>
+<ul>
+<li><strong>数据明细层DW</strong></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/9ab3e9c3c75a5f7d5adbcfd1fa763151.png" alt="img"></p>
+<p>数据明细层</p>
+<p>事实表中的每行对应一个度量，每行中的数据是一个特定级别的细节数据，称为粒度。维度建模的核心原则之一是<strong>同一事实表中的所有度量必须具有相同的粒度</strong>。这样能确保不会出现重复计算度量的问题。</p>
+<p>维度表一般都是单一主键，少数是联合主键，注意维度表不要出现重复数据，否则和事实表关联会出现<strong>数据发散</strong>问题。</p>
+<p>有时候往往不能确定该列数据是事实属性还是维度属性。记住<strong>最实用的事实就是数值类型和可加类事实</strong>。所以可以通过分析该列是否是一种包含多个值并作为计算的参与者的度量，这种情况下该列往往是事实；如果该列是对具体值的描述，是一个文本或常量，某一约束和行标识的参与者，此时该属性往往是维度属性。但是还是要结合业务进行最终判断是维度还是事实。</p>
+<ul>
+<li><strong>数据轻度汇总层DM</strong></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/a0fbc1813048e3c9a6c91f644c46c46d.png" alt="img"></p>
+<p>数据轻度汇总层</p>
+<p>此层命名为轻汇总层，就代表这一层已经开始对数据进行汇总，但是不是完全汇总，只是对相同粒度的数据进行关联汇总，不同粒度但是有关系的数据也可进行汇总，此时需要将粒度通过聚合等操作进行统一。</p>
+<ul>
+<li><strong>数据应用层APP</strong></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/227d7c2f4bf8007faac56311404708d8.png" alt="img"></p>
+<p>数据应用层</p>
+<p>数据应用层的表就是提供给用户使用的，数仓建设到此就接近尾声了，接下来就根据不同的需求进行不同的取数，如直接进行报表展示，或提供给数据分析的同事所需的数据，或其他的业务支撑。</p>
+<p><strong>一张图总结下数据仓库的构建整体流程</strong>：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/649d68a75ace139a62abf593f71517a5.png" alt="img"></p>
+<p>数仓整体流程</p>
+<h2 id="数据治理"><a href="#数据治理" class="headerlink" title="数据治理"></a>数据治理</h2><p><strong>数仓建设真正的难点不在于数仓设计，而在于后续业务发展起来，业务线变的庞大之后的数据治理</strong>，包括资产治理、数据质量监控、数据指标体系的建设等。</p>
+<p>其实数据治理的范围很⼴，包含数据本⾝的管理、数据安全、数据质量、数据成本等。在DAMA 数据管理知识体系指南中，数据治理位于数据管理“车轮图”的正中央，是数据架构、数据建模、数据存储、数据安全、数据质量、元数据管理、主数据管理等10大数据管理领域的总纲，为各项数据管理活动提供总体指导策略。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/a2c687316cabc8b5e5fe833c1f2262c7.png" alt="img"></p>
+<h3 id="数据治理之道是什么"><a href="#数据治理之道是什么" class="headerlink" title="数据治理之道是什么"></a>数据治理之道是什么</h3><h5 id="1-数据治理需要体系建设"><a href="#1-数据治理需要体系建设" class="headerlink" title="1. 数据治理需要体系建设"></a>1. 数据治理需要体系建设</h5><p>为发挥数据价值需要满足三个要素：<strong>合理的平台架构、完善的治理服务、体系化的运营手段</strong>。</p>
+<p>根据企业的规模、所属行业、数据量等情况选择合适的平台架构；治理服务需要贯穿数据全生命周期，保证数据在采集、加工、共享、存储、应用整个过程中的完整性、准确性、一致性和实效性；运营手段则应当包括规范的优化、组织的优化、平台的优化以及流程的优化等等方面。</p>
+<h5 id="2-数据治理需要夯实基础"><a href="#2-数据治理需要夯实基础" class="headerlink" title="2. 数据治理需要夯实基础"></a>2. 数据治理需要夯实基础</h5><p>数据治理需要循序渐进，但在建设初期至少需要关注三个方面：<strong>数据规范、数据质量、数据安全</strong>。规范化的模型管理是保障数据可以被治理的前提条件，高质量的数据是数据可用的前提条件，数据的安全管控是数据可以共享交换的前提条件。</p>
+<h5 id="3-数据治理需要IT赋能"><a href="#3-数据治理需要IT赋能" class="headerlink" title="3. 数据治理需要IT赋能"></a>3. 数据治理需要IT赋能</h5><p>数据治理不是一堆规范文档的堆砌，而是需要将治理过程中所产生的的规范、流程、标准落地到IT平台上，在数据生产过程中通过“以终为始”前向的方式进行数据治理，避免事后稽核带来各种被动和运维成本的增加。</p>
+<h5 id="4-数据治理需要聚焦数据"><a href="#4-数据治理需要聚焦数据" class="headerlink" title="4. 数据治理需要聚焦数据"></a>4. 数据治理需要聚焦数据</h5><p>数据治理的本质是管理数据，因此需要加强元数据管理和主数据管理，从源头治理数据，补齐数据的相关属性和信息，比如：元数据、质量、安全、业务逻辑、血缘等，通过元数据驱动的方式管理数据生产、加工和使用。</p>
+<h5 id="5-数据治理需要建管一体化"><a href="#5-数据治理需要建管一体化" class="headerlink" title="5. 数据治理需要建管一体化"></a>5. 数据治理需要建管一体化</h5><p>数据模型血缘与任务调度的一致性是建管一体化的关键，有助于解决数据管理与数据生产口径不一致的问题，避免出现两张皮的低效管理模式。</p>
+<h3 id="浅谈数据治理方式"><a href="#浅谈数据治理方式" class="headerlink" title="浅谈数据治理方式"></a>浅谈数据治理方式</h3><p>如上面所说，数据治理的范围非常广，其中最重要的是数据质量治理，而数据质量涉及的范围也很广，贯穿数仓的整个生命周期，从<strong>数据产生-&gt;数据接入-&gt;数据存储-&gt;数据处理-&gt;数据输出-&gt;数据展示</strong>，每个阶段都需要质量治理，评价维度包括<strong>完整性、规范性、一致性、准确性、唯一性、关联性</strong>等。</p>
+<p>在系统建设的各个阶段都应该根据标准进行数据质量检测和规范，及时进行治理，避免事后的清洗工作。</p>
+<p>质量检测可参考以下维度：</p>
+<table>
+<thead>
+<tr>
+<th align="center">维度</th>
+<th align="center">衡量标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">完整性</td>
+<td align="center">业务指定必须的数据是否缺失，不允许为空字符或者空值等。例如，数据源是否完整、维度取值是否完整、数据取值是否完整等</td>
+</tr>
+<tr>
+<td align="center">时效性</td>
+<td align="center">当需要使用时，数据能否反映当前事实。即数据必须及时，能够满足系统对数据时间的要求。例如处理（获取、整理、清洗、加载等）的及时性</td>
+</tr>
+<tr>
+<td align="center">唯一性</td>
+<td align="center">在指定的数据集中数据值是否唯一</td>
+</tr>
+<tr>
+<td align="center">参照完整性</td>
+<td align="center">数据项是否在父表中有定义</td>
+</tr>
+<tr>
+<td align="center">依赖一致性</td>
+<td align="center">数据项取值是否满足与其他数据项之间的依赖关系</td>
+</tr>
+<tr>
+<td align="center">正确性</td>
+<td align="center">数据内容和定义是否一致</td>
+</tr>
+<tr>
+<td align="center">精确性</td>
+<td align="center">数据精度是否达到业务规则要求的位数</td>
+</tr>
+<tr>
+<td align="center">技术有效性</td>
+<td align="center">数据项是否按已定义的格式标准组织</td>
+</tr>
+<tr>
+<td align="center">业务有效性</td>
+<td align="center">数据项是否符合已定义的</td>
+</tr>
+<tr>
+<td align="center">可信度</td>
+<td align="center">根据客户调查或客户主动提供获得</td>
+</tr>
+<tr>
+<td align="center">可用性</td>
+<td align="center">数据可用的时间和数据需要被访问时间的比例</td>
+</tr>
+<tr>
+<td align="center">可访问性</td>
+<td align="center">数据是否便于自动化读取</td>
+</tr>
+</tbody></table>
+<hr>
+<p>下面是根据美团的技术文章总结的几点具体治理方式：</p>
+<h5 id="1-规范治理"><a href="#1-规范治理" class="headerlink" title="1. 规范治理"></a>1. 规范治理</h5><p>规范是数仓建设的保障。为了避免出现指标重复建设和数据质量差的情况，统一按照最详细、可落地的方法进行规范建设。</p>
+<p>(1) <strong>词根</strong></p>
+<p>词根是维度和指标管理的基础，划分为普通词根与专有词根，提高词根的易用性和关联性。</p>
+<ul>
+<li>普通词根：描述事物的最小单元体，如：交易-trade。</li>
+<li>专有词根：具备约定成俗或行业专属的描述体，如：美元-USD。</li>
+</ul>
+<p>(2) <strong>表命名规范</strong></p>
+<p>通用规范</p>
+<ul>
+<li>表名、字段名采用一个下划线分隔词根（示例：clienttype-&gt;client_type）。</li>
+<li>每部分使用小写英文单词，属于通用字段的必须满足通用字段信息的定义。</li>
+<li>表名、字段名需以字母为开头。</li>
+<li>表名、字段名最长不超过64个英文字符。</li>
+<li>优先使用词根中已有关键字（数仓标准配置中的词根管理），定期Review新增命名的不合理性。</li>
+<li>在表名自定义部分禁止采用非标准的缩写。</li>
+</ul>
+<p>表命名规则</p>
+<ul>
+<li><strong>表名称</strong> &#x3D; 类型 + 业务主题 + 子主题 + 表含义 + 存储格式 + 更新频率 +结尾，如下图所示：</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/a51c515d30df671286a7d198494e5047.jpg" alt="img"><br>统一的表命名规范</p>
+<p>(3) <strong>指标命名规范</strong></p>
+<p>结合指标的特性以及词根管理规范，将指标进行结构化处理。</p>
+<ol>
+<li>基础指标词根，即所有指标必须包含以下基础词根：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/cc44ec072eefd412745ca4a5b69cd89e.png" alt="img"></p>
+<ol>
+<li>业务修饰词，用于描述业务场景的词汇，例如trade-交易。</li>
+</ol>
+<p>3.日期修饰词，用于修饰业务发生的时间区间。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6f78a6f5dc592acefc627a60a4f65ac1.png" alt="img"></p>
+<p>4.聚合修饰词，对结果进行聚集操作。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/faec13fac369c151c58af3515f9d0cfc.png" alt="img"></p>
+<p>5.基础指标，单一的业务修饰词+基础指标词根构建基础指标 ，例如：交易金额-trade_amt。</p>
+<p>6.派生指标，多修饰词+基础指标词根构建派生指标。派生指标继承基础指标的特性，例如：安装门店数量-install_poi_cnt。</p>
+<p>7.普通指标命名规范，与字段命名规范一致，由词汇转换即可以。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/c7aa39c0efce32e81aa285150eb7c0ca.png" alt="img"></p>
+<h5 id="2-架构治理"><a href="#2-架构治理" class="headerlink" title="2. 架构治理"></a>2. 架构治理</h5><p>(1) <strong>数据分层</strong></p>
+<p>优秀可靠的数仓体系，往往需要清晰的数据分层结构，即要保证数据层的稳定又要屏蔽对下游的影响，并且要避免链路过长，一般的分层架构如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3de8fe118f00602ce367334c97a1a111.jpg" alt="img"></p>
+<p>(2) <strong>数据流向</strong></p>
+<p>稳定业务按照标准的数据流向进行开发，即ODS–&gt;DWD–&gt;DWA–&gt;APP。非稳定业务或探索性需求，可以遵循ODS-&gt;DWD-&gt;APP或者ODS-&gt;DWD-&gt;DWT-&gt;APP两个模型数据流。在保障了数据链路的合理性之后，又在此基础上确认了模型分层引用原则：</p>
+<ul>
+<li>正常流向：ODS&gt;DWD-&gt;DWT-&gt;DWA-&gt;APP，当出现ODS &gt;DWD-&gt;DWA-&gt;APP这种关系时，说明主题域未覆盖全。应将DWD数据落到DWT中，对于使用频度非常低的表允许DWD-&gt;DWA。</li>
+<li>尽量避免出现DWA宽表中使用DWD又使用（该DWD所归属主题域）DWT的表。</li>
+<li>同一主题域内对于DWT生成DWT的表，原则上要尽量避免，否则会影响ETL的效率。</li>
+<li>DWT、DWA和APP中禁止直接使用ODS的表， ODS的表只能被DWD引用。</li>
+<li>禁止出现反向依赖，例如DWT的表依赖DWA的表。</li>
+</ul>
+<h5 id="3-元数据治理"><a href="#3-元数据治理" class="headerlink" title="3. 元数据治理"></a>3. 元数据治理</h5><p>元数据可分为技术元数据和业务元数据：</p>
+<p><strong>技术元数据</strong>为开发和管理数据仓库的IT 人员使用，它描述了与数据仓库开发、管理和维护相关的数据，包括数据源信息、数据转换描述、数据仓库模型、数据清洗与更新规则、数据映射和访问权限等。</p>
+<p>常见的技术元数据有：</p>
+<ul>
+<li>存储元数据：如表、字段、分区等信息。</li>
+<li>运行元数据：如大数据平台上所有作业运行等信息：类似于 Hive Job 日志，包括作业类型、实例名称、输入输出、 SQL 、运行参数、执行时间，执行引擎等。</li>
+<li>数据开发平台中数据同步、计算任务、任务调度等信息：包括数据同步的输入输出表和字段，以及同步任务本身的节点信息：计算任务主要有输入输出、任务本身的节点信息 任务调度主要有任务的依赖类型、依赖关系等，以及不同类型调度任务的运行日志等。</li>
+<li>数据质量和运维相关元数据：如任务监控、运维报警、数据质量、故障等信息，包括任务监控运行日志、告警配置及运行日志、故障信息等。</li>
+</ul>
+<p><strong>业务元数据</strong>为管理层和业务分析人员服务，从业务角度描述数据，包括商务术语、数据仓库中有什么数据、数据的位置和数据的可用性等，帮助业务人员更好地理解数据仓库中哪些数据是可用的以及如何使用。</p>
+<ul>
+<li>常见的业务元数据有维度及属性(包括维度编码，字段类型，创建人，创建时间，状态等)、业务过程、指标(包含指标名称,指标编码，业务口径，指标类型，责任人，创建时间，状态，sql等)，安全等级，计算逻辑等的规范化定义，用于更好地管理和使用数据。数据应用元数据，如数据报表、数据产品等的配置和运行元数据。</li>
+</ul>
+<p>元数据不仅定义了数据仓库中数据的模式、来源、抽取和转换规则等，而且是整个数据仓库系统运行的基础，元数据把数据仓库系统中各个松散的组件联系起来，组成了一个有机的整体。</p>
+<p><strong>元数据治理主要解决三个问题</strong>：</p>
+<ol>
+<li>通过建立相应的组织、流程和工具，推动业务标准的落地实施，实现指标的规范定义，消除指标认知的歧义；</li>
+<li>基于业务现状和未来的演进方式，对业务模型进行抽象，制定清晰的主题、业务过程和分析方向，构建完备的技术元数据，对物理模型进行准确完善的描述，并打通技术元数据与业务元数据的关系，对物理模型进行完备的刻画；</li>
+<li>通过元数据建设，为使用数据提效，解决“找数、理解数、评估”难题以及“取数、数据可视化”等难题。</li>
+</ol>
+<h5 id="4-安全治理"><a href="#4-安全治理" class="headerlink" title="4. 安全治理"></a>4. 安全治理</h5><p>围绕数据安全标准，首先要有数据的分级、分类标准，确保数据在上线前有着准确的密级。第二，针对数据使用方，要有明确的角色授权标准，通过分级分类和角色授权，来保障重要数据拿不走。第三，针对敏感数据，要有隐私管理标准，保障敏感数据的安全存储，即使未授权用户绕过权限管理拿到敏感数据，也要确保其看不懂。第四，通过制定审计标准，为后续的审计提供审计依据，确保数据走不脱。</p>
+<h5 id="5-数据生命周期治理"><a href="#5-数据生命周期治理" class="headerlink" title="5. 数据生命周期治理"></a>5. 数据生命周期治理</h5><p>任何事物都具有一定的生命周期，数据也不例外。从数据的产生、加工、使用乃至消亡都应该有一个科学的管理办法，将极少或者不再使用的数据从系统中剥离出来，并通过核实的存储设备进行保留，不仅能够提高系统的运行效率，更好的服务客户，还能大幅度减少因为数据长期保存带来的储存成本。数据生命周期一般包含在线阶段、归档阶段（有时还会进一步划分为在线归档阶段和离线归档阶段）、销毁阶段三大阶段，管理内容包括建立合理的数据类别，针对不同类别的数据制定各个阶段的保留时间、存储介质、清理规则和方式、注意事项等。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/cff6b9a18ec5e99a3a4dff7df3031da1.jpg" alt="img"></p>
+<p>从上图数据生命周期中各参数间的关系中我们可以了解到，数据生命周期管理可以使得高价值数据的查询效率大幅提升，而且高价格的存储介质的采购量也可以减少很多；但是随着数据的使用程度的下降，数据被逐渐归档，查询时间也慢慢的变长；最后随着数据的使用频率和价值基本没有了之后，就可以逐渐销毁了。</p>
+<p>参考链接：</p>
+<p><a href="https://mp.weixin.qq.com/s/h6HnkROzljralUj2aZyNUQ">https://mp.weixin.qq.com/s/h6HnkROzljralUj2aZyNUQ</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/137454121">https://zhuanlan.zhihu.com/p/137454121</a></p>
+<p><a href="https://www.infoq.cn/article/KJzDGU6IkWKyaPZXbFkB">https://www.infoq.cn/article/KJzDGU6IkWKyaPZXbFkB</a></p>
+<p><a href="https://blog.csdn.net/MeituanTech/article/details/102617733">https://blog.csdn.net/MeituanTech/article/details/102617733</a></p>
+<p><a href="https://baijiahao.baidu.com/s?id=1699535513357258268">https://baijiahao.baidu.com/s?id=1699535513357258268</a></p>
+<p><a href="https://tech.meituan.com/2020/03/12/delivery-data-governance.html">https://tech.meituan.com/2020/03/12/delivery-data-governance.html</a></p>
+<p><strong>【END】</strong></p>
 ]]></content>
       <categories>
         <category>数据</category>
@@ -3026,41 +3309,6 @@
       </categories>
       <tags>
         <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>致远OA查询请求REST</title>
-    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>请求rest</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
-<ol start="2">
-<li>获取token</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
-<ol start="3">
-<li>根据rest请求</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
-<ol start="4">
-<li>塞data</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>拼接count和totalcount</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
       </tags>
   </entry>
   <entry>
@@ -3200,6 +3448,41 @@
       </tags>
   </entry>
   <entry>
+    <title>致远OA查询请求REST</title>
+    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>请求rest</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
+<ol start="2">
+<li>获取token</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
+<ol start="3">
+<li>根据rest请求</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
+<ol start="4">
+<li>塞data</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>拼接count和totalcount</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>记致远OA线程堵塞遇坑</title>
     <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
     <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
@@ -3266,6 +3549,55 @@
       </tags>
   </entry>
   <entry>
+    <title>评估类别、评估类和评估类型</title>
+    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
+<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
+<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
+<p>  1）个别计价法一般用X按批次进行评估；</p>
+<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
+<ul>
+<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
+<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
+<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
+</ul>
+<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
+<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
+<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
+<p>  The valuation category defines the valuation types allowed for a material.</p>
+<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
+<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
+<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
+<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
+<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
+<hr>
+<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
+<p><strong>评估类的进一步解释：</strong></p>
+<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
+<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
+<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git的博客配置图床</title>
     <url>/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/</url>
     <content><![CDATA[<h2 id="1、配置git上传仓库"><a href="#1、配置git上传仓库" class="headerlink" title="1、配置git上传仓库"></a>1、配置git上传仓库</h2><p>省略</p>
@@ -3327,55 +3659,6 @@
       </categories>
       <tags>
         <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>评估类别、评估类和评估类型</title>
-    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
-<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
-<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
-<p>  1）个别计价法一般用X按批次进行评估；</p>
-<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
-<ul>
-<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
-<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
-<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
-</ul>
-<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
-<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
-<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
-<p>  The valuation category defines the valuation types allowed for a material.</p>
-<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
-<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
-<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
-<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
-<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
-<hr>
-<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
-<p><strong>评估类的进一步解释：</strong></p>
-<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
-<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
-<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
       </tags>
   </entry>
 </search>
