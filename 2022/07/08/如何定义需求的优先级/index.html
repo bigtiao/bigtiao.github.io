@@ -20,27 +20,22 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1.更改note的目标系统client配置 登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：  将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.  将Cross-Client Objec">
+  <meta name="description" content="如何定义需求的优先级&#x3D;考验你决策取舍的能力 楼里有些回答写的过于花哨了，看完似乎懂了很多，但其实参考性太差，可行性不高 最后还是开会时候拍脑袋定优先级 我总结了一些朴素但实用的需求优先级排序思路： 遇到多个需求时，先认真问自己三个问题  1、这个需求紧不紧急？  牢记！造成严重的流程卡点的需求最紧急，如果无法确定是否严重，可以根据卡点辐射的用户量去佐证到底紧不紧急。  2、这个需求对你核">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SAP NOTE安装过程">
-<meta property="og:url" content="http://example.com/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:title" content="如何定义需求的优先级">
+<meta property="og:url" content="http://example.com/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/index.html">
 <meta property="og:site_name" content="打螺丝闲暇的记录">
-<meta property="og:description" content="1.更改note的目标系统client配置 登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：  将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.  将Cross-Client Objec">
+<meta property="og:description" content="如何定义需求的优先级&#x3D;考验你决策取舍的能力 楼里有些回答写的过于花哨了，看完似乎懂了很多，但其实参考性太差，可行性不高 最后还是开会时候拍脑袋定优先级 我总结了一些朴素但实用的需求优先级排序思路： 遇到多个需求时，先认真问自己三个问题  1、这个需求紧不紧急？  牢记！造成严重的流程卡点的需求最紧急，如果无法确定是否严重，可以根据卡点辐射的用户量去佐证到底紧不紧急。  2、这个需求对你核">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png">
-<meta property="article:published_time" content="2022-06-20T09:18:00.000Z">
-<meta property="article:modified_time" content="2022-06-20T09:17:41.610Z">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-cdc39aa326057d2f4cad31769b720ea1_720w.jpg?source=3af55fa1">
+<meta property="article:published_time" content="2022-07-08T07:06:00.000Z">
+<meta property="article:modified_time" content="2022-07-08T07:16:41.881Z">
 <meta property="article:author" content="一骗树">
-<meta property="article:tag" content="SAP">
+<meta property="article:tag" content="数据">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png">
+<meta name="twitter:image" content="https://pic2.zhimg.com/v2-cdc39aa326057d2f4cad31769b720ea1_720w.jpg?source=3af55fa1">
 
-<link rel="canonical" href="http://example.com/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
+<link rel="canonical" href="http://example.com/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/">
 
 
 <script id="page-configurations">
@@ -53,7 +48,7 @@
   };
 </script>
 
-  <title>SAP NOTE安装过程 | 打螺丝闲暇的记录</title>
+  <title>如何定义需求的优先级 | 打螺丝闲暇的记录</title>
   
 
 
@@ -191,7 +186,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -204,7 +199,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          SAP NOTE安装过程
+          如何定义需求的优先级
         </h1>
 
         <div class="post-meta">
@@ -215,7 +210,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 17:18:00 / 修改时间：17:17:41" itemprop="dateCreated datePublished" datetime="2022-06-20T17:18:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-07-08 15:06:00 / 修改时间：15:16:41" itemprop="dateCreated datePublished" datetime="2022-07-08T15:06:00+08:00">2022-07-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -223,7 +218,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">数据</span></a>
                 </span>
             </span>
 
@@ -238,26 +233,37 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>1.更改note的目标系统client配置</strong></p>
-<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
-<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
-<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
-<p><strong>2.更改系统选项</strong></p>
-<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
-<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
-<p><strong>3.导入note</strong></p>
-<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
-<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
-<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
-<p> <strong>4.新建传输号</strong></p>
-<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
-<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+        <p>如何定义需求的优先级&#x3D;考验你决策取舍的能力</p>
+<p>楼里有些回答写的过于花哨了，看完似乎懂了很多，但其实参考性太差，可行性不高</p>
+<p>最后还是开会时候拍脑袋定优先级</p>
+<p>我总结了一些朴素但实用的需求优先级排序思路：</p>
+<p><strong>遇到多个需求时，先认真问自己三个问题</strong></p>
+<ul>
+<li><strong>1、这个需求紧不紧急？</strong></li>
+</ul>
+<p>牢记！造成严重的流程卡点的需求最紧急，如果无法确定是否严重，可以根据卡点辐射的用户量去佐证到底紧不紧急。</p>
+<ul>
+<li><strong>2、这个需求对你核心指标的贡献程度如何？</strong></li>
+</ul>
+<p>这个其实考验到你拆分、估算的能力。比如我们近期的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%8C%97%E6%9E%81%E6%98%9F&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">北极星</a>指标是提升从A环节→B环节的转化率，那么在其它投入都近乎相等的情况下，需求1预计能提升5%，而需求2预计能提升7%，结果当然不言而喻。</p>
+<ul>
+<li><strong>3、这个需求涉及的工作量大不大？</strong></li>
+</ul>
+<p>还是上面那个例子，如果需求1预计能提升5%，需求2预计能提升7%，但需求2的工作量是需求1的3-4倍，并且需要投入双倍的人力，导致本期其它的需求也会被需求2的影响，面临资源不足的情况，那么这种情况下，考虑到ROI必然是先做需求1。</p>
+<p>如果你的需求是有调研问卷数据支撑的话，还可以引入一个产品需求分析的经典模型<strong>「KANO分析模型」</strong>，进行系统的需求梳理，对需求进行分析和提炼，分为<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=%E5%85%B4%E5%A5%8B%E6%80%A7&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">兴奋性</a>、期望型、无差异、必备型。不展开说了，可以看看我之前的文章，写的很详细了。</p>
+<p><img src="https://pic2.zhimg.com/v2-cdc39aa326057d2f4cad31769b720ea1_720w.jpg?source=3af55fa1" alt="img"></p>
+<p>KANO 模型是东京理工大学教授狩野纪昭发明的对用户需求分类和优先排序的有用工具，以分析用户需求对用户满意的影响为基础，体现了产品性能和用户满意之间的非线性关系。</p>
+<h3 id="1、了解需求属性分类"><a href="#1、了解需求属性分类" class="headerlink" title="1、了解需求属性分类"></a>1、了解需求属性分类</h3><p>通过对需求的满意度、具备度二维分析，KANO将需求划分为必备型、期望型、魅力型、无差异型、反向型五类，分别以英文字母M、O、A、I、R表示。</p>
+<ul>
+<li>必备型需求(M)：需求满足时，用户不会感到满意。需求不满足时，用户会很不满意。</li>
+<li>期望型需求(O)：需求满足时，用户会感到很满意。需求不满足时，用户会很不满意。</li>
+<li>魅力型需求(A)：该需求超过用户对产品本来的期望，使得用户的满意度急剧上升。即使表现得不完善，用户的满意度也不受影响。</li>
+<li>无差异型需求(I)：需求被满足或未被满足，都不会对用户的满意度造成影响。</li>
+<li>反向型需求(R)：该需求与用户的满意度呈反向相关，满足该要求，反而会使用户的满意度下降。</li>
+</ul>
+<h3 id="2、better-worse系数"><a href="#2、better-worse系数" class="headerlink" title="2、better-worse系数"></a>2、better-worse系数</h3><p>Better系数&#x3D;（期望数+魅力数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
+<p>Worse系数&#x3D; -1*（期望数+必备数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
+<p>Better系数越接近1，表示该具备度越高该需求对用户满意度提升的影响效果越大。Worse系数越接近-1，表示具备度越低该需求对用户满意度造成的负面影响越大。</p>
 
     </div>
 
@@ -267,7 +273,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/SAP/" rel="tag"># SAP</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE/" rel="tag"># 数据</a>
           </div>
 
         
@@ -276,12 +282,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/" rel="prev" title="SAP常见的几个接口技术区别">
-      <i class="fa fa-chevron-left"></i> SAP常见的几个接口技术区别
+    <a href="/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/" rel="prev" title="你真的了解ELT和ETL吗">
+      <i class="fa fa-chevron-left"></i> 你真的了解ELT和ETL吗
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/" rel="next" title="SAP脚本录制与回放功能">
-      SAP脚本录制与回放功能 <i class="fa fa-chevron-right"></i>
+    <a href="/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/" rel="next" title="如何搭建一套完整的数据指标体系概述">
+      如何搭建一套完整的数据指标体系概述 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -341,6 +347,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E4%BA%86%E8%A7%A3%E9%9C%80%E6%B1%82%E5%B1%9E%E6%80%A7%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">1、了解需求属性分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81better-worse%E7%B3%BB%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">2、better-worse系数</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

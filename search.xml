@@ -1,49 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>OLTP与OLAP的区别</title>
-    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
-<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
-<ul>
-<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
-<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
-</ul>
-<p><strong>2、实时性要求不同：</strong></p>
-<ul>
-<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
-<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
-</ul>
-<p><strong>3、数据量不同：</strong></p>
-<ul>
-<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
-<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
-</ul>
-<p><strong>4、用户和系统的面向性不同：</strong></p>
-<ul>
-<li>OLTP是面向顾客的,用于事务和查询处理。</li>
-<li>OLAP是面向市场的,用于数据分析。</li>
-</ul>
-<p><strong>5、数据库设计不同：</strong></p>
-<ul>
-<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
-<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ABAP动态内表</title>
     <url>/2022/06/21/ABAP%E5%8A%A8%E6%80%81%E5%86%85%E8%A1%A8/</url>
     <content><![CDATA[<h3 id="ABAP动态内表"><a href="#ABAP动态内表" class="headerlink" title="ABAP动态内表"></a>ABAP动态内表</h3><p>例子：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">&quot;新特性在ABAP7.5环境下使用</span><br><span class="line">TYPES:BEGIN OF GTY_DATA,</span><br><span class="line">      COL1 TYPE CHAR10,</span><br><span class="line">      COL2 TYPE CHAR10,</span><br><span class="line">      COL3 TYPE CHAR10,</span><br><span class="line">      COL4 TYPE CHAR10,</span><br><span class="line">      COL5 TYPE CHAR10,</span><br><span class="line">      COL6 TYPE CHAR10,</span><br><span class="line">      COL7 TYPE CHAR10,</span><br><span class="line">      COL8 TYPE CHAR10,</span><br><span class="line">      COL9 TYPE CHAR10,</span><br><span class="line">      COL10 TYPE CHAR10,</span><br><span class="line">      COL11 TYPE CHAR10,</span><br><span class="line">      COL12 TYPE CHAR10,</span><br><span class="line">  END OF GTY_DATA.</span><br><span class="line"></span><br><span class="line">DATA:GT_DATA TYPE TABLE OF GTY_DATA,</span><br><span class="line">      GS_DATA TYPE GTY_DATA.</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS:&lt;FS_RESULT&gt; TYPE STANDARD TABLE,</span><br><span class="line">               &lt;FS_TABLE&gt; TYPE STANDARD TABLE,</span><br><span class="line">               &lt;FS_LINE&gt; TYPE ANY,</span><br><span class="line">               &lt;FS_DATA&gt; TYPE GTY_DATA.</span><br><span class="line"></span><br><span class="line">DATA:LR_TABLE TYPE REF TO DATA,</span><br><span class="line">      LR_LINE TYPE REF TO DATA.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">*ALV字段列表。 &quot;构建fieldcat</span><br><span class="line">DATA: GT_FIELDCAT TYPE LVC_T_FCAT,</span><br><span class="line">      GS_FIELDCAT TYPE LVC_S_FCAT,</span><br><span class="line">      GS_LAYOUT   TYPE LVC_S_LAYO,</span><br><span class="line">      GT_EVENTS   TYPE SLIS_T_EVENT,</span><br><span class="line">      GS_EVENTS   TYPE SLIS_ALV_EVENT,</span><br><span class="line">      GS_VARIANT  TYPE DISVARIANT.</span><br><span class="line"></span><br><span class="line">PARAMETERS: P_ROW TYPE I DEFAULT 3,</span><br><span class="line">            P_COL TYPE I DEFAULT 3.</span><br><span class="line"></span><br><span class="line">START-OF-SELECTION.</span><br><span class="line">  PERFORM FRM_INIT_DATA.</span><br><span class="line">  PERFORM FRM_FETCH_DATA.</span><br><span class="line"></span><br><span class="line">  PERFORM FRM_DISPLAY_ALV.</span><br><span class="line"></span><br><span class="line">FORM FRM_INIT_DATA.</span><br><span class="line">  DO P_ROW TIMES.</span><br><span class="line">    DATA(LV_INDEX) = SY-INDEX.</span><br><span class="line">    &quot;快速创建并分配指针，添加空行,&lt;FS_DATA&gt;指向GT_DATA</span><br><span class="line">    APPEND INITIAL LINE TO GT_DATA ASSIGNING &lt;FS_DATA&gt;.</span><br><span class="line">    IF &lt;FS_DATA&gt; IS ASSIGNED.</span><br><span class="line">      DO 12 TIMES.</span><br><span class="line">        DATA(LV_COMP) = |COL&#123; SY-INDEX &#125;|.</span><br><span class="line">        &quot;填充&lt;FS_COMP&gt;指向&lt;FS_DATA&gt;</span><br><span class="line">        ASSIGN COMPONENT LV_COMP OF STRUCTURE &lt;FS_DATA&gt; TO FIELD-SYMBOL(&lt;FS_COMP&gt;).</span><br><span class="line">       IF SY-SUBRC = 0.</span><br><span class="line">         &lt;FS_COMP&gt; = |&#123; LV_COMP &#125;--&#123; LV_INDEX &#125;|.</span><br><span class="line">       ENDIF.</span><br><span class="line">      ENDDO.</span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDDO.</span><br><span class="line">  &quot;初始化列</span><br><span class="line">  DO P_COL TIMES.</span><br><span class="line">    LV_COMP = |COL&#123; SY-INDEX &#125;|.</span><br><span class="line">    DATA(LV_TEXT) = |列&#123; SY-INDEX &#125;|.</span><br><span class="line">    PERFORM FRM_FILL_FIELDCAT USING SY-INDEX LV_COMP LV_TEXT.</span><br><span class="line">  ENDDO.</span><br><span class="line">  ENDFORM.</span><br><span class="line"></span><br><span class="line">FORM FRM_FILL_FIELDCAT USING P_COL P_FIELDNAME P_TEXT.</span><br><span class="line">  APPEND INITIAL LINE TO GT_FIELDCAT ASSIGNING FIELD-SYMBOL(&lt;FS_FIELD&gt;).</span><br><span class="line">  IF &lt;FS_FIELD&gt; IS ASSIGNED.</span><br><span class="line">    &lt;FS_FIELD&gt;-COL_POS = P_COL.</span><br><span class="line">    &lt;FS_FIELD&gt;-FIELDNAME = P_FIELDNAME.</span><br><span class="line">    &lt;FS_FIELD&gt;-SCRTEXT_M = P_TEXT.</span><br><span class="line">  ENDIF.</span><br><span class="line">  ENDFORM.</span><br><span class="line"></span><br><span class="line">FORM FRM_FETCH_DATA.</span><br><span class="line">  SORT GT_FIELDCAT BY COL_POS.</span><br><span class="line"></span><br><span class="line">  &quot; 根据列创建动态内表</span><br><span class="line">  CALL METHOD CL_ALV_TABLE_CREATE=&gt;CREATE_DYNAMIC_TABLE</span><br><span class="line">    EXPORTING</span><br><span class="line">      IT_FIELDCATALOG = GT_FIELDCAT</span><br><span class="line">    IMPORTING</span><br><span class="line">      EP_TABLE        = LR_TABLE.</span><br><span class="line"></span><br><span class="line">  &quot; 将表对象分配给指针</span><br><span class="line">  ASSIGN LR_TABLE-&gt;* TO &lt;FS_TABLE&gt;.</span><br><span class="line"></span><br><span class="line">*  &quot; 根据表对象创建行对象</span><br><span class="line">*  CREATE DATA LR_LINE LIKE LINE OF &lt;FS_TABLE&gt;.</span><br><span class="line">*</span><br><span class="line">*  &quot; 将行对象分配给指针</span><br><span class="line">*  ASSIGN LR_LINE-&gt;* TO &lt;FS_LINE&gt;.</span><br><span class="line"></span><br><span class="line">&quot; &lt;FS_TABLE&gt;按照GT_DATA重新赋值，相同字段赋值gt_data的值，不同字段重新定义</span><br><span class="line">  &lt;FS_TABLE&gt; = CORRESPONDING #( GT_DATA ).</span><br><span class="line">  </span><br><span class="line">  &quot;直接赋值</span><br><span class="line">*DATA itab TYPE TABLE OF i.</span><br><span class="line">*itab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ). &quot;itab此时赋值为1,2,3</span><br><span class="line">*itab = VALUE #( ( 4 ) ( 5 ) ( 6 ) ). &quot; itab被覆盖，重新赋值4,5,6</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  ENDFORM.</span><br><span class="line"></span><br><span class="line">FORM FRM_DISPLAY_ALV.</span><br><span class="line">CALL FUNCTION &#x27;REUSE_ALV_GRID_DISPLAY_LVC&#x27;</span><br><span class="line">    EXPORTING</span><br><span class="line">      I_CALLBACK_PROGRAM = SY-CPROG</span><br><span class="line">      IT_FIELDCAT_LVC    = GT_FIELDCAT</span><br><span class="line">      I_DEFAULT          = &#x27;X&#x27;</span><br><span class="line">      I_SAVE             = &#x27;A&#x27;</span><br><span class="line">    TABLES</span><br><span class="line">      T_OUTTAB           = &lt;FS_TABLE&gt;.</span><br><span class="line"></span><br><span class="line">  ENDFORM.</span><br></pre></td></tr></table></figure>
 
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP NOTE安装过程</title>
+    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
+<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
+<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
+<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
+<p><strong>2.更改系统选项</strong></p>
+<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
+<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
+<p><strong>3.导入note</strong></p>
+<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
+<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
+<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
+<p> <strong>4.新建传输号</strong></p>
+<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
+<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -106,28 +99,80 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP NOTE安装过程</title>
-    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
-<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
-<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
-<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
-<p><strong>2.更改系统选项</strong></p>
-<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
-<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
-<p><strong>3.导入note</strong></p>
-<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
-<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
-<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
-<p> <strong>4.新建传输号</strong></p>
-<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
-<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+    <title>SAP变式配置BOM实现</title>
+    <url>/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
+<p>下面举个例子说明如何实现可配置 BOM.要实现可配置 BOM,首先需要一个可配置物料,什么叫可配置物料,可以理解为最终成品的父亲,关系图如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/mcn2u927lr.png" alt="img"></p>
+<p>从上图可看出,可配置物料里含有该产品系列中覆盖到的所有组成的材料,正常的成品物料与可配置物料存在依赖关系,通过设定好的相关性来生成最终的 BOM 结构.可配置物料的 BOM 在 SAP 中称为超级 BOM.下面按照以下步骤实现这个过程:</p>
+<p><strong>配置实现:</strong></p>
+<p>\1. 建立特性(事务码 CT04)所谓的特性,就是描述该成品的特性.在上图中是建立相关性要用到这个特性,我们通过产品的不同特性来决定最终BOM 的构成. </p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ctsfbj4e4y.jpeg" alt="img"></p>
+<p>我们建立一个关于颜色的特性，类型：字符格式，值分配：单一性项目，意思是只能单选。特性值我们设置2个，分别为红色和黄色。</p>
+<p>按照上述，我们依次建立2个特性，分别是Z101(颜色） 特性值Z1:红，Z2:黄；Z103(性别）特性值Z1:男，Z2：女。</p>
+<p>2.建立分类（CL02）</p>
+<p>在特性界面分配上述特性，即把我们上述建立的特性打包起来，再赋予给可配置物料物料。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3jkof4dptn.jpeg" alt="img"></p>
+<p>3.创建可配置物料（MM01）</p>
+<p>物料类型选KMAT可配置物料：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/li2zt5wnrs.jpeg" alt="img"></p>
+<p>项目类别组0002，策略组25</p>
+<p>4.创建超级BOM中的其他物料（MM01）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/rbjbqjt8ic.jpeg" alt="img"></p>
+<p>由于原材料需要在半成品中配置出来，所以需要勾选物料时可配置的</p>
+<p>5.把分类分配给物料（CL20N）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zzaye6aepy.jpeg" alt="img"></p>
+<p>6.创建相关性（CU01）</p>
+<p>相关性就是建立一个逻辑，让系统自动判断，当用户选择特性或填写特性值，自动匹配出我们所需的物料或物料的用量。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zucy1yh8qn.jpeg" alt="img"></p>
+<p>相关性类型选择(选择条件），点击编辑器，写入代码：Z101&#x3D;’Z1’，意思是当用户选择Z101颜色特性为红色的时候，我们的原材料1被选中，回到前面的前面，记得把状态更改为1下达。</p>
+<p>同样的道理，设置其余物料的相关性。</p>
+<p>7.创建超级BOM(CS01)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/wv0wrvr4cv.jpeg" alt="img"></p>
+<p>点绿色的箭头，把相关性维护到物料上</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/r7jyp0nfgi.png" alt="img"></p>
+<p>建立完毕后，可以看到OD标志（含相关性）被打上勾</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0qcko7q8l7.jpeg" alt="img"></p>
+<p>同样的方式，我们在半成品1中也进行设置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8nihjt65jh.jpeg" alt="img"></p>
+<p>创建完成后，用CS12展开整个可配置BOM的结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ziitg7bcq0.jpeg" alt="img"></p>
+<p>8.创建物料的可配置参数文件（CU41）</p>
+<p>主要是设定可配置物料在执行配置时候的界面参数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hdxde7yffa.jpeg" alt="img"></p>
+<p>9.检查和测试可配置物料（CU50）</p>
+<p>用于测试特性是否生效，成本核算是否正确，成本核算是否出来，前提还需要为相应的成品和半成品建立工艺路线。</p>
+<p>点右上角的配置按钮，输入特性值：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8kpyvwgcip.jpeg" alt="img"></p>
+<p>输入特性值后，点结果按钮显示配置出来的BOM结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/jyld9q8hhp.jpeg" alt="img"></p>
+<p>如上图所示，当我们输入颜色特性是Z1红色，性别特性是Z1女，显示的BOM结构是把超级BOM中的原材料2和原材料4，符合我们的相关性设置。</p>
+<p>再切换到特性界面，点成本核算按钮，成本核算变式选PPC4销售订单成本核算，传递控制选择PC01带工厂的传输，回车，可以看到产品成本：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/7jv67r939i.jpeg" alt="img"></p>
+<p>10.创建正常的成品物料（MM01）</p>
+<p>已有可配置物料，为什么不直接用可配置物料下达销售订单？由于可配置物料的物料类型是KMAT,默认不参与数量价值的更新，不能实现库存管理，所以，需要用一个正常的成品把可配置物料关联起来，MRP3视图中，需要制定关联到哪个可配置物料：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/sm6t8xnqn3.jpeg" alt="img"></p>
+<p>11.执行正常物料与可配置物料的连接（CS40）</p>
+<p>指定新建的成品与可配置物料的BOM建立连接</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/y5gohmx6q2.jpeg" alt="img"></p>
+<p>勾选保存即可。建立连接后的成品BOM查看只能用CS12查看，不能用CS03</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4kvhylxsc7.jpeg" alt="img"></p>
+<p>我们可以看到CS12展开的BOM,只显示了一个半成品1，那是因为创建该成品的时候，分类特性1个都没有填写。</p>
+<p>至此，我们所有基础数据已经准备完成，看看具体的销售订单和MRP的执行。</p>
+<p><strong>业务实现：</strong></p>
+<ol>
+<li>创建销售订单（VA01） 输入正常成品，会提示选择特性：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4dw4n53jf4.png" alt="img"></p>
+<ol>
+<li>执行MRP运算（MD41） 会产生相应的计划订单，产生的计划订单类型是KD个别客户订单</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/tup614zo32.jpeg" alt="img"></p>
+<ol>
+<li><p>展开订单树 可以看到与特性值对应的物料的计划订单&#x2F;采购申请按需求产生</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hy0acr1100.jpeg" alt="img"></p>
+</li>
+</ol>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -202,6 +247,44 @@
       </categories>
       <tags>
         <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OLTP与OLAP的区别</title>
+    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
+<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
+<ul>
+<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
+<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
+</ul>
+<p><strong>2、实时性要求不同：</strong></p>
+<ul>
+<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
+<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
+</ul>
+<p><strong>3、数据量不同：</strong></p>
+<ul>
+<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
+<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
+</ul>
+<p><strong>4、用户和系统的面向性不同：</strong></p>
+<ul>
+<li>OLTP是面向顾客的,用于事务和查询处理。</li>
+<li>OLAP是面向市场的,用于数据分析。</li>
+</ul>
+<p><strong>5、数据库设计不同：</strong></p>
+<ul>
+<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
+<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
@@ -317,132 +400,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP工单创建自动释放</title>
-    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
-<p>输入相关数据后保存，</p>
-<p>系统提示：process order 900275584 created.</p>
-<p>执行事务代码COR3显示该工单</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
-<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
-<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
-<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
-<p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
-<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
-<p>或者直接用：OPKP事务码。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP变式配置BOM实现</title>
-    <url>/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
-<p>下面举个例子说明如何实现可配置 BOM.要实现可配置 BOM,首先需要一个可配置物料,什么叫可配置物料,可以理解为最终成品的父亲,关系图如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/mcn2u927lr.png" alt="img"></p>
-<p>从上图可看出,可配置物料里含有该产品系列中覆盖到的所有组成的材料,正常的成品物料与可配置物料存在依赖关系,通过设定好的相关性来生成最终的 BOM 结构.可配置物料的 BOM 在 SAP 中称为超级 BOM.下面按照以下步骤实现这个过程:</p>
-<p><strong>配置实现:</strong></p>
-<p>\1. 建立特性(事务码 CT04)所谓的特性,就是描述该成品的特性.在上图中是建立相关性要用到这个特性,我们通过产品的不同特性来决定最终BOM 的构成. </p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ctsfbj4e4y.jpeg" alt="img"></p>
-<p>我们建立一个关于颜色的特性，类型：字符格式，值分配：单一性项目，意思是只能单选。特性值我们设置2个，分别为红色和黄色。</p>
-<p>按照上述，我们依次建立2个特性，分别是Z101(颜色） 特性值Z1:红，Z2:黄；Z103(性别）特性值Z1:男，Z2：女。</p>
-<p>2.建立分类（CL02）</p>
-<p>在特性界面分配上述特性，即把我们上述建立的特性打包起来，再赋予给可配置物料物料。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3jkof4dptn.jpeg" alt="img"></p>
-<p>3.创建可配置物料（MM01）</p>
-<p>物料类型选KMAT可配置物料：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/li2zt5wnrs.jpeg" alt="img"></p>
-<p>项目类别组0002，策略组25</p>
-<p>4.创建超级BOM中的其他物料（MM01）</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/rbjbqjt8ic.jpeg" alt="img"></p>
-<p>由于原材料需要在半成品中配置出来，所以需要勾选物料时可配置的</p>
-<p>5.把分类分配给物料（CL20N）</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zzaye6aepy.jpeg" alt="img"></p>
-<p>6.创建相关性（CU01）</p>
-<p>相关性就是建立一个逻辑，让系统自动判断，当用户选择特性或填写特性值，自动匹配出我们所需的物料或物料的用量。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zucy1yh8qn.jpeg" alt="img"></p>
-<p>相关性类型选择(选择条件），点击编辑器，写入代码：Z101&#x3D;’Z1’，意思是当用户选择Z101颜色特性为红色的时候，我们的原材料1被选中，回到前面的前面，记得把状态更改为1下达。</p>
-<p>同样的道理，设置其余物料的相关性。</p>
-<p>7.创建超级BOM(CS01)</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/wv0wrvr4cv.jpeg" alt="img"></p>
-<p>点绿色的箭头，把相关性维护到物料上</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/r7jyp0nfgi.png" alt="img"></p>
-<p>建立完毕后，可以看到OD标志（含相关性）被打上勾</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0qcko7q8l7.jpeg" alt="img"></p>
-<p>同样的方式，我们在半成品1中也进行设置</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8nihjt65jh.jpeg" alt="img"></p>
-<p>创建完成后，用CS12展开整个可配置BOM的结构：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ziitg7bcq0.jpeg" alt="img"></p>
-<p>8.创建物料的可配置参数文件（CU41）</p>
-<p>主要是设定可配置物料在执行配置时候的界面参数</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hdxde7yffa.jpeg" alt="img"></p>
-<p>9.检查和测试可配置物料（CU50）</p>
-<p>用于测试特性是否生效，成本核算是否正确，成本核算是否出来，前提还需要为相应的成品和半成品建立工艺路线。</p>
-<p>点右上角的配置按钮，输入特性值：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8kpyvwgcip.jpeg" alt="img"></p>
-<p>输入特性值后，点结果按钮显示配置出来的BOM结构：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/jyld9q8hhp.jpeg" alt="img"></p>
-<p>如上图所示，当我们输入颜色特性是Z1红色，性别特性是Z1女，显示的BOM结构是把超级BOM中的原材料2和原材料4，符合我们的相关性设置。</p>
-<p>再切换到特性界面，点成本核算按钮，成本核算变式选PPC4销售订单成本核算，传递控制选择PC01带工厂的传输，回车，可以看到产品成本：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/7jv67r939i.jpeg" alt="img"></p>
-<p>10.创建正常的成品物料（MM01）</p>
-<p>已有可配置物料，为什么不直接用可配置物料下达销售订单？由于可配置物料的物料类型是KMAT,默认不参与数量价值的更新，不能实现库存管理，所以，需要用一个正常的成品把可配置物料关联起来，MRP3视图中，需要制定关联到哪个可配置物料：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/sm6t8xnqn3.jpeg" alt="img"></p>
-<p>11.执行正常物料与可配置物料的连接（CS40）</p>
-<p>指定新建的成品与可配置物料的BOM建立连接</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/y5gohmx6q2.jpeg" alt="img"></p>
-<p>勾选保存即可。建立连接后的成品BOM查看只能用CS12查看，不能用CS03</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4kvhylxsc7.jpeg" alt="img"></p>
-<p>我们可以看到CS12展开的BOM,只显示了一个半成品1，那是因为创建该成品的时候，分类特性1个都没有填写。</p>
-<p>至此，我们所有基础数据已经准备完成，看看具体的销售订单和MRP的执行。</p>
-<p><strong>业务实现：</strong></p>
-<ol>
-<li>创建销售订单（VA01） 输入正常成品，会提示选择特性：</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4dw4n53jf4.png" alt="img"></p>
-<ol>
-<li>执行MRP运算（MD41） 会产生相应的计划订单，产生的计划订单类型是KD个别客户订单</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/tup614zo32.jpeg" alt="img"></p>
-<ol>
-<li><p>展开订单树 可以看到与特性值对应的物料的计划订单&#x2F;采购申请按需求产生</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hy0acr1100.jpeg" alt="img"></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP常见的几个接口技术区别</title>
-    <url>/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p><strong>RFC</strong>是SAP接口技术中最简单和易用的一种方式，该方式开发比较简便，特别适合于外部报表开发，但对于<a href="https://cloud.tencent.com/solution/bigdata?from=10680">大数据</a>量的查询效率相对较低。</p>
-<p><strong>BAPI</strong>基于RFC技术实现，被作为BO的Interface使用，是SAP提供的稳定而强大的业务接口，其增强和版本控制都在业务对象仓库中记录。BAPI效率相对比较高，这个主要体现在有些BAPI是用direct input的方式写的。但当你写的不只是一个LUW时，而每个LUW都比较简单，在这种情况下就用RFC开发比较快。</p>
-<p><strong>IDoc</strong>是一种数据交换格式，类似于XML的概念，是SAP标准的文件交换格式。IDoc基于文档，通常IDoc用于异步处理，可以处理批量数据。而RFC常用于同步处理，而且并不适用于批量数据的处理。同时在Monitor和Troubleshooting方面，IDoc功能非常强大。</p>
-<p><strong>ALE</strong>主要用于SAP系统内部数据交换。EDI主要用于外部或不同client 间数据交换。它们同时都可采用 IDoc 的方式作为数据的传输格式。</p>
-<p><strong>Web Services</strong>是一种松散耦合的组件，使用XML描述交换信息内容，可以保证信息的自描述性和自适应性。WS的分布与地理位置无关，这样就可将非核心业务外包给专门的服务提供商。WS基于开放标准与技术（XML &#x2F; SOAP &#x2F; UDDI等），使其特别适合于异构平台的多样性和可扩展性。</p>
-<p><strong>XI</strong>适配器(Adapter)进行XML格式与业务系统的特定类型的数据格式之间的转换。依据业务系统的数据格式的不同，适配器可以分为多种类型，比如 SOAP Adapter, JDBCAdapter, File Adapter, RFC Adapter, IDoc Adapter , WS Adapter和XI Adapter等。WS Adapter和XI Adapter是基于Web Service技术实现的。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP批次管理（分割评估）</title>
     <url>/2022/06/30/SAP%E6%89%B9%E6%AC%A1%E7%AE%A1%E7%90%86%EF%BC%88%E5%88%86%E5%89%B2%E8%AF%84%E4%BC%B0%EF%BC%89/</url>
     <content><![CDATA[<h3 id="批次分割评估："><a href="#批次分割评估：" class="headerlink" title="批次分割评估："></a><strong>批次分割评估：</strong></h3><p><strong>业务场景：</strong>企业要求各批次物料成本价格不一样。此时可以采用分割批次来实现不同成本。</p>
@@ -480,6 +437,78 @@
 <p>工厂选择2000，评估类型直接就是批次类型，F4直接查看该物料的所有批次，根据批次即可查找该物料，工厂和批次下的价格，如果不填评估类型（批次），既是该物料在工厂下面所有的价值总和。</p>
 <p>在配置好后台以后，在物料配置页面中，只要会计1视图中的评估类别没有打X，那就是没有启用批次分割。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220630184938028.png" alt="image-20220630184938028"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP工单创建自动释放</title>
+    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p>输入相关数据后保存，</p>
+<p>系统提示：process order 900275584 created.</p>
+<p>执行事务代码COR3显示该工单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
+<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
+<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
+<p>去后台如下配置路径，检查该PSP的配置信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
+<p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP常见的几个接口技术区别</title>
+    <url>/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p><strong>RFC</strong>是SAP接口技术中最简单和易用的一种方式，该方式开发比较简便，特别适合于外部报表开发，但对于<a href="https://cloud.tencent.com/solution/bigdata?from=10680">大数据</a>量的查询效率相对较低。</p>
+<p><strong>BAPI</strong>基于RFC技术实现，被作为BO的Interface使用，是SAP提供的稳定而强大的业务接口，其增强和版本控制都在业务对象仓库中记录。BAPI效率相对比较高，这个主要体现在有些BAPI是用direct input的方式写的。但当你写的不只是一个LUW时，而每个LUW都比较简单，在这种情况下就用RFC开发比较快。</p>
+<p><strong>IDoc</strong>是一种数据交换格式，类似于XML的概念，是SAP标准的文件交换格式。IDoc基于文档，通常IDoc用于异步处理，可以处理批量数据。而RFC常用于同步处理，而且并不适用于批量数据的处理。同时在Monitor和Troubleshooting方面，IDoc功能非常强大。</p>
+<p><strong>ALE</strong>主要用于SAP系统内部数据交换。EDI主要用于外部或不同client 间数据交换。它们同时都可采用 IDoc 的方式作为数据的传输格式。</p>
+<p><strong>Web Services</strong>是一种松散耦合的组件，使用XML描述交换信息内容，可以保证信息的自描述性和自适应性。WS的分布与地理位置无关，这样就可将非核心业务外包给专门的服务提供商。WS基于开放标准与技术（XML &#x2F; SOAP &#x2F; UDDI等），使其特别适合于异构平台的多样性和可扩展性。</p>
+<p><strong>XI</strong>适配器(Adapter)进行XML格式与业务系统的特定类型的数据格式之间的转换。依据业务系统的数据格式的不同，适配器可以分为多种类型，比如 SOAP Adapter, JDBCAdapter, File Adapter, RFC Adapter, IDoc Adapter , WS Adapter和XI Adapter等。WS Adapter和XI Adapter是基于Web Service技术实现的。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP生产订单BOM组件修改ABAP函数</title>
+    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
+<p>​    一般SAP有2种方式可以处理：</p>
+<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
+<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
+<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
+<p>IT_METHODS是选择调用接口的对象与方法名，</p>
+<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
+<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
+<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
+<p>应用情况如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
+<p>即完成生产订单BOM数量的修改。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -835,35 +864,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP生产订单BOM组件修改ABAP函数</title>
-    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
-<p>​    一般SAP有2种方式可以处理：</p>
-<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
-<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
-<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
-<p>IT_METHODS是选择调用接口的对象与方法名，</p>
-<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
-<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
-<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
-<p>应用情况如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
-<p>即完成生产订单BOM数量的修改。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP知识点速查</title>
     <url>/2022/05/21/SAP%E7%9F%A5%E8%AF%86%E7%82%B9%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<p><strong>1、DELETE用法</strong></p>
@@ -966,6 +966,74 @@
 <p>如果查询的2个条件都是相同值时，使用binary search可能失效，查出来的数据会有多条。即：sy-subrc &#x3D; 8。</p>
 <p><strong>18、SAP表增强</strong></p>
 <p>需要在增强中修改，还需要在OMSR中进行配置，参照之前的配置就行，配置完了进行传输。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP月结步骤</title>
+    <url>/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
+<p>​      这样可保证当月收入与成本匹配。</p>
+<p>2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者TECO技术完成处理。这个要求，对保证生产成本的正确至关重要（为保险起见，请全部用DLV，如果生产订单中有联产品，则联产品也应打上交货已经完成的勾）。</p>
+<p>3，S_ALR_87013611  查看成本中心报表,在后续成本要素分配分摊过程中,做完每一步都要在这里刷新报表查看结果是不是正确。注意成本中心（组）及费用要素（组）的选择，生产成本中心不应该出现非制造费用科目有金额。管理费用要素组也不应该出现生产成本中心，一定要先做这个检查。发现不匹配，应做纠错分录处理。</p>
+<p>在进行下面的步骤之前，最好是先发出系统通知，请所有用户登出系统，以避免与结账操作互相冲突，对结账过程产生不利影响。</p>
+<p>4, KSV5&#x2F;KSU5  分配与分摊.   KSV5分配在初级成本要素之间,KSU5分摊则是在初级与次级之间进行费用的重分配,最终目标是把生产费用合理地分摊到生产成本中心去.如果是各车间共同费用分摊到各生产车间，最好是采用KSV5，这样可以费用的原始科目分摊转移（注：这个对后面的差异计算及作业价格重估有影响）。如果是采用KSU5，则要用到次级（43类型）成本要素进行结转，这样查看报表时看不清楚费用科目的来龙去脉。KSU5如果不用次级成本要素，则必须用到成本结构（TC：KSES维护）。还要注意循环的属性：重复和累计的选择，以及接受方以什么为基数分配接收。KSU5应该也可以实现KSV5的功能。如果要在生产成本中心之间再进行分摊转移，则应该采用KSU5。</p>
+<p>   我们选择使用KSV5。并且在ksv5之前，先用ksvb进行计划分配。</p>
+<p>5，KSS1  差异计算 （如果KSV5&#x2F;KSU5错误应用，差异计算也会错）</p>
+<p>6，KSS2  作业成本分割（固定与变动）（注意同上）</p>
+<p>7，KSII   作业价格重算 （得到实际作业价格）(结果受到上面三步的直接影响)。注意这里可以选择期间，意味着可以得到几个月的累计实际作业价格。这是进行成本计划时重要的参考数据。如果某个生产成本中心有作业发生，但是确没有成本金额产生，或者有金额产生但是没有作业发生，两种情况都会带来问题。没有作业发生等于是一个分式的分母为0，会发生无法相除的致命错误！如果没有金额，则分子为0，虽然现在不致命，但是到后面，会告诉你某个作业类型的实际价格无法确定，仍是致命错误！</p>
+<p>8，CO8A  联产品成本预结算（预分配），当存在联产品时必做。保险起见，一般都做一下这一步。</p>
+<p>9，KKAO  在产品成本计算  （在产品成本从生产成本状态转入在产品科目，形成存货，当使用物料分类账时，在产品并不分摊差异，这一点要特别注意，也是因为这一点，请避免产生在产品，这是神人SAP屠夫最有用的建议之一）。</p>
+<p>10，KKS1  生产订单成本差异计算，比较耗时，请耐心等待。结果出来后，会发现很多条错误类型的消息。这里需要经验判断，哪一些错误是不需要理睬的：例如某个订单没有dlv或者teco的状态，某个订单是clsd状态，或者别的已经知道原因并且处理过的错误信息。这一步要慎重对待。如果发现新的错误信息，则一定要先处理完错误才能继续。这时候请尊重顾问，向顾问虚心求教！切记。</p>
+<p>11，CO88  生产订单结算（这里，如果在结算版本中配置的在产品转出的会计科目同时生成了初级成本要素就会出错, 必须删除这个科目的成本要素）。如果前面都顺利，则生产订单的结算一般不会出现问题。这一步完成之后，生产订单就都处理完毕了。但是差异并没有实际结转，要继续以下重头戏：物料分类账的结账</p>
+<p>12，CKLMCP 以下物料分类账的结账内容较多，并且交错影响：</p>
+<p>物料账月末处理： a.选择        CKMLCP    物料账月末处理：b.确定顺序    CKMLCP 物料账月末处理：c.单级处理确定   CKMLCP  检查单级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作） 物料账月末处理：d.多级处理确定   CKMLCP  检查多级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作）</p>
+<p>物料账月末处理： e.消耗的重新评估  CKMLCP</p>
+<p>上面这几步完成后，要先打开新的期间才能继续： 打开新的物料期间   MMPV（打开期间前，必须已处理完所有的单级及多级的错误） </p>
+<p>打开新的会计期间 OB52  （打开这两个期间后，新的物料标准价格才能下达）</p>
+<p>然后继续：</p>
+<p>物料账月末处理： f.记账清算      CKMLCP （测试运行） （此步骤必须先测试运行）  检查物料账月末处理是否正确，OK后才能       物料账月末处理：f.记账清算     CKMLCP  （正式运行）   查询物料账相关报表，检查数据是否正确。其实只要查看F.01报表中的存货与生产成本，所有差异都结转为0，生产成本也结转为0，就表示正确无误了。但一般会存在几分钱的零头差异，这是正常的结果。生产成本的零头差异，一般在成本中心报表中可以看到。而存货差异的零头差异，则一般可用ckmvfm查看明细(未分摊的差异)。因均为零头，而且在系统运算过程中无法避免，所以一般都是用总账调整分录直接在FI中调整即可。 13，月末成本处理及物料账结算完成。打开锁定用户。通知大家可以继续正常使用系统了。</p>
+<p>最后在CKMLCP中的标志价格那一步，作用是在物料主档的会计1视图中以移动平均价更新未来价格。这一步没有必要做。</p>
+<p>至此，成本结算就差不多了。 再返回去看成本中心报表，所有生产成本中心应该结平（转走了），但一般情况下会出现几分钱的余额，这属正常现象。如果余额较大，应分析原因，以避免下一期再出现较大余额。但本期可以直接在FI中用调整分录调整一下就可以了。</p>
+<p>另外要看F.01 报表中在产品与生产成本科目的余额.   生产成本科目的余额按道理应为0才对,因为在产品结算后,生产成本的余额就全部转到在产品科目了. </p>
+<p> 此时所有物料，在系统中的成本已经转换成了实际成本。月末库存成本也为实际成本。实际成本：移动加权平均成本。系统中是使用周期成本来表述。</p>
+<p>以上为最重要的月末结账操作。从上面的描述可知，月末结账的内容很多，而且因为在结账过程中要冻结系统，一般人员不能使用，所以要求在半天，最多一天的时间内完成。过程中每一步都很重要，不允许出现错误，否则遗害整个系统。如果过程中出现错误，必须要有经验的人员进行处理，必须是处理完错误之后才能继续。因此需要资深的，对系统有全局把握的人员负责。当公司人员无法解决问题时，还必须得到外部顾问的帮助。（让人尴尬的是，SAP公司的技术支持人员，不会帮用户解决使用上碰到的非系统错误性质的问题）</p>
+<p>以下还有三个重要的结账操作：</p>
+<p>14，FAGL_FC_VAL  外币评估。  这一步要在所有外币业务处理完，特别是外销的收入。做完收入还要核对，例如跟报税的资料核对。一般配置两个变式，一个是要在下月初冲回，如果应收应付科目，一个则是不冲回，如货币资金科目。请按变式操作，不要随便动变式的任何配置。</p>
+<p>15，F.19  GI&#x2F;IR收货与收发票的对比，即在途存货与暂估应付账款的记账。 请按变式操作，不要随便动变式的任何配置。一般为暂估应付账款，即已经收货但没有收到发票的状态。这时的负债的是一个临时的，暂估的金额，因为最终是以发票金额确认负债的。</p>
+<p>16，FAGLF101 应收应付科目余额的重分类。请按变式操作，不要随便动变式的任何配置。应收科目的余额正常应该在借方，但如果出现在贷方呢？就应该重分类为负债。相反，应付科目的余额正常应该在贷方，但如果出现在借方呢？就应该重分类为资产。</p>
+<p>以上完成之后，SAP的系统月结就完成了。</p>
+<p>此时还可以做一些非生产制造成本费用的，非外币业务的，非应收应付的总账分录。如果没有，请及时关闭已经结账月份的期间。</p>
+<p>最终关闭旧期间： OB52  </p>
+<p>只有关闭了旧期间，这个期间的会计报表才是固定不变的。</p>
+<p>数据已经定型，接下来，各位分析师们，就开始各种数据分析了。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP统驭科目理解</title>
+    <url>/2022/06/08/SAP%E7%BB%9F%E9%A9%AD%E7%A7%91%E7%9B%AE%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h3 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h3><p>首先统驭科目就是特别总账科目，只是用在SAP应收、应付业务中，起了个名称为特别总账，主要用于解决与一个客户、供应商发生不同业务，需要记账再不同的会计科目上。</p>
+<p>可以说：统驭科目是一座桥，链接着总账和明细账，它是一个需要和明细账核对的总账科目，与明细账平行，但是不能单独记账。常常用于客户（D）、供应商（K）、资产类科目（A）记账。</p>
+<p>再次理解：统驭科目（reconciliation account）指的就是将明细科目归集起来的意思，统驭科目类型分三类：供应商类别（K）、客户类别（D）、固定资产类别（A），主要针对应收账款、应付账款、固定资产等模块过入的金额，他们的交易时不通过总账模块进行的，但再各自模块完成的同时，会将相应的金额过入总账。</p>
+<p>举例：公司向供应商（中百超市）采购3千元的商品，正常的财务记账方式如下：</p>
+<p><strong>借：办公费用3千元          贷：应付账款3千元</strong></p>
+<p>但采购人员不会像财务人员那样记账。通常将业务理解为支付中百超市3千元用于采购办公用品一批。</p>
+<p>在实际的SAP系统中，采购收货后产生物料凭证（并关联产生会计凭证），系统就会自动在财务这边生成一笔凭证（财务并没有手工记账），之所以自动生成，时因为科目“应收账款”设为了供应商“中百超市”的统驭科目。当然，实际运作中由于收货和发票并不同步，所以会有中间科目过渡。但在理解时可以将中间记账科目简化，假设时同步完成。直接产生借费用，贷应付。费用科目可以在采购订单中手工指定。而应付科目就是通过供应商统驭科目的方式实现的。<strong>设为统驭科目的会计科目就不能在手工记账了，只能通过其他的模块（如：AR（应收账款）&#x2F;AP（应付账款）&#x2F;SD&#x2F;MM）自动记账</strong>。</p>
+<p>设置一个统驭科目的步骤：</p>
+<p>1、新建一个科目FSS0（如：应收账款或应付账款）并指定它的“统驭科目类型”为“客户&#x2F;供应商&#x2F;资产”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220608143011488.png" alt="image-20220608143011488"></p>
+<p>2、在创建客户活供应商主数据时，在其“统驭科目”（公司代码标签下）选择刚才新建的那个会计科目，这样，以后对这个客户或供应商进行记账的话，从AR&#x2F;AP&#x2F;SD&#x2F;MM那边记“***供应商”的同时，也会自动在GL中记一笔，并记在“应收账款活应付账款”上。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2469,43 +2537,51 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP月结步骤</title>
-    <url>/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
-<p>​      这样可保证当月收入与成本匹配。</p>
-<p>2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者TECO技术完成处理。这个要求，对保证生产成本的正确至关重要（为保险起见，请全部用DLV，如果生产订单中有联产品，则联产品也应打上交货已经完成的勾）。</p>
-<p>3，S_ALR_87013611  查看成本中心报表,在后续成本要素分配分摊过程中,做完每一步都要在这里刷新报表查看结果是不是正确。注意成本中心（组）及费用要素（组）的选择，生产成本中心不应该出现非制造费用科目有金额。管理费用要素组也不应该出现生产成本中心，一定要先做这个检查。发现不匹配，应做纠错分录处理。</p>
-<p>在进行下面的步骤之前，最好是先发出系统通知，请所有用户登出系统，以避免与结账操作互相冲突，对结账过程产生不利影响。</p>
-<p>4, KSV5&#x2F;KSU5  分配与分摊.   KSV5分配在初级成本要素之间,KSU5分摊则是在初级与次级之间进行费用的重分配,最终目标是把生产费用合理地分摊到生产成本中心去.如果是各车间共同费用分摊到各生产车间，最好是采用KSV5，这样可以费用的原始科目分摊转移（注：这个对后面的差异计算及作业价格重估有影响）。如果是采用KSU5，则要用到次级（43类型）成本要素进行结转，这样查看报表时看不清楚费用科目的来龙去脉。KSU5如果不用次级成本要素，则必须用到成本结构（TC：KSES维护）。还要注意循环的属性：重复和累计的选择，以及接受方以什么为基数分配接收。KSU5应该也可以实现KSV5的功能。如果要在生产成本中心之间再进行分摊转移，则应该采用KSU5。</p>
-<p>   我们选择使用KSV5。并且在ksv5之前，先用ksvb进行计划分配。</p>
-<p>5，KSS1  差异计算 （如果KSV5&#x2F;KSU5错误应用，差异计算也会错）</p>
-<p>6，KSS2  作业成本分割（固定与变动）（注意同上）</p>
-<p>7，KSII   作业价格重算 （得到实际作业价格）(结果受到上面三步的直接影响)。注意这里可以选择期间，意味着可以得到几个月的累计实际作业价格。这是进行成本计划时重要的参考数据。如果某个生产成本中心有作业发生，但是确没有成本金额产生，或者有金额产生但是没有作业发生，两种情况都会带来问题。没有作业发生等于是一个分式的分母为0，会发生无法相除的致命错误！如果没有金额，则分子为0，虽然现在不致命，但是到后面，会告诉你某个作业类型的实际价格无法确定，仍是致命错误！</p>
-<p>8，CO8A  联产品成本预结算（预分配），当存在联产品时必做。保险起见，一般都做一下这一步。</p>
-<p>9，KKAO  在产品成本计算  （在产品成本从生产成本状态转入在产品科目，形成存货，当使用物料分类账时，在产品并不分摊差异，这一点要特别注意，也是因为这一点，请避免产生在产品，这是神人SAP屠夫最有用的建议之一）。</p>
-<p>10，KKS1  生产订单成本差异计算，比较耗时，请耐心等待。结果出来后，会发现很多条错误类型的消息。这里需要经验判断，哪一些错误是不需要理睬的：例如某个订单没有dlv或者teco的状态，某个订单是clsd状态，或者别的已经知道原因并且处理过的错误信息。这一步要慎重对待。如果发现新的错误信息，则一定要先处理完错误才能继续。这时候请尊重顾问，向顾问虚心求教！切记。</p>
-<p>11，CO88  生产订单结算（这里，如果在结算版本中配置的在产品转出的会计科目同时生成了初级成本要素就会出错, 必须删除这个科目的成本要素）。如果前面都顺利，则生产订单的结算一般不会出现问题。这一步完成之后，生产订单就都处理完毕了。但是差异并没有实际结转，要继续以下重头戏：物料分类账的结账</p>
-<p>12，CKLMCP 以下物料分类账的结账内容较多，并且交错影响：</p>
-<p>物料账月末处理： a.选择        CKMLCP    物料账月末处理：b.确定顺序    CKMLCP 物料账月末处理：c.单级处理确定   CKMLCP  检查单级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作） 物料账月末处理：d.多级处理确定   CKMLCP  检查多级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作）</p>
-<p>物料账月末处理： e.消耗的重新评估  CKMLCP</p>
-<p>上面这几步完成后，要先打开新的期间才能继续： 打开新的物料期间   MMPV（打开期间前，必须已处理完所有的单级及多级的错误） </p>
-<p>打开新的会计期间 OB52  （打开这两个期间后，新的物料标准价格才能下达）</p>
-<p>然后继续：</p>
-<p>物料账月末处理： f.记账清算      CKMLCP （测试运行） （此步骤必须先测试运行）  检查物料账月末处理是否正确，OK后才能       物料账月末处理：f.记账清算     CKMLCP  （正式运行）   查询物料账相关报表，检查数据是否正确。其实只要查看F.01报表中的存货与生产成本，所有差异都结转为0，生产成本也结转为0，就表示正确无误了。但一般会存在几分钱的零头差异，这是正常的结果。生产成本的零头差异，一般在成本中心报表中可以看到。而存货差异的零头差异，则一般可用ckmvfm查看明细(未分摊的差异)。因均为零头，而且在系统运算过程中无法避免，所以一般都是用总账调整分录直接在FI中调整即可。 13，月末成本处理及物料账结算完成。打开锁定用户。通知大家可以继续正常使用系统了。</p>
-<p>最后在CKMLCP中的标志价格那一步，作用是在物料主档的会计1视图中以移动平均价更新未来价格。这一步没有必要做。</p>
-<p>至此，成本结算就差不多了。 再返回去看成本中心报表，所有生产成本中心应该结平（转走了），但一般情况下会出现几分钱的余额，这属正常现象。如果余额较大，应分析原因，以避免下一期再出现较大余额。但本期可以直接在FI中用调整分录调整一下就可以了。</p>
-<p>另外要看F.01 报表中在产品与生产成本科目的余额.   生产成本科目的余额按道理应为0才对,因为在产品结算后,生产成本的余额就全部转到在产品科目了. </p>
-<p> 此时所有物料，在系统中的成本已经转换成了实际成本。月末库存成本也为实际成本。实际成本：移动加权平均成本。系统中是使用周期成本来表述。</p>
-<p>以上为最重要的月末结账操作。从上面的描述可知，月末结账的内容很多，而且因为在结账过程中要冻结系统，一般人员不能使用，所以要求在半天，最多一天的时间内完成。过程中每一步都很重要，不允许出现错误，否则遗害整个系统。如果过程中出现错误，必须要有经验的人员进行处理，必须是处理完错误之后才能继续。因此需要资深的，对系统有全局把握的人员负责。当公司人员无法解决问题时，还必须得到外部顾问的帮助。（让人尴尬的是，SAP公司的技术支持人员，不会帮用户解决使用上碰到的非系统错误性质的问题）</p>
-<p>以下还有三个重要的结账操作：</p>
-<p>14，FAGL_FC_VAL  外币评估。  这一步要在所有外币业务处理完，特别是外销的收入。做完收入还要核对，例如跟报税的资料核对。一般配置两个变式，一个是要在下月初冲回，如果应收应付科目，一个则是不冲回，如货币资金科目。请按变式操作，不要随便动变式的任何配置。</p>
-<p>15，F.19  GI&#x2F;IR收货与收发票的对比，即在途存货与暂估应付账款的记账。 请按变式操作，不要随便动变式的任何配置。一般为暂估应付账款，即已经收货但没有收到发票的状态。这时的负债的是一个临时的，暂估的金额，因为最终是以发票金额确认负债的。</p>
-<p>16，FAGLF101 应收应付科目余额的重分类。请按变式操作，不要随便动变式的任何配置。应收科目的余额正常应该在借方，但如果出现在贷方呢？就应该重分类为负债。相反，应付科目的余额正常应该在贷方，但如果出现在借方呢？就应该重分类为资产。</p>
-<p>以上完成之后，SAP的系统月结就完成了。</p>
-<p>此时还可以做一些非生产制造成本费用的，非外币业务的，非应收应付的总账分录。如果没有，请及时关闭已经结账月份的期间。</p>
-<p>最终关闭旧期间： OB52  </p>
-<p>只有关闭了旧期间，这个期间的会计报表才是固定不变的。</p>
-<p>数据已经定型，接下来，各位分析师们，就开始各种数据分析了。</p>
+    <title>SAP脚本录制与回放功能</title>
+    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
+    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
+<p>​    一、开启SAP脚本录制功能</p>
+<p>​    事务代码：RZ11</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
+<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
+<p> 进入“参数详细信息”界面后，点击“更改值”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
+<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
+<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
+<p>​    二、SAP脚本录制功能测试</p>
+<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
+<p>​    1.打开录制，点下图红色按钮</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
+<p> 2.输入事务代码“&#x2F;nMM02”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
+<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
+<p>​    3.录制结束，停止录制</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
+<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
+<p>​    5.使用记事本格式或装vb打开录制脚本</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
+<p>​    获取脚本引擎的方法，如下：</p>
+<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
+<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
+<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
+<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
+<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
+<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
+
+<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
+<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
+<ol start="9">
+<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
+</ol>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2515,19 +2591,71 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP统驭科目理解</title>
-    <url>/2022/06/08/SAP%E7%BB%9F%E9%A9%AD%E7%A7%91%E7%9B%AE%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h3 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h3><p>首先统驭科目就是特别总账科目，只是用在SAP应收、应付业务中，起了个名称为特别总账，主要用于解决与一个客户、供应商发生不同业务，需要记账再不同的会计科目上。</p>
-<p>可以说：统驭科目是一座桥，链接着总账和明细账，它是一个需要和明细账核对的总账科目，与明细账平行，但是不能单独记账。常常用于客户（D）、供应商（K）、资产类科目（A）记账。</p>
-<p>再次理解：统驭科目（reconciliation account）指的就是将明细科目归集起来的意思，统驭科目类型分三类：供应商类别（K）、客户类别（D）、固定资产类别（A），主要针对应收账款、应付账款、固定资产等模块过入的金额，他们的交易时不通过总账模块进行的，但再各自模块完成的同时，会将相应的金额过入总账。</p>
-<p>举例：公司向供应商（中百超市）采购3千元的商品，正常的财务记账方式如下：</p>
-<p><strong>借：办公费用3千元          贷：应付账款3千元</strong></p>
-<p>但采购人员不会像财务人员那样记账。通常将业务理解为支付中百超市3千元用于采购办公用品一批。</p>
-<p>在实际的SAP系统中，采购收货后产生物料凭证（并关联产生会计凭证），系统就会自动在财务这边生成一笔凭证（财务并没有手工记账），之所以自动生成，时因为科目“应收账款”设为了供应商“中百超市”的统驭科目。当然，实际运作中由于收货和发票并不同步，所以会有中间科目过渡。但在理解时可以将中间记账科目简化，假设时同步完成。直接产生借费用，贷应付。费用科目可以在采购订单中手工指定。而应付科目就是通过供应商统驭科目的方式实现的。<strong>设为统驭科目的会计科目就不能在手工记账了，只能通过其他的模块（如：AR（应收账款）&#x2F;AP（应付账款）&#x2F;SD&#x2F;MM）自动记账</strong>。</p>
-<p>设置一个统驭科目的步骤：</p>
-<p>1、新建一个科目FSS0（如：应收账款或应付账款）并指定它的“统驭科目类型”为“客户&#x2F;供应商&#x2F;资产”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220608143011488.png" alt="image-20220608143011488"></p>
-<p>2、在创建客户活供应商主数据时，在其“统驭科目”（公司代码标签下）选择刚才新建的那个会计科目，这样，以后对这个客户或供应商进行记账的话，从AR&#x2F;AP&#x2F;SD&#x2F;MM那边记“***供应商”的同时，也会自动在GL中记一笔，并记在“应收账款活应付账款”上。</p>
+    <title>简介</title>
+    <url>/2022/05/19/hello-world/</url>
+    <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
+<p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>SE21创建_复制包均报错</title>
+    <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
+<p>创建 ZGST_CO_PCA</p>
+<p>继续</p>
+<p>Software component HOME is not modifiable</p>
+<p>&amp;软件组件HOME不可修改</p>
+<p>&amp;复制Z001，也会出现同样的报错。</p>
+<h3 id="1-1-2-I-incident"><a href="#1-1-2-I-incident" class="headerlink" title="1.1.2 *I**incident*"></a><strong>1.1.2</strong> <em><strong>*I*</strong></em><em><strong>*incident*</strong></em></h3><h4 id="1-1-2-1-Error-when-creating-development-package"><a href="#1-1-2-1-Error-when-creating-development-package" class="headerlink" title="1.1.2.1 *Error when creating development package*"></a><strong>1.1.2.1</strong> <em><strong>*Error when creating development package*</strong></em></h4><p>When I tried to create a new development package with transaction code ‘SE21’, the following error occured: Software component HOME is not modifiable (Message no. TR463). The parameters were the same as those I set on another server last year. (And I tried it again on that sever, it still works now). Then I tried to copy a development package that existed in the sever, the same error occured. The following is the parameters:</p>
+<p>Application Component: Empty</p>
+<p>Software Component: HOME</p>
+<p>Transport Layer: ZDS4</p>
+<p>Superpackage: Empty</p>
+<p>Package Type: Development Package</p>
+<p>Package encapsulated: Not checked</p>
+<h4 id="1-1-2-2-Note"><a href="#1-1-2-2-Note" class="headerlink" title="1.1.2.2 *Note*"></a><strong>1.1.2.2</strong> <em><strong>*Note*</strong></em></h4><p><em><strong>*2404403 - You get an error “System setting does not allow you to change &amp; &amp; &amp;.” when you try to edit an object*</strong></em></p>
+<p><em><strong>*Symptom*</strong></em></p>
+<p>When you try to edit some object in your system or you do some other actions which are to change some objects, you get the following error:</p>
+<p>System setting does not allow you to change &amp; &amp; &amp;.(<Program ID> <Object Type>  <Object Name>).</p>
+<p>Message no. TR006</p>
+<p><em><strong>*Diagnosis*</strong></em></p>
+<p>The object <Program ID> <Object Type>  <Object Name> is assigned to the software component <Component Name> through its package.</p>
+<p>This software component is not modifiable in this SAP System.</p>
+<p><em><strong>*System Response*</strong></em></p>
+<p>The function terminates.</p>
+<p>Procedure for System Administration</p>
+<p>Check whether you can modify software component <Component Name></p>
+<p>You can set the modifiability of software components in the Transport Organizer Tools under Administration -&gt;Set System Change Option. </p>
+<p><em><strong>*Environment*</strong></em></p>
+<p>ABAP System, Release independent</p>
+<p><em><strong>*Resolution*</strong></em></p>
+<p>Firstly, please specify the package name of the object through the object attributes or table TADIR.</p>
+<p>Then you can go to SE80 to get the the software component of the assigned package.</p>
+<p>Now you must make the following settings to be able to do the needful change in the system.</p>
+<p>SE06-&gt;System change options </p>
+<p>The following settings must be made.</p>
+<p>Global settings: “modifiable”</p>
+<p>You must also set the software component of the assigned package to “modifiable” or “Restrict Modifiable” , for example:</p>
+<p>Ü The software component LOCAL (“Local Developments (No Automatic Transport)”) must be “Modifiable” for the package $TMP.</p>
+<p>Ü The software component HOME (“Developments Without Delivery to Customers”) must be “Modifiable” for a package with the software component HOME.</p>
+<p>Ü All other software components must be set to “Modifiable” or “Restrict Modifibility” correspondingly.</p>
+<p><em><strong>*Namespace&#x2F;name range*</strong></em></p>
+<p>Ü The namespace “General SAP Name range” and “Customer name range” must be set to “modifiable”.</p>
+<p>Ü All other namespaces&#x2F;name ranges can be set to “Not Modifiable”.</p>
+<p>For example, when you edit the object “ZLOGON_SCREEN_INFO” in SE61, you may got error TR006 or TR045.To resolve the error, you need to change the settings below:</p>
+<p>Ü SE06-&gt;System Change Options-&gt;Global Settings:Modifiable</p>
+<p>Ü Software Component-&gt;Local or Home-&gt;Modifiable</p>
+<p>Ü Namespace&#x2F;Name Range-&gt;Customer Name Range: Modifiable </p>
+<p>Keywords</p>
+<p>TR045, TR 045, TR 006, system settings</p>
+<h3 id="1-1-3-解决过程"><a href="#1-1-3-解决过程" class="headerlink" title="1.1.3 *解决过程*"></a><strong>1.1.3</strong> <em><strong>*解决过程*</strong></em></h3><p>SE06</p>
+<p>系统更改选项</p>
+<p>点击</p>
+<p>客户开发-&gt;HOME-&gt;修改为可修改</p>
+<p>这里的状态不对，如下修改：</p>
+<p>保存</p>
+<p>SE21创建包即可</p>
+<h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2693,131 +2821,87 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP脚本录制与回放功能</title>
-    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
-    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
-<p>​    一、开启SAP脚本录制功能</p>
-<p>​    事务代码：RZ11</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
-<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
-<p> 进入“参数详细信息”界面后，点击“更改值”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
-<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
-<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
-<p>​    二、SAP脚本录制功能测试</p>
-<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
-<p>​    1.打开录制，点下图红色按钮</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
-<p> 2.输入事务代码“&#x2F;nMM02”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
-<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
-<p>​    3.录制结束，停止录制</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
-<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
-<p>​    5.使用记事本格式或装vb打开录制脚本</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
-<p>​    获取脚本引擎的方法，如下：</p>
-<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
-<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
-<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
-<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
-<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
-<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
-
-<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
-<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
-<ol start="9">
-<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
-</ol>
+    <title>如何定义需求的优先级</title>
+    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/</url>
+    <content><![CDATA[<p>如何定义需求的优先级&#x3D;考验你决策取舍的能力</p>
+<p>楼里有些回答写的过于花哨了，看完似乎懂了很多，但其实参考性太差，可行性不高</p>
+<p>最后还是开会时候拍脑袋定优先级</p>
+<p>我总结了一些朴素但实用的需求优先级排序思路：</p>
+<p><strong>遇到多个需求时，先认真问自己三个问题</strong></p>
+<ul>
+<li><strong>1、这个需求紧不紧急？</strong></li>
+</ul>
+<p>牢记！造成严重的流程卡点的需求最紧急，如果无法确定是否严重，可以根据卡点辐射的用户量去佐证到底紧不紧急。</p>
+<ul>
+<li><strong>2、这个需求对你核心指标的贡献程度如何？</strong></li>
+</ul>
+<p>这个其实考验到你拆分、估算的能力。比如我们近期的<a href="https://www.zhihu.com/search?q=%E5%8C%97%E6%9E%81%E6%98%9F&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">北极星</a>指标是提升从A环节→B环节的转化率，那么在其它投入都近乎相等的情况下，需求1预计能提升5%，而需求2预计能提升7%，结果当然不言而喻。</p>
+<ul>
+<li><strong>3、这个需求涉及的工作量大不大？</strong></li>
+</ul>
+<p>还是上面那个例子，如果需求1预计能提升5%，需求2预计能提升7%，但需求2的工作量是需求1的3-4倍，并且需要投入双倍的人力，导致本期其它的需求也会被需求2的影响，面临资源不足的情况，那么这种情况下，考虑到ROI必然是先做需求1。</p>
+<p>如果你的需求是有调研问卷数据支撑的话，还可以引入一个产品需求分析的经典模型<strong>「KANO分析模型」</strong>，进行系统的需求梳理，对需求进行分析和提炼，分为<a href="https://www.zhihu.com/search?q=%E5%85%B4%E5%A5%8B%E6%80%A7&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra=%7B%22sourceType%22:%22answer%22,%22sourceId%22:2521571347%7D">兴奋性</a>、期望型、无差异、必备型。不展开说了，可以看看我之前的文章，写的很详细了。</p>
+<p><img src="https://pic2.zhimg.com/v2-cdc39aa326057d2f4cad31769b720ea1_720w.jpg?source=3af55fa1" alt="img"></p>
+<p>KANO 模型是东京理工大学教授狩野纪昭发明的对用户需求分类和优先排序的有用工具，以分析用户需求对用户满意的影响为基础，体现了产品性能和用户满意之间的非线性关系。</p>
+<h3 id="1、了解需求属性分类"><a href="#1、了解需求属性分类" class="headerlink" title="1、了解需求属性分类"></a>1、了解需求属性分类</h3><p>通过对需求的满意度、具备度二维分析，KANO将需求划分为必备型、期望型、魅力型、无差异型、反向型五类，分别以英文字母M、O、A、I、R表示。</p>
+<ul>
+<li>必备型需求(M)：需求满足时，用户不会感到满意。需求不满足时，用户会很不满意。</li>
+<li>期望型需求(O)：需求满足时，用户会感到很满意。需求不满足时，用户会很不满意。</li>
+<li>魅力型需求(A)：该需求超过用户对产品本来的期望，使得用户的满意度急剧上升。即使表现得不完善，用户的满意度也不受影响。</li>
+<li>无差异型需求(I)：需求被满足或未被满足，都不会对用户的满意度造成影响。</li>
+<li>反向型需求(R)：该需求与用户的满意度呈反向相关，满足该要求，反而会使用户的满意度下降。</li>
+</ul>
+<h3 id="2、better-worse系数"><a href="#2、better-worse系数" class="headerlink" title="2、better-worse系数"></a>2、better-worse系数</h3><p>Better系数&#x3D;（期望数+魅力数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
+<p>Worse系数&#x3D; -1*（期望数+必备数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
+<p>Better系数越接近1，表示该具备度越高该需求对用户满意度提升的影响效果越大。Worse系数越接近-1，表示具备度越低该需求对用户满意度造成的负面影响越大。</p>
 ]]></content>
       <categories>
-        <category>SAP</category>
+        <category>数据</category>
       </categories>
       <tags>
-        <tag>SAP</tag>
+        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
-    <title>简介</title>
-    <url>/2022/05/19/hello-world/</url>
-    <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
-<p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>SE21创建_复制包均报错</title>
-    <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
-    <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
-<p>创建 ZGST_CO_PCA</p>
-<p>继续</p>
-<p>Software component HOME is not modifiable</p>
-<p>&amp;软件组件HOME不可修改</p>
-<p>&amp;复制Z001，也会出现同样的报错。</p>
-<h3 id="1-1-2-I-incident"><a href="#1-1-2-I-incident" class="headerlink" title="1.1.2 *I**incident*"></a><strong>1.1.2</strong> <em><strong>*I*</strong></em><em><strong>*incident*</strong></em></h3><h4 id="1-1-2-1-Error-when-creating-development-package"><a href="#1-1-2-1-Error-when-creating-development-package" class="headerlink" title="1.1.2.1 *Error when creating development package*"></a><strong>1.1.2.1</strong> <em><strong>*Error when creating development package*</strong></em></h4><p>When I tried to create a new development package with transaction code ‘SE21’, the following error occured: Software component HOME is not modifiable (Message no. TR463). The parameters were the same as those I set on another server last year. (And I tried it again on that sever, it still works now). Then I tried to copy a development package that existed in the sever, the same error occured. The following is the parameters:</p>
-<p>Application Component: Empty</p>
-<p>Software Component: HOME</p>
-<p>Transport Layer: ZDS4</p>
-<p>Superpackage: Empty</p>
-<p>Package Type: Development Package</p>
-<p>Package encapsulated: Not checked</p>
-<h4 id="1-1-2-2-Note"><a href="#1-1-2-2-Note" class="headerlink" title="1.1.2.2 *Note*"></a><strong>1.1.2.2</strong> <em><strong>*Note*</strong></em></h4><p><em><strong>*2404403 - You get an error “System setting does not allow you to change &amp; &amp; &amp;.” when you try to edit an object*</strong></em></p>
-<p><em><strong>*Symptom*</strong></em></p>
-<p>When you try to edit some object in your system or you do some other actions which are to change some objects, you get the following error:</p>
-<p>System setting does not allow you to change &amp; &amp; &amp;.(<Program ID> <Object Type>  <Object Name>).</p>
-<p>Message no. TR006</p>
-<p><em><strong>*Diagnosis*</strong></em></p>
-<p>The object <Program ID> <Object Type>  <Object Name> is assigned to the software component <Component Name> through its package.</p>
-<p>This software component is not modifiable in this SAP System.</p>
-<p><em><strong>*System Response*</strong></em></p>
-<p>The function terminates.</p>
-<p>Procedure for System Administration</p>
-<p>Check whether you can modify software component <Component Name></p>
-<p>You can set the modifiability of software components in the Transport Organizer Tools under Administration -&gt;Set System Change Option. </p>
-<p><em><strong>*Environment*</strong></em></p>
-<p>ABAP System, Release independent</p>
-<p><em><strong>*Resolution*</strong></em></p>
-<p>Firstly, please specify the package name of the object through the object attributes or table TADIR.</p>
-<p>Then you can go to SE80 to get the the software component of the assigned package.</p>
-<p>Now you must make the following settings to be able to do the needful change in the system.</p>
-<p>SE06-&gt;System change options </p>
-<p>The following settings must be made.</p>
-<p>Global settings: “modifiable”</p>
-<p>You must also set the software component of the assigned package to “modifiable” or “Restrict Modifiable” , for example:</p>
-<p>Ü The software component LOCAL (“Local Developments (No Automatic Transport)”) must be “Modifiable” for the package $TMP.</p>
-<p>Ü The software component HOME (“Developments Without Delivery to Customers”) must be “Modifiable” for a package with the software component HOME.</p>
-<p>Ü All other software components must be set to “Modifiable” or “Restrict Modifibility” correspondingly.</p>
-<p><em><strong>*Namespace&#x2F;name range*</strong></em></p>
-<p>Ü The namespace “General SAP Name range” and “Customer name range” must be set to “modifiable”.</p>
-<p>Ü All other namespaces&#x2F;name ranges can be set to “Not Modifiable”.</p>
-<p>For example, when you edit the object “ZLOGON_SCREEN_INFO” in SE61, you may got error TR006 or TR045.To resolve the error, you need to change the settings below:</p>
-<p>Ü SE06-&gt;System Change Options-&gt;Global Settings:Modifiable</p>
-<p>Ü Software Component-&gt;Local or Home-&gt;Modifiable</p>
-<p>Ü Namespace&#x2F;Name Range-&gt;Customer Name Range: Modifiable </p>
-<p>Keywords</p>
-<p>TR045, TR 045, TR 006, system settings</p>
-<h3 id="1-1-3-解决过程"><a href="#1-1-3-解决过程" class="headerlink" title="1.1.3 *解决过程*"></a><strong>1.1.3</strong> <em><strong>*解决过程*</strong></em></h3><p>SE06</p>
-<p>系统更改选项</p>
-<p>点击</p>
-<p>客户开发-&gt;HOME-&gt;修改为可修改</p>
-<p>这里的状态不对，如下修改：</p>
-<p>保存</p>
-<p>SE21创建包即可</p>
-<h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
+    <title>如何搭建一套完整的数据指标体系概述</title>
+    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
+<p>而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。</p>
+<p><strong>而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用</strong><br><strong>一套逻辑连接起来(见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg" alt="img"></p>
+<p>在这套逻辑里，你能从局部看到整体，能从整体划分到局部。<br>例如你头疼(整体)， 医生能够按照人的生命体系一-检查, 直到发现你上呼吸道不正常，发生了感染(局部) ;也能从你手扎破了(局部) ，如果不及时处理伤口，可能由于感染丢失了性命(整体)。<br>企业也一样,通过企业的指标体系,也能看到企业利润没有达成，是哪个部门(个人)出现了问题，也可从一个销售员的业绩推断出公司的整体情况。</p>
+<p><strong>由此可以看出，指标体系最重要的是”指标”和“逻辑”。</strong></p>
+<hr>
+<h2 id="解决问题：指标体系到底如何搭建？"><a href="#解决问题：指标体系到底如何搭建？" class="headerlink" title="解决问题：指标体系到底如何搭建？"></a><strong>解决问题：指标体系到底如何搭建？</strong></h2><p>那么，如果我们想要搭建一完整指标体系,就得有一大堆衡量企业健康状况的指标，还得有一整套逻辑将企业的各个指标有机连接起来。</p>
+<p>“指标”和“逻辑”虽然是指标体系的两个组成部分,但是构造”指标”和“逻辑”的过程却是同一个过程，那就是“自上而下，从大到小”，层层拆解，步步细分(业绩目标的设定过程可能相反)。</p>
+<p><strong>1、首先，每个企业都有自己每年的整体目标，这个目标-般是营收、利润、或销量。</strong><br>这个大指标的问题在于，它无法把责任落在某-个具体的人或部门(CEO不算， 因为整个指标体系就是为了他达成大指标使用的管理工具，他又不能一个人把公司所有活干了)，所以就需要把这个大指标进行拆解，直到拆解到责任可以落实到每一个部门(个人)头上。</p>
+<p><strong>2、其次，就是如何拆解企业目标，这一步至关重要。一般来说， 指标体系是按照本企业的业务流程进行拆解。</strong><br>那什么是业务流程呢?它指的就是你要将从消费者(或者客户)那里收到钱所经历的所有的步骤进行拆解(也有人说按照消费者消费路径来拆解的,个人认为主要是业务流程，因为一般公司的部门是按照业务流程设置的)。</p>
+<p>例如一家汽车制造公司,要想从客户手里收到购车款，大体来说需要经历造车一-&gt;营销一-&gt; 物<br>流一一&gt;销售的环节。那如何将企业一年的收入在这些环节进行分解，这时可以就需要“将业务流<br>程抽象为数学公式”，因为指标本质上还是数据，所以指标的拆解当然离不开数学。<br>以上汽车销售的业务流程用数学公式表达出来如下:<br>汽车的销售收入&#x3D;Max{出厂车辆数，营销产生的销售线索数X销镌转化率x门店数量} X单车利润</p>
+<p>因此，要达成营业利润那么子指标就是销售车辆数，而销售车辆数的子指标就是出厂车辆数、销售线索数、销售转化率。<br>这是大指标的一级拆解，一级拆解，一 般建议子指标可以找到一 一个具体负责的部门。因为说一千道一万，企业是由各部门门组成的，不论是传统企业是互联网公司，当然集团除外，我们这里主要说的是某一板块业务。</p>
+<p>这样拆解的好处就是，虽然这个部门无法完全控制整个公司大指标，但是总可以控制部门的子指标。</p>
+<p>例如，营销部可能无法对整个公司的销售收入负责，毕竟如果你车造的很烂，或者销售人员不努力，即使我把产品吹天，消费者实际到店一试驾，还是不会买不是吗。但是，有多少人看广告,有多人看了广告愿意试驾(销售线索)你总不能甩锅吧。</p>
+<p><strong>3、就是将每个业务流程的目标再次在本流程的子流程层面进行二_级拆解 (见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg" alt="img"></p>
+<p>例如，营销部负责销售线索数，但是你可能在很多媒介上做广告,例如电视、门户网站、移动端APP等等，那么每一个媒介上有多少销售线索数，你总得有一个统计指标吧，或者每一个媒介都有一个具体的人员在负责，那么将“销售线索数”这个子指标再细分，就是“XX媒介产生的销售线索数”。</p>
+<p>这样，我们就可以看出这个媒介在整年的表现，如果责任到人的话，可以直接去看负责这个媒介投放的人员的业绩表现，进而通过这个子指标看其对整个营业收入(公司大指标)的影响。</p>
+<p>其实这方面没有很好的方法，网上很多人都在鼓吹”OSM模型” ，O就是Objective, S是Strategy, M是Measurement,其实它更多指的是一个概念框架， 而且是高度抽象、大道至简的那种，而在真实的应用上能够参考的意义是有限的(就像SWOT分析一样)。</p>
+<p>因此，最好的方法，就是你对这个业务流程相当了解，这也是现实中为什么HR部门门]无法设置好的指标体系了，因为他们对业务流程的了解一般少之又少。所以，指标的拆解(指标体系的搭建)，其实是非常内行的一件事情。</p>
+<p><strong>4、是将一些职能部门的指标以及业务部门的保障性指标加入进去。</strong></p>
+<p>如果按照上述方法拆解KPI,那么基本上只有销售部、营销部、生产部等主要业务部门]的指标，但是问题是整个公司的运行不是只有业务部门，还有很多职能部门，这些职能部]的工作也很重要，因为他们是保障整个公司的健康运行，也就是以上业务部[ ]的指标能够达成的基础环境(参见波特价值链)。</p>
+<p>举个例子，如果财务部门不好好工作，导致出现-个财务漏洞，那整个公司好几年的营收估计都搭进去了，又何谈一年的目标实现呢?</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg" alt="img"></p>
+<h4 id="那职能部门的指标如何拆解呢？"><a href="#那职能部门的指标如何拆解呢？" class="headerlink" title="那职能部门的指标如何拆解呢？"></a><strong>那职能部门的指标如何拆解呢？</strong></h4><p>首先，你必须得了解它们的主要工作内容、工作目标、工作流程。例如财务部门，主要指标可能是财务报告的及时性和准确性，以及预算管理的好与坏，这些都是可以量化的。</p>
+<p>还有数据分析部门可能主要是一个支撑部门， 那目标就是、及时准确地支撑业务部门数据需求、报表开发、给管理层的深度分析报告等，这些服务可以由各业务部门来打分，这样你就可以设置数据分析部门的指标诸如“数据提供满意度”、“数据分析报告满意度” 等。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg" alt="img"></p>
+<p>此外，业务部门]也有保障性指标。例如生产部的指标肯定不光是生产合格的产品数量，你还得在一定时间、按照一定成本、按照一定良品率把合格的产品生产出来，那这个部门(业务)的指标就不光是生产合格的产品数量，还有以上提到的保障性指标。通过之前搭建的业务指标体系(总指标–&gt; 细分一&gt;细分….)加上诸如风险管理、财务、人事等职能(支撑)部门的保障性指标以及业务部门门的业务保障性指标，覆盖整个公司的指标体系就搭建起来了。</p>
+<p>这个体系整体像一颗巨大的树，但是在内在结构_上又是枝与枝相关联，例如各部]的预算控制好了，整个财务的预算才能控制好;或者说数据部门门要提供好用的报表，也得开发部门]开发出好用的报表套件才行。毕竟，各部门相互连接，整个公司才是一个”有机的”整体(下图)。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg" alt="img"></p>
 ]]></content>
       <categories>
-        <category>SAP</category>
+        <category>数据</category>
       </categories>
       <tags>
-        <tag>SAP</tag>
+        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
@@ -2945,20 +3029,31 @@
       </tags>
   </entry>
   <entry>
-    <title>致远Dee接口堵塞弹窗记录</title>
-    <url>/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>在致远OA传输到SAP接口时，需要校验下接口能否调用成功，比如OA询比价写入SAP的时候没有维护供应商，如果不加校验这一步的话会导致SAP返回错误，OA流程结束，这样只能去SAP调整问题，然后手工调用接口，很麻烦。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>利用Dee的高级功能，堵塞即可解决以上的需求，当传输接口有问题的时候，直接弹出报错弹窗，待处理人解决问题后提交SAP，也就是说只要是能提交到SAP的数据都是正确的。</p>
+    <title>致远OA查询请求REST</title>
+    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
 <h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>SAP接口要求：要求SAP的接口返回值包含TYPE&#x2F;FLAG的标识和MESSAGE的返回错误消息，不要在外面包一层，不然解析很麻烦。</li>
-<li>SAP接口配置完成以后，再写一个转换元数据的脚本，这个的意思就是把返回的数据解析为Dee能够解析的元数据，这个元数据就是来拼接XML，具体代码如下：</li>
+<li>请求rest</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String MESSAGE=getParaByName(document,&quot;MESSAGE&quot;);  &quot;解析SAP返回的错误消息</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);  &quot;解析SAP返回标识</span><br><span class="line"></span><br><span class="line">String xml=&quot;&lt;root&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;area count=\&quot;1\&quot; totalCount=\&quot;1\&quot;&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;MESSAGE&gt;&quot;+MESSAGE+&quot;&lt;/MESSAGE&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;FLAG&gt;&quot;+FLAG+&quot;&lt;/FLAG&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/area&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/root&gt;&quot;;</span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
+<ol start="2">
+<li>获取token</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
 <ol start="3">
-<li>根据解析的元数据进行堵塞处理，具体代码如下：</li>
+<li>根据rest请求</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sta = &quot;&quot;;</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);</span><br><span class="line">String MSG = getParaByName(document,&quot;MESSAGE&quot;);</span><br><span class="line">if(FLAG.equals(&quot;Y&quot;))&#123;</span><br><span class="line">  sta = &quot;T&quot;;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">  sta = &quot;F&quot;;</span><br><span class="line">&#125;;</span><br><span class="line">setHighSetStr(document,sta,&quot;Y&quot;,MSG,&quot;&quot;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
+<ol start="4">
+<li>塞data</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>拼接count和totalcount</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
@@ -3081,6 +3176,54 @@
       </tags>
   </entry>
   <entry>
+    <title>致远Dee接口堵塞弹窗记录</title>
+    <url>/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>在致远OA传输到SAP接口时，需要校验下接口能否调用成功，比如OA询比价写入SAP的时候没有维护供应商，如果不加校验这一步的话会导致SAP返回错误，OA流程结束，这样只能去SAP调整问题，然后手工调用接口，很麻烦。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>利用Dee的高级功能，堵塞即可解决以上的需求，当传输接口有问题的时候，直接弹出报错弹窗，待处理人解决问题后提交SAP，也就是说只要是能提交到SAP的数据都是正确的。</p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>SAP接口要求：要求SAP的接口返回值包含TYPE&#x2F;FLAG的标识和MESSAGE的返回错误消息，不要在外面包一层，不然解析很麻烦。</li>
+<li>SAP接口配置完成以后，再写一个转换元数据的脚本，这个的意思就是把返回的数据解析为Dee能够解析的元数据，这个元数据就是来拼接XML，具体代码如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String MESSAGE=getParaByName(document,&quot;MESSAGE&quot;);  &quot;解析SAP返回的错误消息</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);  &quot;解析SAP返回标识</span><br><span class="line"></span><br><span class="line">String xml=&quot;&lt;root&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;area count=\&quot;1\&quot; totalCount=\&quot;1\&quot;&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;MESSAGE&gt;&quot;+MESSAGE+&quot;&lt;/MESSAGE&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;FLAG&gt;&quot;+FLAG+&quot;&lt;/FLAG&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/area&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/root&gt;&quot;;</span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>根据解析的元数据进行堵塞处理，具体代码如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sta = &quot;&quot;;</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);</span><br><span class="line">String MSG = getParaByName(document,&quot;MESSAGE&quot;);</span><br><span class="line">if(FLAG.equals(&quot;Y&quot;))&#123;</span><br><span class="line">  sta = &quot;T&quot;;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">  sta = &quot;F&quot;;</span><br><span class="line">&#125;;</span><br><span class="line">setHighSetStr(document,sta,&quot;Y&quot;,MSG,&quot;&quot;);</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记致远OA线程堵塞遇坑</title>
+    <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
+    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
+<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、在6月15号下午，以为是数据库内存占用过大的问题，通过查询发现数据库内存占用超过90%，在重启数据库并新增内存资源后，数据库使用占比降低。但是在重启后问题依然存在。这个时候只能手工推送SAP单据</p>
+<p>2、6月16号上午，反馈致远研发，研发在看log日志后判断是迈锐思插件（费控）问题，然后找迈锐思客服打上了补丁，但是打完补丁重启OA服务器以后，该问题依然存在。</p>
+<p>3、继续反馈致远研发查找问题，发现是在节点跳转的时候有问题，导致所有合并节点的操作都挂掉了，导致了无法接受待办问题。</p>
+<p>4、然后继续查，发现其实是环境问题，由于线程堵塞导致所有的操作均会卡掉，具体的原因如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191133868.png" alt="image-20220616191133868"></p>
+<p>通过这个界面，可以看出来，由于这个插件导致一直未响应堵塞，导致堆栈无法释放。</p>
+<p>5、找到真正原因后，把这个自开发插件停用掉，重启服务，恢复。</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、以后再遇到这种问题，首先要先去system中查看系统监控</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191402865.png" alt="image-20220616191402865"></p>
+<p>2、如果监控有问题，具体的排错是在</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
+<p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>致远OA遇坑记录</title>
     <url>/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
@@ -3120,114 +3263,6 @@
       </categories>
       <tags>
         <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>致远OA查询请求REST</title>
-    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>请求rest</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
-<ol start="2">
-<li>获取token</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
-<ol start="3">
-<li>根据rest请求</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
-<ol start="4">
-<li>塞data</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>拼接count和totalcount</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记致远OA线程堵塞遇坑</title>
-    <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
-    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
-<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、在6月15号下午，以为是数据库内存占用过大的问题，通过查询发现数据库内存占用超过90%，在重启数据库并新增内存资源后，数据库使用占比降低。但是在重启后问题依然存在。这个时候只能手工推送SAP单据</p>
-<p>2、6月16号上午，反馈致远研发，研发在看log日志后判断是迈锐思插件（费控）问题，然后找迈锐思客服打上了补丁，但是打完补丁重启OA服务器以后，该问题依然存在。</p>
-<p>3、继续反馈致远研发查找问题，发现是在节点跳转的时候有问题，导致所有合并节点的操作都挂掉了，导致了无法接受待办问题。</p>
-<p>4、然后继续查，发现其实是环境问题，由于线程堵塞导致所有的操作均会卡掉，具体的原因如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191133868.png" alt="image-20220616191133868"></p>
-<p>通过这个界面，可以看出来，由于这个插件导致一直未响应堵塞，导致堆栈无法释放。</p>
-<p>5、找到真正原因后，把这个自开发插件停用掉，重启服务，恢复。</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、以后再遇到这种问题，首先要先去system中查看系统监控</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191402865.png" alt="image-20220616191402865"></p>
-<p>2、如果监控有问题，具体的排错是在</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
-<p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>评估类别、评估类和评估类型</title>
-    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
-<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
-<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
-<p>  1）个别计价法一般用X按批次进行评估；</p>
-<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
-<ul>
-<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
-<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
-<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
-</ul>
-<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
-<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
-<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
-<p>  The valuation category defines the valuation types allowed for a material.</p>
-<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
-<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
-<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
-<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
-<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
-<hr>
-<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
-<p><strong>评估类的进一步解释：</strong></p>
-<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
-<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
-<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
       </tags>
   </entry>
   <entry>
@@ -3292,6 +3327,55 @@
       </categories>
       <tags>
         <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>评估类别、评估类和评估类型</title>
+    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
+<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
+<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
+<p>  1）个别计价法一般用X按批次进行评估；</p>
+<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
+<ul>
+<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
+<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
+<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
+</ul>
+<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
+<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
+<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
+<p>  The valuation category defines the valuation types allowed for a material.</p>
+<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
+<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
+<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
+<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
+<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
+<hr>
+<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
+<p><strong>评估类的进一步解释：</strong></p>
+<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
+<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
+<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
       </tags>
   </entry>
 </search>
