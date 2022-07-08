@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>OLTP与OLAP的区别</title>
+    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
+<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
+<ul>
+<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
+<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
+</ul>
+<p><strong>2、实时性要求不同：</strong></p>
+<ul>
+<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
+<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
+</ul>
+<p><strong>3、数据量不同：</strong></p>
+<ul>
+<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
+<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
+</ul>
+<p><strong>4、用户和系统的面向性不同：</strong></p>
+<ul>
+<li>OLTP是面向顾客的,用于事务和查询处理。</li>
+<li>OLAP是面向市场的,用于数据分析。</li>
+</ul>
+<p><strong>5、数据库设计不同：</strong></p>
+<ul>
+<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
+<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ABAP动态内表</title>
     <url>/2022/06/21/ABAP%E5%8A%A8%E6%80%81%E5%86%85%E8%A1%A8/</url>
     <content><![CDATA[<h3 id="ABAP动态内表"><a href="#ABAP动态内表" class="headerlink" title="ABAP动态内表"></a>ABAP动态内表</h3><p>例子：</p>
@@ -59,6 +97,37 @@
 <p>此种写法对确定结构的定义和未确定结构的定义的<gs_ab>都可行。</p>
 <p> 但是有确定结构定义的<gs_ab>可以直接使用<gs_ab>-col1 &#x3D; ‘AAA’来赋值。</p>
 <p>一般如果能事先知道结构的话，还是应该用确定结构的方式来定义FS，不确定结构的定义通常用于动态处理。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP NOTE安装过程</title>
+    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
+<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
+<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
+<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
+<p><strong>2.更改系统选项</strong></p>
+<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
+<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
+<p><strong>3.导入note</strong></p>
+<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
+<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
+<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
+<p> <strong>4.新建传输号</strong></p>
+<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
+<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -133,44 +202,6 @@
       </categories>
       <tags>
         <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>OLTP与OLAP的区别</title>
-    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
-<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
-<ul>
-<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
-<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
-</ul>
-<p><strong>2、实时性要求不同：</strong></p>
-<ul>
-<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
-<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
-</ul>
-<p><strong>3、数据量不同：</strong></p>
-<ul>
-<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
-<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
-</ul>
-<p><strong>4、用户和系统的面向性不同：</strong></p>
-<ul>
-<li>OLTP是面向顾客的,用于事务和查询处理。</li>
-<li>OLAP是面向市场的,用于数据分析。</li>
-</ul>
-<p><strong>5、数据库设计不同：</strong></p>
-<ul>
-<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
-<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -286,28 +317,23 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP NOTE安装过程</title>
-    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
-<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
-<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
-<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
-<p><strong>2.更改系统选项</strong></p>
-<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
-<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
-<p><strong>3.导入note</strong></p>
-<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
-<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
-<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
-<p> <strong>4.新建传输号</strong></p>
-<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
-<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+    <title>SAP工单创建自动释放</title>
+    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p>输入相关数据后保存，</p>
+<p>系统提示：process order 900275584 created.</p>
+<p>执行事务代码COR3显示该工单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
+<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
+<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
+<p>去后台如下配置路径，检查该PSP的配置信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
+<p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -400,32 +426,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP工单创建自动释放</title>
-    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
-<p>输入相关数据后保存，</p>
-<p>系统提示：process order 900275584 created.</p>
-<p>执行事务代码COR3显示该工单</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
-<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
-<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
-<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
-<p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
-<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
-<p>或者直接用：OPKP事务码。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP常见的几个接口技术区别</title>
     <url>/2022/06/20/SAP%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E6%8E%A5%E5%8F%A3%E6%8A%80%E6%9C%AF%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<p><strong>RFC</strong>是SAP接口技术中最简单和易用的一种方式，该方式开发比较简便，特别适合于外部报表开发，但对于<a href="https://cloud.tencent.com/solution/bigdata?from=10680">大数据</a>量的查询效率相对较低。</p>
@@ -480,6 +480,91 @@
 <p>工厂选择2000，评估类型直接就是批次类型，F4直接查看该物料的所有批次，根据批次即可查找该物料，工厂和批次下的价格，如果不填评估类型（批次），既是该物料在工厂下面所有的价值总和。</p>
 <p>在配置好后台以后，在物料配置页面中，只要会计1视图中的评估类别没有打X，那就是没有启用批次分割。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220630184938028.png" alt="image-20220630184938028"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP监控常用TCODE</title>
+    <url>/2022/07/04/SAP%E7%9B%91%E6%8E%A7%E5%B8%B8%E7%94%A8TCODE/</url>
+    <content><![CDATA[<p><strong>1 系统监视</strong></p>
+<p><strong>1.1 进程监视</strong></p>
+<p><strong>SM66&#x2F;SM50 进程查看</strong></p>
+<p>管理员需全天监看系统的进程。长时间运行的后台工作，有缺陷的报表程序，若不进行控制都将消耗掉大量的系统资源。管理员用这个事务码检查他们的环境。当然，在杀掉这些进程前，需要与最终用户协商。</p>
+<p><strong>1.2 服务器监视</strong></p>
+<p><strong>SM51</strong></p>
+<p>R&#x2F;3服务器的列表可用SM51显示，管理员用它来监视不同服务器之间的工作进程。想要显示某一服务器的进程，鼠标指针点中服务器的名称，然后选Processes。</p>
+<p> <strong>RZ20 CCMS监控</strong></p>
+<p>双击要查看的菜单项，检查系统收集的监控信息，遇到报警和错误信息要查清原因，找出解决办法。</p>
+<p><strong>1.3 用户监视</strong></p>
+<p><strong>SM04 用户监视</strong></p>
+<p>管理员应该考虑全天监视用户仅他们的活动。是否有非法用户？是否有用户试图或正在用他们不该用的事务码，等等。</p>
+<p><strong>1.4 性能监视</strong></p>
+<p><strong>ST03 工作量分析</strong></p>
+<p>世上没有经验的替代品。当需要调R&#x2F;3系统的性能的时候是很痛苦的事情。管理员应该保留尽可能多的工作量分析数据，特别是系统没用性能问题时候的数据。拥有一副系统工作正常时的清晰的系统图，将使你具有对你的系统的不可估量的感觉，这种感觉将使你能预见到将要发生的问题，并且很多时候可以避免问题的发生。</p>
+<p><strong>ST02 缓存分析</strong></p>
+<p>R&#x2F;3的缓存存储经常用到的数据，以使本地应用服务器的实例能取得这些数据。这样就可以减少<a href="https://cloud.tencent.com/solution/database?from=10680">数据库</a>的访问，数据库的负载，网络的流量，从而提高系统的性能。数据缓存中包括了ABAP&#x2F;4程序，屏幕，ABAP&#x2F;4字典数据和公司的数据，这些数据在系统操作过程中是不会改变的。我们应该经常的监视缓存、点击率、剩余空间、交换区。此进程可以帮助管理员作性能调整。</p>
+<p><strong>SP12 TemSe管理</strong></p>
+<p>管理员要检查文件系统和数据库空间的增长，尤其是批量打印大量数据时。TemSe的一致性检查(RSPO0043)需要计划每天在打印池重新整理(RSPO0041)之前执行。</p>
+<p><strong>1.5 更新记录</strong></p>
+<p><strong>SM13更新记录</strong></p>
+<p>此事务码显示失败的更新动作。失败的更新动作在生产系统中是决不允许发生的，一旦发生，开发人员应马上修改。</p>
+<p><strong>1.6 锁定对象</strong></p>
+<p><strong>SM12 锁定对象</strong></p>
+<p>用户总是会时不时的因为某种原因（如断线，程序出错等等）而锁定一个对象。所有被锁定的老的对象均要被分析，更正。</p>
+<p><strong>1.7 出错分析</strong></p>
+<p><strong>ST22出错分析</strong></p>
+<p>当一个报表或事务因为严重的错误而停止工作时，ABAP&#x2F;4开发工作台就会发出一个“突然出错”（short dump）。系统在系统日志中记录错误信息，并在表SNAP中记录程序终止时的出错信息。管理员需要每天检查是否有short dump 出现，如果有则分析并试图解决问题。</p>
+<p><strong>1.8 系统日志</strong></p>
+<p><strong>SM21系统日日志</strong></p>
+<p>R&#x2F;3服务器在系统日志中记录系统的事件和问题。所有的警告和错误信息应被分析和解决。此程序应包括将问题及其解决方案做成文档。</p>
+<p><strong>1.9 数据库</strong></p>
+<p><strong>DB13 定义DATABASE相关的日常后台job,如：</strong></p>
+<p>数据库备份，CHECK DATABASE ,OBTIMIZER STATISTICS UPDATE等等，</p>
+<p>也可查看DATABASE相关后台作业的LOG </p>
+<p><strong>DB12 SAPDBA日志</strong></p>
+<p>检查夜间备份是否成功。</p>
+<p>检查日志目录的剩余空间。</p>
+<p><strong>DB02 存储管理</strong></p>
+<p>监控数据库的扩长。</p>
+<p>监控表和索引的扩长及碎片的情况。</p>
+<p>如有必要监控数据库的优化统计。</p>
+<p><strong>ST02 监控SAP R&#x2F;3 BUFFER状况</strong></p>
+<p>每天监控SAP R&#x2F;3各种 BUFFER 的命中率，比如: ROLL MEMORY ,EXTEND MEMORY,HEAP MEMORY，TABLE BUFFER,ABAP PROGRAM BUFFER 等等。</p>
+<p><strong>ST04 数据库性能监控</strong></p>
+<p>每天监控数据库的性能统计值以观察数据库是否处于良好的运行状态。</p>
+<p>每天监控对数据库逻辑上和物理上的读，以追踪数据库负载的发展情况。如：DATA BUFFER 命中率，SHARE MEMORY 命中率等等和数据库性能密切相关的重要</p>
+<p>参数值。</p>
+<p><strong>ST06 监控操作系统资源状况</strong></p>
+<p>每天察看ST06用以掌握系统运行过程中整个操作系统资源状况，如：</p>
+<p>CPU 使用率，内存使用率，PAGE SPACE 使用率等等。</p>
+<p><strong>AL02数据库警报监视</strong></p>
+<p>所有的警告均需被分析，修正和记录在案。</p>
+<p><strong>1.10 操作系统</strong></p>
+<p><strong>OS06 操作系统监视</strong></p>
+<p>所有的警告均需被分析，修正和记录在案。</p>
+<p><strong>AL16 操作系统警报监视</strong></p>
+<p>所有的警告均需被分析，修正和记录在案。</p>
+<p><strong>1.11 网络</strong></p>
+<p><strong>ST09&#x2F;ST08 网络警报监视</strong></p>
+<p>所有的警告均需被分析，修正和记录在案。</p>
+<p><strong>2  工作定时系统</strong></p>
+<p><strong>SM37 工作日志查看</strong></p>
+<p>管理员应该检查所有被取消的工作，如有必要分析并修正这些工作。问题及其解决方案需记录在案。</p>
+<p>管理器应该检查所有的日志，包括输出列表</p>
+<p> <strong>RZ01 图形化的工作监视</strong></p>
+<p><strong>3  打印系统</strong></p>
+<p><strong>SP01 打印需求查看</strong></p>
+<p>失败的打印任务可以从新启动。这些打印任务的失败往往是用户端的问题（如PC上的SAPLPD程序被关闭了）。由于R&#x2F;3 系统仅跟踪打印任务到目标队列中，输出控制器中的已经完成的状态并不能表明实际打印成功，因此那些比较重要和大量的打印任务在被从TemSe中删除前必须先确认是否完成。</p>
+<p><strong>4  系统变更检查</strong></p>
+<p><strong>4.1 DB03 数据库参数修改记录</strong></p>
+<p>监控所有R&#x2F;3系统数据库参数的修改。管理员要经常检查参数是否由经授权的的用户修改。</p>
+<p><strong>4.2 TU02 R&#x2F;3系统参数修改记录</strong></p>
+<p>R&#x2F;3系统监控所有R&#x2F;3系统参数的修改。即使不是每天检查，系统管理员人要确认参数的调整是在艘全的情况下调整地。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -750,91 +835,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP监控常用TCODE</title>
-    <url>/2022/07/04/SAP%E7%9B%91%E6%8E%A7%E5%B8%B8%E7%94%A8TCODE/</url>
-    <content><![CDATA[<p><strong>1 系统监视</strong></p>
-<p><strong>1.1 进程监视</strong></p>
-<p><strong>SM66&#x2F;SM50 进程查看</strong></p>
-<p>管理员需全天监看系统的进程。长时间运行的后台工作，有缺陷的报表程序，若不进行控制都将消耗掉大量的系统资源。管理员用这个事务码检查他们的环境。当然，在杀掉这些进程前，需要与最终用户协商。</p>
-<p><strong>1.2 服务器监视</strong></p>
-<p><strong>SM51</strong></p>
-<p>R&#x2F;3服务器的列表可用SM51显示，管理员用它来监视不同服务器之间的工作进程。想要显示某一服务器的进程，鼠标指针点中服务器的名称，然后选Processes。</p>
-<p> <strong>RZ20 CCMS监控</strong></p>
-<p>双击要查看的菜单项，检查系统收集的监控信息，遇到报警和错误信息要查清原因，找出解决办法。</p>
-<p><strong>1.3 用户监视</strong></p>
-<p><strong>SM04 用户监视</strong></p>
-<p>管理员应该考虑全天监视用户仅他们的活动。是否有非法用户？是否有用户试图或正在用他们不该用的事务码，等等。</p>
-<p><strong>1.4 性能监视</strong></p>
-<p><strong>ST03 工作量分析</strong></p>
-<p>世上没有经验的替代品。当需要调R&#x2F;3系统的性能的时候是很痛苦的事情。管理员应该保留尽可能多的工作量分析数据，特别是系统没用性能问题时候的数据。拥有一副系统工作正常时的清晰的系统图，将使你具有对你的系统的不可估量的感觉，这种感觉将使你能预见到将要发生的问题，并且很多时候可以避免问题的发生。</p>
-<p><strong>ST02 缓存分析</strong></p>
-<p>R&#x2F;3的缓存存储经常用到的数据，以使本地应用服务器的实例能取得这些数据。这样就可以减少<a href="https://cloud.tencent.com/solution/database?from=10680">数据库</a>的访问，数据库的负载，网络的流量，从而提高系统的性能。数据缓存中包括了ABAP&#x2F;4程序，屏幕，ABAP&#x2F;4字典数据和公司的数据，这些数据在系统操作过程中是不会改变的。我们应该经常的监视缓存、点击率、剩余空间、交换区。此进程可以帮助管理员作性能调整。</p>
-<p><strong>SP12 TemSe管理</strong></p>
-<p>管理员要检查文件系统和数据库空间的增长，尤其是批量打印大量数据时。TemSe的一致性检查(RSPO0043)需要计划每天在打印池重新整理(RSPO0041)之前执行。</p>
-<p><strong>1.5 更新记录</strong></p>
-<p><strong>SM13更新记录</strong></p>
-<p>此事务码显示失败的更新动作。失败的更新动作在生产系统中是决不允许发生的，一旦发生，开发人员应马上修改。</p>
-<p><strong>1.6 锁定对象</strong></p>
-<p><strong>SM12 锁定对象</strong></p>
-<p>用户总是会时不时的因为某种原因（如断线，程序出错等等）而锁定一个对象。所有被锁定的老的对象均要被分析，更正。</p>
-<p><strong>1.7 出错分析</strong></p>
-<p><strong>ST22出错分析</strong></p>
-<p>当一个报表或事务因为严重的错误而停止工作时，ABAP&#x2F;4开发工作台就会发出一个“突然出错”（short dump）。系统在系统日志中记录错误信息，并在表SNAP中记录程序终止时的出错信息。管理员需要每天检查是否有short dump 出现，如果有则分析并试图解决问题。</p>
-<p><strong>1.8 系统日志</strong></p>
-<p><strong>SM21系统日日志</strong></p>
-<p>R&#x2F;3服务器在系统日志中记录系统的事件和问题。所有的警告和错误信息应被分析和解决。此程序应包括将问题及其解决方案做成文档。</p>
-<p><strong>1.9 数据库</strong></p>
-<p><strong>DB13 定义DATABASE相关的日常后台job,如：</strong></p>
-<p>数据库备份，CHECK DATABASE ,OBTIMIZER STATISTICS UPDATE等等，</p>
-<p>也可查看DATABASE相关后台作业的LOG </p>
-<p><strong>DB12 SAPDBA日志</strong></p>
-<p>检查夜间备份是否成功。</p>
-<p>检查日志目录的剩余空间。</p>
-<p><strong>DB02 存储管理</strong></p>
-<p>监控数据库的扩长。</p>
-<p>监控表和索引的扩长及碎片的情况。</p>
-<p>如有必要监控数据库的优化统计。</p>
-<p><strong>ST02 监控SAP R&#x2F;3 BUFFER状况</strong></p>
-<p>每天监控SAP R&#x2F;3各种 BUFFER 的命中率，比如: ROLL MEMORY ,EXTEND MEMORY,HEAP MEMORY，TABLE BUFFER,ABAP PROGRAM BUFFER 等等。</p>
-<p><strong>ST04 数据库性能监控</strong></p>
-<p>每天监控数据库的性能统计值以观察数据库是否处于良好的运行状态。</p>
-<p>每天监控对数据库逻辑上和物理上的读，以追踪数据库负载的发展情况。如：DATA BUFFER 命中率，SHARE MEMORY 命中率等等和数据库性能密切相关的重要</p>
-<p>参数值。</p>
-<p><strong>ST06 监控操作系统资源状况</strong></p>
-<p>每天察看ST06用以掌握系统运行过程中整个操作系统资源状况，如：</p>
-<p>CPU 使用率，内存使用率，PAGE SPACE 使用率等等。</p>
-<p><strong>AL02数据库警报监视</strong></p>
-<p>所有的警告均需被分析，修正和记录在案。</p>
-<p><strong>1.10 操作系统</strong></p>
-<p><strong>OS06 操作系统监视</strong></p>
-<p>所有的警告均需被分析，修正和记录在案。</p>
-<p><strong>AL16 操作系统警报监视</strong></p>
-<p>所有的警告均需被分析，修正和记录在案。</p>
-<p><strong>1.11 网络</strong></p>
-<p><strong>ST09&#x2F;ST08 网络警报监视</strong></p>
-<p>所有的警告均需被分析，修正和记录在案。</p>
-<p><strong>2  工作定时系统</strong></p>
-<p><strong>SM37 工作日志查看</strong></p>
-<p>管理员应该检查所有被取消的工作，如有必要分析并修正这些工作。问题及其解决方案需记录在案。</p>
-<p>管理器应该检查所有的日志，包括输出列表</p>
-<p> <strong>RZ01 图形化的工作监视</strong></p>
-<p><strong>3  打印系统</strong></p>
-<p><strong>SP01 打印需求查看</strong></p>
-<p>失败的打印任务可以从新启动。这些打印任务的失败往往是用户端的问题（如PC上的SAPLPD程序被关闭了）。由于R&#x2F;3 系统仅跟踪打印任务到目标队列中，输出控制器中的已经完成的状态并不能表明实际打印成功，因此那些比较重要和大量的打印任务在被从TemSe中删除前必须先确认是否完成。</p>
-<p><strong>4  系统变更检查</strong></p>
-<p><strong>4.1 DB03 数据库参数修改记录</strong></p>
-<p>监控所有R&#x2F;3系统数据库参数的修改。管理员要经常检查参数是否由经授权的的用户修改。</p>
-<p><strong>4.2 TU02 R&#x2F;3系统参数修改记录</strong></p>
-<p>R&#x2F;3系统监控所有R&#x2F;3系统参数的修改。即使不是每天检查，系统管理员人要确认参数的调整是在艘全的情况下调整地。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP生产订单BOM组件修改ABAP函数</title>
     <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
@@ -855,52 +855,6 @@
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
 <p>即完成生产订单BOM数量的修改。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP月结步骤</title>
-    <url>/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
-<p>​      这样可保证当月收入与成本匹配。</p>
-<p>2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者TECO技术完成处理。这个要求，对保证生产成本的正确至关重要（为保险起见，请全部用DLV，如果生产订单中有联产品，则联产品也应打上交货已经完成的勾）。</p>
-<p>3，S_ALR_87013611  查看成本中心报表,在后续成本要素分配分摊过程中,做完每一步都要在这里刷新报表查看结果是不是正确。注意成本中心（组）及费用要素（组）的选择，生产成本中心不应该出现非制造费用科目有金额。管理费用要素组也不应该出现生产成本中心，一定要先做这个检查。发现不匹配，应做纠错分录处理。</p>
-<p>在进行下面的步骤之前，最好是先发出系统通知，请所有用户登出系统，以避免与结账操作互相冲突，对结账过程产生不利影响。</p>
-<p>4, KSV5&#x2F;KSU5  分配与分摊.   KSV5分配在初级成本要素之间,KSU5分摊则是在初级与次级之间进行费用的重分配,最终目标是把生产费用合理地分摊到生产成本中心去.如果是各车间共同费用分摊到各生产车间，最好是采用KSV5，这样可以费用的原始科目分摊转移（注：这个对后面的差异计算及作业价格重估有影响）。如果是采用KSU5，则要用到次级（43类型）成本要素进行结转，这样查看报表时看不清楚费用科目的来龙去脉。KSU5如果不用次级成本要素，则必须用到成本结构（TC：KSES维护）。还要注意循环的属性：重复和累计的选择，以及接受方以什么为基数分配接收。KSU5应该也可以实现KSV5的功能。如果要在生产成本中心之间再进行分摊转移，则应该采用KSU5。</p>
-<p>   我们选择使用KSV5。并且在ksv5之前，先用ksvb进行计划分配。</p>
-<p>5，KSS1  差异计算 （如果KSV5&#x2F;KSU5错误应用，差异计算也会错）</p>
-<p>6，KSS2  作业成本分割（固定与变动）（注意同上）</p>
-<p>7，KSII   作业价格重算 （得到实际作业价格）(结果受到上面三步的直接影响)。注意这里可以选择期间，意味着可以得到几个月的累计实际作业价格。这是进行成本计划时重要的参考数据。如果某个生产成本中心有作业发生，但是确没有成本金额产生，或者有金额产生但是没有作业发生，两种情况都会带来问题。没有作业发生等于是一个分式的分母为0，会发生无法相除的致命错误！如果没有金额，则分子为0，虽然现在不致命，但是到后面，会告诉你某个作业类型的实际价格无法确定，仍是致命错误！</p>
-<p>8，CO8A  联产品成本预结算（预分配），当存在联产品时必做。保险起见，一般都做一下这一步。</p>
-<p>9，KKAO  在产品成本计算  （在产品成本从生产成本状态转入在产品科目，形成存货，当使用物料分类账时，在产品并不分摊差异，这一点要特别注意，也是因为这一点，请避免产生在产品，这是神人SAP屠夫最有用的建议之一）。</p>
-<p>10，KKS1  生产订单成本差异计算，比较耗时，请耐心等待。结果出来后，会发现很多条错误类型的消息。这里需要经验判断，哪一些错误是不需要理睬的：例如某个订单没有dlv或者teco的状态，某个订单是clsd状态，或者别的已经知道原因并且处理过的错误信息。这一步要慎重对待。如果发现新的错误信息，则一定要先处理完错误才能继续。这时候请尊重顾问，向顾问虚心求教！切记。</p>
-<p>11，CO88  生产订单结算（这里，如果在结算版本中配置的在产品转出的会计科目同时生成了初级成本要素就会出错, 必须删除这个科目的成本要素）。如果前面都顺利，则生产订单的结算一般不会出现问题。这一步完成之后，生产订单就都处理完毕了。但是差异并没有实际结转，要继续以下重头戏：物料分类账的结账</p>
-<p>12，CKLMCP 以下物料分类账的结账内容较多，并且交错影响：</p>
-<p>物料账月末处理： a.选择        CKMLCP    物料账月末处理：b.确定顺序    CKMLCP 物料账月末处理：c.单级处理确定   CKMLCP  检查单级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作） 物料账月末处理：d.多级处理确定   CKMLCP  检查多级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作）</p>
-<p>物料账月末处理： e.消耗的重新评估  CKMLCP</p>
-<p>上面这几步完成后，要先打开新的期间才能继续： 打开新的物料期间   MMPV（打开期间前，必须已处理完所有的单级及多级的错误） </p>
-<p>打开新的会计期间 OB52  （打开这两个期间后，新的物料标准价格才能下达）</p>
-<p>然后继续：</p>
-<p>物料账月末处理： f.记账清算      CKMLCP （测试运行） （此步骤必须先测试运行）  检查物料账月末处理是否正确，OK后才能       物料账月末处理：f.记账清算     CKMLCP  （正式运行）   查询物料账相关报表，检查数据是否正确。其实只要查看F.01报表中的存货与生产成本，所有差异都结转为0，生产成本也结转为0，就表示正确无误了。但一般会存在几分钱的零头差异，这是正常的结果。生产成本的零头差异，一般在成本中心报表中可以看到。而存货差异的零头差异，则一般可用ckmvfm查看明细(未分摊的差异)。因均为零头，而且在系统运算过程中无法避免，所以一般都是用总账调整分录直接在FI中调整即可。 13，月末成本处理及物料账结算完成。打开锁定用户。通知大家可以继续正常使用系统了。</p>
-<p>最后在CKMLCP中的标志价格那一步，作用是在物料主档的会计1视图中以移动平均价更新未来价格。这一步没有必要做。</p>
-<p>至此，成本结算就差不多了。 再返回去看成本中心报表，所有生产成本中心应该结平（转走了），但一般情况下会出现几分钱的余额，这属正常现象。如果余额较大，应分析原因，以避免下一期再出现较大余额。但本期可以直接在FI中用调整分录调整一下就可以了。</p>
-<p>另外要看F.01 报表中在产品与生产成本科目的余额.   生产成本科目的余额按道理应为0才对,因为在产品结算后,生产成本的余额就全部转到在产品科目了. </p>
-<p> 此时所有物料，在系统中的成本已经转换成了实际成本。月末库存成本也为实际成本。实际成本：移动加权平均成本。系统中是使用周期成本来表述。</p>
-<p>以上为最重要的月末结账操作。从上面的描述可知，月末结账的内容很多，而且因为在结账过程中要冻结系统，一般人员不能使用，所以要求在半天，最多一天的时间内完成。过程中每一步都很重要，不允许出现错误，否则遗害整个系统。如果过程中出现错误，必须要有经验的人员进行处理，必须是处理完错误之后才能继续。因此需要资深的，对系统有全局把握的人员负责。当公司人员无法解决问题时，还必须得到外部顾问的帮助。（让人尴尬的是，SAP公司的技术支持人员，不会帮用户解决使用上碰到的非系统错误性质的问题）</p>
-<p>以下还有三个重要的结账操作：</p>
-<p>14，FAGL_FC_VAL  外币评估。  这一步要在所有外币业务处理完，特别是外销的收入。做完收入还要核对，例如跟报税的资料核对。一般配置两个变式，一个是要在下月初冲回，如果应收应付科目，一个则是不冲回，如货币资金科目。请按变式操作，不要随便动变式的任何配置。</p>
-<p>15，F.19  GI&#x2F;IR收货与收发票的对比，即在途存货与暂估应付账款的记账。 请按变式操作，不要随便动变式的任何配置。一般为暂估应付账款，即已经收货但没有收到发票的状态。这时的负债的是一个临时的，暂估的金额，因为最终是以发票金额确认负债的。</p>
-<p>16，FAGLF101 应收应付科目余额的重分类。请按变式操作，不要随便动变式的任何配置。应收科目的余额正常应该在借方，但如果出现在贷方呢？就应该重分类为负债。相反，应付科目的余额正常应该在贷方，但如果出现在借方呢？就应该重分类为资产。</p>
-<p>以上完成之后，SAP的系统月结就完成了。</p>
-<p>此时还可以做一些非生产制造成本费用的，非外币业务的，非应收应付的总账分录。如果没有，请及时关闭已经结账月份的期间。</p>
-<p>最终关闭旧期间： OB52  </p>
-<p>只有关闭了旧期间，这个期间的会计报表才是固定不变的。</p>
-<p>数据已经定型，接下来，各位分析师们，就开始各种数据分析了。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2515,6 +2469,52 @@
       </tags>
   </entry>
   <entry>
+    <title>SAP月结步骤</title>
+    <url>/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
+<p>​      这样可保证当月收入与成本匹配。</p>
+<p>2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者TECO技术完成处理。这个要求，对保证生产成本的正确至关重要（为保险起见，请全部用DLV，如果生产订单中有联产品，则联产品也应打上交货已经完成的勾）。</p>
+<p>3，S_ALR_87013611  查看成本中心报表,在后续成本要素分配分摊过程中,做完每一步都要在这里刷新报表查看结果是不是正确。注意成本中心（组）及费用要素（组）的选择，生产成本中心不应该出现非制造费用科目有金额。管理费用要素组也不应该出现生产成本中心，一定要先做这个检查。发现不匹配，应做纠错分录处理。</p>
+<p>在进行下面的步骤之前，最好是先发出系统通知，请所有用户登出系统，以避免与结账操作互相冲突，对结账过程产生不利影响。</p>
+<p>4, KSV5&#x2F;KSU5  分配与分摊.   KSV5分配在初级成本要素之间,KSU5分摊则是在初级与次级之间进行费用的重分配,最终目标是把生产费用合理地分摊到生产成本中心去.如果是各车间共同费用分摊到各生产车间，最好是采用KSV5，这样可以费用的原始科目分摊转移（注：这个对后面的差异计算及作业价格重估有影响）。如果是采用KSU5，则要用到次级（43类型）成本要素进行结转，这样查看报表时看不清楚费用科目的来龙去脉。KSU5如果不用次级成本要素，则必须用到成本结构（TC：KSES维护）。还要注意循环的属性：重复和累计的选择，以及接受方以什么为基数分配接收。KSU5应该也可以实现KSV5的功能。如果要在生产成本中心之间再进行分摊转移，则应该采用KSU5。</p>
+<p>   我们选择使用KSV5。并且在ksv5之前，先用ksvb进行计划分配。</p>
+<p>5，KSS1  差异计算 （如果KSV5&#x2F;KSU5错误应用，差异计算也会错）</p>
+<p>6，KSS2  作业成本分割（固定与变动）（注意同上）</p>
+<p>7，KSII   作业价格重算 （得到实际作业价格）(结果受到上面三步的直接影响)。注意这里可以选择期间，意味着可以得到几个月的累计实际作业价格。这是进行成本计划时重要的参考数据。如果某个生产成本中心有作业发生，但是确没有成本金额产生，或者有金额产生但是没有作业发生，两种情况都会带来问题。没有作业发生等于是一个分式的分母为0，会发生无法相除的致命错误！如果没有金额，则分子为0，虽然现在不致命，但是到后面，会告诉你某个作业类型的实际价格无法确定，仍是致命错误！</p>
+<p>8，CO8A  联产品成本预结算（预分配），当存在联产品时必做。保险起见，一般都做一下这一步。</p>
+<p>9，KKAO  在产品成本计算  （在产品成本从生产成本状态转入在产品科目，形成存货，当使用物料分类账时，在产品并不分摊差异，这一点要特别注意，也是因为这一点，请避免产生在产品，这是神人SAP屠夫最有用的建议之一）。</p>
+<p>10，KKS1  生产订单成本差异计算，比较耗时，请耐心等待。结果出来后，会发现很多条错误类型的消息。这里需要经验判断，哪一些错误是不需要理睬的：例如某个订单没有dlv或者teco的状态，某个订单是clsd状态，或者别的已经知道原因并且处理过的错误信息。这一步要慎重对待。如果发现新的错误信息，则一定要先处理完错误才能继续。这时候请尊重顾问，向顾问虚心求教！切记。</p>
+<p>11，CO88  生产订单结算（这里，如果在结算版本中配置的在产品转出的会计科目同时生成了初级成本要素就会出错, 必须删除这个科目的成本要素）。如果前面都顺利，则生产订单的结算一般不会出现问题。这一步完成之后，生产订单就都处理完毕了。但是差异并没有实际结转，要继续以下重头戏：物料分类账的结账</p>
+<p>12，CKLMCP 以下物料分类账的结账内容较多，并且交错影响：</p>
+<p>物料账月末处理： a.选择        CKMLCP    物料账月末处理：b.确定顺序    CKMLCP 物料账月末处理：c.单级处理确定   CKMLCP  检查单级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作） 物料账月末处理：d.多级处理确定   CKMLCP  检查多级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作）</p>
+<p>物料账月末处理： e.消耗的重新评估  CKMLCP</p>
+<p>上面这几步完成后，要先打开新的期间才能继续： 打开新的物料期间   MMPV（打开期间前，必须已处理完所有的单级及多级的错误） </p>
+<p>打开新的会计期间 OB52  （打开这两个期间后，新的物料标准价格才能下达）</p>
+<p>然后继续：</p>
+<p>物料账月末处理： f.记账清算      CKMLCP （测试运行） （此步骤必须先测试运行）  检查物料账月末处理是否正确，OK后才能       物料账月末处理：f.记账清算     CKMLCP  （正式运行）   查询物料账相关报表，检查数据是否正确。其实只要查看F.01报表中的存货与生产成本，所有差异都结转为0，生产成本也结转为0，就表示正确无误了。但一般会存在几分钱的零头差异，这是正常的结果。生产成本的零头差异，一般在成本中心报表中可以看到。而存货差异的零头差异，则一般可用ckmvfm查看明细(未分摊的差异)。因均为零头，而且在系统运算过程中无法避免，所以一般都是用总账调整分录直接在FI中调整即可。 13，月末成本处理及物料账结算完成。打开锁定用户。通知大家可以继续正常使用系统了。</p>
+<p>最后在CKMLCP中的标志价格那一步，作用是在物料主档的会计1视图中以移动平均价更新未来价格。这一步没有必要做。</p>
+<p>至此，成本结算就差不多了。 再返回去看成本中心报表，所有生产成本中心应该结平（转走了），但一般情况下会出现几分钱的余额，这属正常现象。如果余额较大，应分析原因，以避免下一期再出现较大余额。但本期可以直接在FI中用调整分录调整一下就可以了。</p>
+<p>另外要看F.01 报表中在产品与生产成本科目的余额.   生产成本科目的余额按道理应为0才对,因为在产品结算后,生产成本的余额就全部转到在产品科目了. </p>
+<p> 此时所有物料，在系统中的成本已经转换成了实际成本。月末库存成本也为实际成本。实际成本：移动加权平均成本。系统中是使用周期成本来表述。</p>
+<p>以上为最重要的月末结账操作。从上面的描述可知，月末结账的内容很多，而且因为在结账过程中要冻结系统，一般人员不能使用，所以要求在半天，最多一天的时间内完成。过程中每一步都很重要，不允许出现错误，否则遗害整个系统。如果过程中出现错误，必须要有经验的人员进行处理，必须是处理完错误之后才能继续。因此需要资深的，对系统有全局把握的人员负责。当公司人员无法解决问题时，还必须得到外部顾问的帮助。（让人尴尬的是，SAP公司的技术支持人员，不会帮用户解决使用上碰到的非系统错误性质的问题）</p>
+<p>以下还有三个重要的结账操作：</p>
+<p>14，FAGL_FC_VAL  外币评估。  这一步要在所有外币业务处理完，特别是外销的收入。做完收入还要核对，例如跟报税的资料核对。一般配置两个变式，一个是要在下月初冲回，如果应收应付科目，一个则是不冲回，如货币资金科目。请按变式操作，不要随便动变式的任何配置。</p>
+<p>15，F.19  GI&#x2F;IR收货与收发票的对比，即在途存货与暂估应付账款的记账。 请按变式操作，不要随便动变式的任何配置。一般为暂估应付账款，即已经收货但没有收到发票的状态。这时的负债的是一个临时的，暂估的金额，因为最终是以发票金额确认负债的。</p>
+<p>16，FAGLF101 应收应付科目余额的重分类。请按变式操作，不要随便动变式的任何配置。应收科目的余额正常应该在借方，但如果出现在贷方呢？就应该重分类为负债。相反，应付科目的余额正常应该在贷方，但如果出现在借方呢？就应该重分类为资产。</p>
+<p>以上完成之后，SAP的系统月结就完成了。</p>
+<p>此时还可以做一些非生产制造成本费用的，非外币业务的，非应收应付的总账分录。如果没有，请及时关闭已经结账月份的期间。</p>
+<p>最终关闭旧期间： OB52  </p>
+<p>只有关闭了旧期间，这个期间的会计报表才是固定不变的。</p>
+<p>数据已经定型，接下来，各位分析师们，就开始各种数据分析了。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP统驭科目理解</title>
     <url>/2022/06/08/SAP%E7%BB%9F%E9%A9%AD%E7%A7%91%E7%9B%AE%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<h3 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h3><p>首先统驭科目就是特别总账科目，只是用在SAP应收、应付业务中，起了个名称为特别总账，主要用于解决与一个客户、供应商发生不同业务，需要记账再不同的会计科目上。</p>
@@ -2534,183 +2534,6 @@
       </categories>
       <tags>
         <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>简介</title>
-    <url>/2022/05/19/hello-world/</url>
-    <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
-<p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>SAP脚本录制与回放功能</title>
-    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
-    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
-<p>​    一、开启SAP脚本录制功能</p>
-<p>​    事务代码：RZ11</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
-<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
-<p> 进入“参数详细信息”界面后，点击“更改值”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
-<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
-<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
-<p>​    二、SAP脚本录制功能测试</p>
-<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
-<p>​    1.打开录制，点下图红色按钮</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
-<p> 2.输入事务代码“&#x2F;nMM02”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
-<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
-<p>​    3.录制结束，停止录制</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
-<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
-<p>​    5.使用记事本格式或装vb打开录制脚本</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
-<p>​    获取脚本引擎的方法，如下：</p>
-<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
-<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
-<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
-<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
-<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
-<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
-
-<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
-<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
-<ol start="9">
-<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SE21创建_复制包均报错</title>
-    <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
-    <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
-<p>创建 ZGST_CO_PCA</p>
-<p>继续</p>
-<p>Software component HOME is not modifiable</p>
-<p>&amp;软件组件HOME不可修改</p>
-<p>&amp;复制Z001，也会出现同样的报错。</p>
-<h3 id="1-1-2-I-incident"><a href="#1-1-2-I-incident" class="headerlink" title="1.1.2 *I**incident*"></a><strong>1.1.2</strong> <em><strong>*I*</strong></em><em><strong>*incident*</strong></em></h3><h4 id="1-1-2-1-Error-when-creating-development-package"><a href="#1-1-2-1-Error-when-creating-development-package" class="headerlink" title="1.1.2.1 *Error when creating development package*"></a><strong>1.1.2.1</strong> <em><strong>*Error when creating development package*</strong></em></h4><p>When I tried to create a new development package with transaction code ‘SE21’, the following error occured: Software component HOME is not modifiable (Message no. TR463). The parameters were the same as those I set on another server last year. (And I tried it again on that sever, it still works now). Then I tried to copy a development package that existed in the sever, the same error occured. The following is the parameters:</p>
-<p>Application Component: Empty</p>
-<p>Software Component: HOME</p>
-<p>Transport Layer: ZDS4</p>
-<p>Superpackage: Empty</p>
-<p>Package Type: Development Package</p>
-<p>Package encapsulated: Not checked</p>
-<h4 id="1-1-2-2-Note"><a href="#1-1-2-2-Note" class="headerlink" title="1.1.2.2 *Note*"></a><strong>1.1.2.2</strong> <em><strong>*Note*</strong></em></h4><p><em><strong>*2404403 - You get an error “System setting does not allow you to change &amp; &amp; &amp;.” when you try to edit an object*</strong></em></p>
-<p><em><strong>*Symptom*</strong></em></p>
-<p>When you try to edit some object in your system or you do some other actions which are to change some objects, you get the following error:</p>
-<p>System setting does not allow you to change &amp; &amp; &amp;.(<Program ID> <Object Type>  <Object Name>).</p>
-<p>Message no. TR006</p>
-<p><em><strong>*Diagnosis*</strong></em></p>
-<p>The object <Program ID> <Object Type>  <Object Name> is assigned to the software component <Component Name> through its package.</p>
-<p>This software component is not modifiable in this SAP System.</p>
-<p><em><strong>*System Response*</strong></em></p>
-<p>The function terminates.</p>
-<p>Procedure for System Administration</p>
-<p>Check whether you can modify software component <Component Name></p>
-<p>You can set the modifiability of software components in the Transport Organizer Tools under Administration -&gt;Set System Change Option. </p>
-<p><em><strong>*Environment*</strong></em></p>
-<p>ABAP System, Release independent</p>
-<p><em><strong>*Resolution*</strong></em></p>
-<p>Firstly, please specify the package name of the object through the object attributes or table TADIR.</p>
-<p>Then you can go to SE80 to get the the software component of the assigned package.</p>
-<p>Now you must make the following settings to be able to do the needful change in the system.</p>
-<p>SE06-&gt;System change options </p>
-<p>The following settings must be made.</p>
-<p>Global settings: “modifiable”</p>
-<p>You must also set the software component of the assigned package to “modifiable” or “Restrict Modifiable” , for example:</p>
-<p>Ü The software component LOCAL (“Local Developments (No Automatic Transport)”) must be “Modifiable” for the package $TMP.</p>
-<p>Ü The software component HOME (“Developments Without Delivery to Customers”) must be “Modifiable” for a package with the software component HOME.</p>
-<p>Ü All other software components must be set to “Modifiable” or “Restrict Modifibility” correspondingly.</p>
-<p><em><strong>*Namespace&#x2F;name range*</strong></em></p>
-<p>Ü The namespace “General SAP Name range” and “Customer name range” must be set to “modifiable”.</p>
-<p>Ü All other namespaces&#x2F;name ranges can be set to “Not Modifiable”.</p>
-<p>For example, when you edit the object “ZLOGON_SCREEN_INFO” in SE61, you may got error TR006 or TR045.To resolve the error, you need to change the settings below:</p>
-<p>Ü SE06-&gt;System Change Options-&gt;Global Settings:Modifiable</p>
-<p>Ü Software Component-&gt;Local or Home-&gt;Modifiable</p>
-<p>Ü Namespace&#x2F;Name Range-&gt;Customer Name Range: Modifiable </p>
-<p>Keywords</p>
-<p>TR045, TR 045, TR 006, system settings</p>
-<h3 id="1-1-3-解决过程"><a href="#1-1-3-解决过程" class="headerlink" title="1.1.3 *解决过程*"></a><strong>1.1.3</strong> <em><strong>*解决过程*</strong></em></h3><p>SE06</p>
-<p>系统更改选项</p>
-<p>点击</p>
-<p>客户开发-&gt;HOME-&gt;修改为可修改</p>
-<p>这里的状态不对，如下修改：</p>
-<p>保存</p>
-<p>SE21创建包即可</p>
-<h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>会计凭证理解</title>
-    <url>/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="1、会计凭证分类"><a href="#1、会计凭证分类" class="headerlink" title="1、会计凭证分类"></a>1、会计凭证分类</h2><p>会计凭证主要按照其用途和填制程序分类，可以分为原始凭证和记账凭证两类。</p>
-<p>区别：</p>
-<p>（一）原始凭证：俗称单据，实在静静业务发生或完成时取得或填制的，用以记录、证明经济业务已经发生或完成的书面证据，时进行会计核算的原始依据。</p>
-<p>原始凭证一般实在经济业务发生时直接取得或填制的，记载着大量的经济信息，又是证明经济业务发生的初始文件，具有较强的法律效力，所以它时一种很重要的凭证。</p>
-<p>原始凭证按照其来源不同，可分为外来原始凭证和自制原始凭证。</p>
-<p>（二）记账凭证：俗称传票，时会计人员根据审核后的原始凭证的经济内容确定会计分录而编制的一种凭证，时直接登账的依据。原始凭证来自各个不同的方面，表明经济业务的具体内容，因而其种类繁多，格式不易，不能清楚地表明其归类的会计科目和记账方向，不经过必要的归纳和整理，难以达到记账的要求。</p>
-<p>记账凭证按照其反应的经济业务的内容不同，可以分为<strong>收款凭证、付款凭证和转账凭证</strong>。</p>
-<ol>
-<li>收款凭证</li>
-</ol>
-<p>收款凭证时用以记录现金、银行存款收入业务的记账凭证。</p>
-<p>具体可以分为<strong>现金收款凭证</strong>、银行存款收款凭证。实际工作中，一般时由出纳人员根据有关人员审批批准后的收款收据编制而成的。</p>
-<ol start="2">
-<li>付款凭证</li>
-</ol>
-<p>付款凭证时用以记录现金、银行存款支付业务的记账凭证，具体可以分为<strong>现金付款凭证、银行存款付款凭证</strong>，实际工作中，它是由出纳人员根据有关人员审核批准的付款单据编制而成。</p>
-<ol start="3">
-<li>转账凭证</li>
-</ol>
-<p>转账凭证时用以记录不涉及现金、银行存在首付的其他经济业务，即转账业务，它是根据有关转账业务的原始凭证编制而成的。</p>
-<h2 id="2、会计记账凭证对应科目"><a href="#2、会计记账凭证对应科目" class="headerlink" title="2、会计记账凭证对应科目"></a>2、会计记账凭证对应科目</h2><p>会计科目时按照经济业务的内容和经济管理的要求，对会计要素的具体内容进行分类核算的科目，称为会计科目。</p>
-<h4 id="会计记账凭证对应科目"><a href="#会计记账凭证对应科目" class="headerlink" title="会计记账凭证对应科目"></a>会计记账凭证对应科目</h4><p>记账凭证的基本功时根据借贷记账法的记账规则，编制会计分录。</p>
-<p>编制会计分录时，必须填写会计科目，要符合如下要求：</p>
-<p>1、字迹必须清晰、工整。</p>
-<p>2、一级科目、二级科目或明细科目填写齐全，对应关系清楚，金额正确无误</p>
-<p>3、书写时，文字不要占满格，一般占格高度1&#x2F;2，上面留空格，便于更正差错。</p>
-<p>4、必须使用统一会计制度规定的会计科目，不得自创，以保证核算口径一致。</p>
-<h4 id="会计记账凭证科目的详细"><a href="#会计记账凭证科目的详细" class="headerlink" title="会计记账凭证科目的详细"></a>会计记账凭证科目的详细</h4><p>会计科目只不过时一个企业经营资料的统计分类而已，所以如果懂得会计科目的性质及结构系统，每一个管理员不但能看懂财务报表，还能设计会计科目，使会计资料成为很好的管理信息。</p>
-<p>会计科目时会计人员做记录的基础，在结构上共分五大类：即（1）资产（2）负债（3）资本（4）收益（5）费用（成本）</p>
-<p>一、资产：指企业所拥有的一切有价资源，其中又可分为流动资产、固定资产、其它资产等三小类。流动资产指现金及企业希望变成现金的资产。例如银行存款、应收账款、存货等。固定资产是指企业不希望出售，而是长期使用的资产，如土地、房屋、机器等。其它资产指无形资产、未分摊费用、保证金等。</p>
-<p>二、负债：指企业的债务，其中又可分为流动负债、长期负债和其他负债。流动负债是指一年以下负债，长期负债是指一年以上的负债，而其他负债是指斐财务行目标的所发生的负债，如存入保证金、代收款及各项损失准备等。</p>
-<p>三、资本：又名股东权益，是企业中属于股东的部分，所以等于资产与负债之差。资本可分股本及盈余两类，股本是股东所投资的部分，盈余是企业所赚的部分。</p>
-<p>四、收益：是指企业的出售产品或提供服务所发生的收入，可分营业收入及营业外收入两小类，营业收入是企业预定营业范围内的收入，而营业外收入是指预定营业范围外的收入，如非金融业的利息收入等。</p>
-<p>五、费用：是指因收益而发生的支出，其中又分四小类：直接成本、销售费用、管理费用、营业外费用。</p>
-<p>直接成本：是该项支出可直接归属于某项营业收入者，如销货成本、材料成本等。</p>
-<p>销售费用：是指为达成营业的目的而发生的支出，但无法直接归属于某项营业收入者。</p>
-<p>管理费用：是指维持企业运作所必须支付的费用，如管理人员薪酬、租金支出等。</p>
-<p>营业外费用：是指财务费用及投资损失等非属达成营业收入而必要的支出。</p>
-]]></content>
-      <categories>
-        <category>财务</category>
-      </categories>
-      <tags>
-        <tag>财务</tag>
       </tags>
   </entry>
   <entry>
@@ -2821,6 +2644,218 @@
       </tags>
   </entry>
   <entry>
+    <title>会计凭证理解</title>
+    <url>/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="1、会计凭证分类"><a href="#1、会计凭证分类" class="headerlink" title="1、会计凭证分类"></a>1、会计凭证分类</h2><p>会计凭证主要按照其用途和填制程序分类，可以分为原始凭证和记账凭证两类。</p>
+<p>区别：</p>
+<p>（一）原始凭证：俗称单据，实在静静业务发生或完成时取得或填制的，用以记录、证明经济业务已经发生或完成的书面证据，时进行会计核算的原始依据。</p>
+<p>原始凭证一般实在经济业务发生时直接取得或填制的，记载着大量的经济信息，又是证明经济业务发生的初始文件，具有较强的法律效力，所以它时一种很重要的凭证。</p>
+<p>原始凭证按照其来源不同，可分为外来原始凭证和自制原始凭证。</p>
+<p>（二）记账凭证：俗称传票，时会计人员根据审核后的原始凭证的经济内容确定会计分录而编制的一种凭证，时直接登账的依据。原始凭证来自各个不同的方面，表明经济业务的具体内容，因而其种类繁多，格式不易，不能清楚地表明其归类的会计科目和记账方向，不经过必要的归纳和整理，难以达到记账的要求。</p>
+<p>记账凭证按照其反应的经济业务的内容不同，可以分为<strong>收款凭证、付款凭证和转账凭证</strong>。</p>
+<ol>
+<li>收款凭证</li>
+</ol>
+<p>收款凭证时用以记录现金、银行存款收入业务的记账凭证。</p>
+<p>具体可以分为<strong>现金收款凭证</strong>、银行存款收款凭证。实际工作中，一般时由出纳人员根据有关人员审批批准后的收款收据编制而成的。</p>
+<ol start="2">
+<li>付款凭证</li>
+</ol>
+<p>付款凭证时用以记录现金、银行存款支付业务的记账凭证，具体可以分为<strong>现金付款凭证、银行存款付款凭证</strong>，实际工作中，它是由出纳人员根据有关人员审核批准的付款单据编制而成。</p>
+<ol start="3">
+<li>转账凭证</li>
+</ol>
+<p>转账凭证时用以记录不涉及现金、银行存在首付的其他经济业务，即转账业务，它是根据有关转账业务的原始凭证编制而成的。</p>
+<h2 id="2、会计记账凭证对应科目"><a href="#2、会计记账凭证对应科目" class="headerlink" title="2、会计记账凭证对应科目"></a>2、会计记账凭证对应科目</h2><p>会计科目时按照经济业务的内容和经济管理的要求，对会计要素的具体内容进行分类核算的科目，称为会计科目。</p>
+<h4 id="会计记账凭证对应科目"><a href="#会计记账凭证对应科目" class="headerlink" title="会计记账凭证对应科目"></a>会计记账凭证对应科目</h4><p>记账凭证的基本功时根据借贷记账法的记账规则，编制会计分录。</p>
+<p>编制会计分录时，必须填写会计科目，要符合如下要求：</p>
+<p>1、字迹必须清晰、工整。</p>
+<p>2、一级科目、二级科目或明细科目填写齐全，对应关系清楚，金额正确无误</p>
+<p>3、书写时，文字不要占满格，一般占格高度1&#x2F;2，上面留空格，便于更正差错。</p>
+<p>4、必须使用统一会计制度规定的会计科目，不得自创，以保证核算口径一致。</p>
+<h4 id="会计记账凭证科目的详细"><a href="#会计记账凭证科目的详细" class="headerlink" title="会计记账凭证科目的详细"></a>会计记账凭证科目的详细</h4><p>会计科目只不过时一个企业经营资料的统计分类而已，所以如果懂得会计科目的性质及结构系统，每一个管理员不但能看懂财务报表，还能设计会计科目，使会计资料成为很好的管理信息。</p>
+<p>会计科目时会计人员做记录的基础，在结构上共分五大类：即（1）资产（2）负债（3）资本（4）收益（5）费用（成本）</p>
+<p>一、资产：指企业所拥有的一切有价资源，其中又可分为流动资产、固定资产、其它资产等三小类。流动资产指现金及企业希望变成现金的资产。例如银行存款、应收账款、存货等。固定资产是指企业不希望出售，而是长期使用的资产，如土地、房屋、机器等。其它资产指无形资产、未分摊费用、保证金等。</p>
+<p>二、负债：指企业的债务，其中又可分为流动负债、长期负债和其他负债。流动负债是指一年以下负债，长期负债是指一年以上的负债，而其他负债是指斐财务行目标的所发生的负债，如存入保证金、代收款及各项损失准备等。</p>
+<p>三、资本：又名股东权益，是企业中属于股东的部分，所以等于资产与负债之差。资本可分股本及盈余两类，股本是股东所投资的部分，盈余是企业所赚的部分。</p>
+<p>四、收益：是指企业的出售产品或提供服务所发生的收入，可分营业收入及营业外收入两小类，营业收入是企业预定营业范围内的收入，而营业外收入是指预定营业范围外的收入，如非金融业的利息收入等。</p>
+<p>五、费用：是指因收益而发生的支出，其中又分四小类：直接成本、销售费用、管理费用、营业外费用。</p>
+<p>直接成本：是该项支出可直接归属于某项营业收入者，如销货成本、材料成本等。</p>
+<p>销售费用：是指为达成营业的目的而发生的支出，但无法直接归属于某项营业收入者。</p>
+<p>管理费用：是指维持企业运作所必须支付的费用，如管理人员薪酬、租金支出等。</p>
+<p>营业外费用：是指财务费用及投资损失等非属达成营业收入而必要的支出。</p>
+]]></content>
+      <categories>
+        <category>财务</category>
+      </categories>
+      <tags>
+        <tag>财务</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP脚本录制与回放功能</title>
+    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
+    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
+<p>​    一、开启SAP脚本录制功能</p>
+<p>​    事务代码：RZ11</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
+<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
+<p> 进入“参数详细信息”界面后，点击“更改值”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
+<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
+<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
+<p>​    二、SAP脚本录制功能测试</p>
+<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
+<p>​    1.打开录制，点下图红色按钮</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
+<p> 2.输入事务代码“&#x2F;nMM02”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
+<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
+<p>​    3.录制结束，停止录制</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
+<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
+<p>​    5.使用记事本格式或装vb打开录制脚本</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
+<p>​    获取脚本引擎的方法，如下：</p>
+<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
+<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
+<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
+<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
+<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
+<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
+
+<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
+<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
+<ol start="9">
+<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>简介</title>
+    <url>/2022/05/19/hello-world/</url>
+    <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
+<p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>SE21创建_复制包均报错</title>
+    <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
+<p>创建 ZGST_CO_PCA</p>
+<p>继续</p>
+<p>Software component HOME is not modifiable</p>
+<p>&amp;软件组件HOME不可修改</p>
+<p>&amp;复制Z001，也会出现同样的报错。</p>
+<h3 id="1-1-2-I-incident"><a href="#1-1-2-I-incident" class="headerlink" title="1.1.2 *I**incident*"></a><strong>1.1.2</strong> <em><strong>*I*</strong></em><em><strong>*incident*</strong></em></h3><h4 id="1-1-2-1-Error-when-creating-development-package"><a href="#1-1-2-1-Error-when-creating-development-package" class="headerlink" title="1.1.2.1 *Error when creating development package*"></a><strong>1.1.2.1</strong> <em><strong>*Error when creating development package*</strong></em></h4><p>When I tried to create a new development package with transaction code ‘SE21’, the following error occured: Software component HOME is not modifiable (Message no. TR463). The parameters were the same as those I set on another server last year. (And I tried it again on that sever, it still works now). Then I tried to copy a development package that existed in the sever, the same error occured. The following is the parameters:</p>
+<p>Application Component: Empty</p>
+<p>Software Component: HOME</p>
+<p>Transport Layer: ZDS4</p>
+<p>Superpackage: Empty</p>
+<p>Package Type: Development Package</p>
+<p>Package encapsulated: Not checked</p>
+<h4 id="1-1-2-2-Note"><a href="#1-1-2-2-Note" class="headerlink" title="1.1.2.2 *Note*"></a><strong>1.1.2.2</strong> <em><strong>*Note*</strong></em></h4><p><em><strong>*2404403 - You get an error “System setting does not allow you to change &amp; &amp; &amp;.” when you try to edit an object*</strong></em></p>
+<p><em><strong>*Symptom*</strong></em></p>
+<p>When you try to edit some object in your system or you do some other actions which are to change some objects, you get the following error:</p>
+<p>System setting does not allow you to change &amp; &amp; &amp;.(<Program ID> <Object Type>  <Object Name>).</p>
+<p>Message no. TR006</p>
+<p><em><strong>*Diagnosis*</strong></em></p>
+<p>The object <Program ID> <Object Type>  <Object Name> is assigned to the software component <Component Name> through its package.</p>
+<p>This software component is not modifiable in this SAP System.</p>
+<p><em><strong>*System Response*</strong></em></p>
+<p>The function terminates.</p>
+<p>Procedure for System Administration</p>
+<p>Check whether you can modify software component <Component Name></p>
+<p>You can set the modifiability of software components in the Transport Organizer Tools under Administration -&gt;Set System Change Option. </p>
+<p><em><strong>*Environment*</strong></em></p>
+<p>ABAP System, Release independent</p>
+<p><em><strong>*Resolution*</strong></em></p>
+<p>Firstly, please specify the package name of the object through the object attributes or table TADIR.</p>
+<p>Then you can go to SE80 to get the the software component of the assigned package.</p>
+<p>Now you must make the following settings to be able to do the needful change in the system.</p>
+<p>SE06-&gt;System change options </p>
+<p>The following settings must be made.</p>
+<p>Global settings: “modifiable”</p>
+<p>You must also set the software component of the assigned package to “modifiable” or “Restrict Modifiable” , for example:</p>
+<p>Ü The software component LOCAL (“Local Developments (No Automatic Transport)”) must be “Modifiable” for the package $TMP.</p>
+<p>Ü The software component HOME (“Developments Without Delivery to Customers”) must be “Modifiable” for a package with the software component HOME.</p>
+<p>Ü All other software components must be set to “Modifiable” or “Restrict Modifibility” correspondingly.</p>
+<p><em><strong>*Namespace&#x2F;name range*</strong></em></p>
+<p>Ü The namespace “General SAP Name range” and “Customer name range” must be set to “modifiable”.</p>
+<p>Ü All other namespaces&#x2F;name ranges can be set to “Not Modifiable”.</p>
+<p>For example, when you edit the object “ZLOGON_SCREEN_INFO” in SE61, you may got error TR006 or TR045.To resolve the error, you need to change the settings below:</p>
+<p>Ü SE06-&gt;System Change Options-&gt;Global Settings:Modifiable</p>
+<p>Ü Software Component-&gt;Local or Home-&gt;Modifiable</p>
+<p>Ü Namespace&#x2F;Name Range-&gt;Customer Name Range: Modifiable </p>
+<p>Keywords</p>
+<p>TR045, TR 045, TR 006, system settings</p>
+<h3 id="1-1-3-解决过程"><a href="#1-1-3-解决过程" class="headerlink" title="1.1.3 *解决过程*"></a><strong>1.1.3</strong> <em><strong>*解决过程*</strong></em></h3><p>SE06</p>
+<p>系统更改选项</p>
+<p>点击</p>
+<p>客户开发-&gt;HOME-&gt;修改为可修改</p>
+<p>这里的状态不对，如下修改：</p>
+<p>保存</p>
+<p>SE21创建包即可</p>
+<h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>你真的了解ELT和ETL吗</title>
+    <url>/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/</url>
+    <content><![CDATA[<p>ETL 和 ELT 有很多共同点，从本质上讲，每种集成方法都可以将数据从源端抽取到数据仓库中，<strong>两者的区别在于数据在哪里进行转换</strong>。 接下来，我们一起详细地分析一下 ETL 和 ELT各自的优缺点，看看在你们现在的业务中用哪种方式处理数据比较合适。</p>
+<h2 id="01-ETL"><a href="#01-ETL" class="headerlink" title="01 ETL"></a><strong>01 ETL</strong></h2><p><strong><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0ff508bcb0fc59847ca432a23449311a.jpg" alt="img"></strong></p>
+<p><strong>ETL - 抽取、转换、加载</strong></p>
+<p>从不同的数据源抽取信息，将其转换为根据业务定义的格式，然后将其加载到其他数据库或数据仓库中。另一种 ETL 集成方法是反向 ETL，它将结构化数据从数据仓库中加载到业务数据库中，如我们常用数据仓库加工好的报表，推送到报表系统的数据库中。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4b2ad6e50c2b1f00b89011ce3b773ec3.jpg" alt="img"></p>
+<p><strong>ELT - 抽取、加载、转换</strong></p>
+<p>同样的从一个或多个数据源中抽取数据，然后将其加载到目标数据仓库中，此时不需要进行数据格式的转换。在 ELT 过程中，数据的转换发生在目标数据仓库中。ELT 对远程资源的要求较少，只需要它们的原始数据即可。</p>
+<h2 id="03-ELT的演变"><a href="#03-ELT的演变" class="headerlink" title="03 ELT的演变"></a><strong>03 ELT的演变</strong></h2><p>ELT 已经存在了一段时间，但 Hadoop 等大数据技术出现后，更加活跃了。像以前转换 PB 级原始数据这样的大型任务无法处理，现在可以被分成小作业，进行处理，然后再加载到目标数据库中。同时，处理能力也提高了，尤其是以私有云集群的方式，把处理、加工数据可以在一个数据仓库中完成了。</p>
+<h2 id="04-ELT的工作原理"><a href="#04-ELT的工作原理" class="headerlink" title="04 ELT的工作原理"></a><strong>04 ELT的工作原理</strong></h2><p>与 ETL 不同，ELT是从多个数据源收集信息，将其加载到数据仓库（或者数据湖）中，然后将其转换为可操作的商业智能的过程。</p>
+<p><strong>抽取</strong>——在ELT和ETL两种数据管理方法中的原理相似。一般我们会采用增量抽取，对于一些维表数据量比较小的也会采用全量抽取。</p>
+<p><strong>加载</strong>——这是 ELT 和 ETL 开始不同的地方了。ELT 不是在抽取大量原始数据的过程中将其转换，而是将所有数据都加在到湖仓中，然后统一进行转换，这样做加快了抽取的效率，但也意味着数据变得有用之前还有很多工作要做。</p>
+<p><strong>转换</strong>——数据湖或数据仓库对数据进行规范化，将部分或全部数据保留在湖仓中，并可用于定制报告。存储海量数据的开销更高，但也是为了后续能够更加快速的进行数据挖掘和报表展现，也就是我们常说的用空间换时间。</p>
+<h2 id="05-什么时候我们选择ELT"><a href="#05-什么时候我们选择ELT" class="headerlink" title="05 什么时候我们选择ELT"></a><strong>05 什么时候我们选择ELT</strong></h2><p>这取决于公司现有的网络和技术架构、预算以及它已经利用云和大数据技术的程度。如果是有下面三个需求场景时，那么ELT就是正确的选择~</p>
+<p><strong>1. 当抽取速度是第一选择时</strong></p>
+<p>因为 ELT 不必等待数据在抽取过程中进行转换后再加载，那么抽取过程要快得多。</p>
+<p><strong>2. 当需要随时访问原始数据时</strong></p>
+<p>有很多场景，我们需要保留所有历史数据，分析师可以根据时间、销售模式、季节性趋势或任何对业务变得重要的新兴指标进行挖掘。由于数据在加载之前未进行转换，因此您可以访问所有原始数据。比如，数据仓库一般都有一个原始数据层，很多数据科学家更喜欢访问原始数据，而业务用户更喜欢使用分析后的应用层或者模型层数据。</p>
+<p><strong>3. 当需要随时可扩展数据湖仓时</strong></p>
+<p>当您使用 Hadoop 或云数据仓库等数据处理引擎时，ELT 可以利用本机处理能力实现更高的可扩展性。</p>
+<h2 id="06-数据湖是不是很好的ELT落脚点"><a href="#06-数据湖是不是很好的ELT落脚点" class="headerlink" title="06 数据湖是不是很好的ELT落脚点"></a><strong>06 数据湖是不是很好的ELT落脚点</strong></h2><p>首先，<strong>我们思考一下数仓为什么会出现？</strong>其实是数据量的飞速增长，以至于当时的数据存储计算引擎，不能很好的满足分析需求；于是数仓概念和经典的理论出现了，很好的解决了当时的问题，用“规范+存储”来解决了当时的问题。</p>
+<p>那么现在大数据时代，随着技术的不断发展，很多新技术出现了，大批量的存储和计算不再是那么难了，那么我们放弃数仓那一套是否可行呢？从一哥现在处理的业务看，如果你的业务系统相对较单一，没有几十个业务系统每天往数仓里灌数据，那么数据湖可以满足你的需求，并且对于“数据驱动”更“敏捷”。如果一线的业务系统较复杂，那么现在使用数据湖也会一不小心会变成“<strong>数据沼泽</strong>”。</p>
+<p>数据湖治理策略没有明确前，还不要急着就上数据湖，并不是适用于每个公司的业务场景的！</p>
+<h2 id="07-结语"><a href="#07-结语" class="headerlink" title="07 结语"></a><strong>07 结语</strong></h2><p>ELT和ETL都有各自的应用场景，可以说现在大数据环境下，很多已经是ELT架构了，<strong>所以这也是我近几年一直不看好很多厂商在推“拖拉拽”的ETL工具或者平台，未来肯定是需要一种通用语言来实现所有的ELT过程</strong>。</p>
+<p>同样，<strong>数据湖是趋势，但现在依然不成熟</strong>，不要看网上很多一线大厂的技术文章中提到了很多数据湖的概念和技术应用，但是请结合自己公司的业务场景，暂时先谨慎选择！</p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>怎么才有数据分析思路</title>
     <url>/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/</url>
     <content><![CDATA[<p>直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：<br>1）使用大众点评优惠吸引用户结账<br>2）直接使用微信或支付宝结账</p>
@@ -2859,6 +2894,78 @@
       </categories>
       <tags>
         <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>物料价格分析CKM3</title>
+    <url>/2022/07/01/%E7%89%A9%E6%96%99%E4%BB%B7%E6%A0%BC%E5%88%86%E6%9E%90CKM3/</url>
+    <content><![CDATA[<p>许多刚接触SAP的财务人员，对成本这一块可能比较困惑，产品的单台成本是多少？其中直接材料是多少，人工是多少？ 物料差异该如何分析？差异是怎么形成的？SAP中该如何查看这些信息呢？</p>
+<p>今天给大家介绍SAP成本控制模块中非常重要的报表CKM3N（CKM3 物料价格分析），成本会计必须读懂的一个报表！通过CKM3N可以分析物料的价格变化，以及成本构成（自制件）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-f775359dde0313c9240cfb826fc4f293_720w.jpg" alt="img"></p>
+<p>按照如上路径，进入CKM3的主界面如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-80c0040d021bbe1a88a08d13c8530f12_720w.jpg" alt="img"></p>
+<p>CKM3显示的内容为“工厂&#x2F;物料”的明细账，记录了“工厂&#x2F;物料”的数量及价值变化情况。这个账本可以细化到“评估类型”以及“销售订单”或“项目”（即对项目库存单独评估）。</p>
+<p>其中，期间状态为绿色，表示已经在当前期间运行完ML（CKMLCP）的相关步骤，全部为绿色代表已经执行ML过账。点击“价格和存货值”，可以看到物料当前的库存量、单价，以及库存总金额（下图）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9d4a6ec128233203242b2634dbae27af_720w.jpg" alt="img"></p>
+<p>在“查看”中选择“价格确定结构”显示内容如下，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2ae448122b8059fef1418de844b459b9_720w.jpg" alt="img"></p>
+<p><strong>初始库存</strong>： 本期的初始值，等于上期期末数。</p>
+<p><strong>收 据</strong>： 本期增加部分，如采购入库、发票校验、生产入库、订单结算等。</p>
+<p><strong>库存累计</strong>： 初始库存 + 收据。</p>
+<p><strong>消 耗</strong>： 本期减少部分，如生产领用、成本中心消耗、销售出库、差异重估等。</p>
+<p><strong>期末库存</strong>： 库存累计 – 消耗。</p>
+<p><strong>初级评估</strong>： 数量 × 标准价得到的金额</p>
+<p><strong>价格差异</strong>： 实际价格与标准价之间的成本差异，例如标准价是100.00，入库价格为105.00，数量100，此时计入初级评估的成本为10000.00，计入差异的金额为500.00。</p>
+<p><strong>汇率差异</strong>： 汇率原因引起的差异，例如标准价65.00CNY，采购价格为10.00USD，订单数量为1；入库时汇率为6.80000，计入初级评估的金额为65.00，计入价格差异的金额为3.00；收到发票时汇率为6.90000，此时1.00的差异计入汇率差异。</p>
+<p><strong>价 格</strong>： 物料的实际价格。</p>
+<p>点击A列左边的小三角，可以展开查看每一项的明细数据，如下图。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b3e2510de4aa24aff37da04330f910a9_720w.jpg" alt="img"></p>
+<p>以收据中的生产为例，可以看到差异5825.00由两部分构成，订单的结算和底层物料差异的上卷。</p>
+<p>在“查看”中选择“成本组件”可以分析物料的成本构成</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-00210a50bd7720f5173efcce4cae37ae_720w.jpg" alt="img"></p>
+<p>从B行可以看到物料3010000001的成本构成中，直接材料、直接人工、燃料动力、折旧费用、制造费用的金额分别是多少。其中，直接人工、燃料动力、折旧费用、制造费用与作业类型相对应，SAP中最多可以定义6个作业。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d47d25b1fe8381070bec73c2f08d4cac_720w.jpg" alt="img"></p>
+<p>分析物料的成本组件时，可以分别查看实际值、标准值、价格差异、汇率差异等，并且可以分别查看本层、底层的成本（上图）。在CKM3N的界面上，点击如下按钮还可以查询价格的成本构成，以及ML结账的会计凭证。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a3dbc3773856dd64328bd8f44d2f4782_720w.jpg" alt="img"></p>
+<p>点击图标1，查看物料价格的成本构成，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b21a6040d91ecb5bf03b5b72307b6add_720w.jpg" alt="img"></p>
+<p>点击图标2，查看ML（物料账）结账对应的会计凭证，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-67ca7d38edffdfc2715c3ed4ac80718e_720w.jpg" alt="img"></p>
+<p><strong>说明</strong>： CKM3N为“工厂&#x2F;物料”的明细账，SAP针对工厂下的每一个物料都有这样的明细账（启用ML后），详细记录了“工厂&#x2F;物料”的数量及价值变化。经常有朋友询问SAP是否有可以批量输出CKM3N的信息呢？事实上，CKM3N本身是物料的明细账本，包含的信息非常丰富，SAP无法按照CKM3N的内容进行批量输出。大家想要的可能是同时输出多个物料的成本构成，或者是输出多个物料的期初、增加、减少、期末汇总数（数量和金额），类似于下图的报表。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d6de81c423200865e24a2885b7a52c92_720w.jpg" alt="img"></p>
+<p>或</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-11e8ae2ebccb5c3cbbc7a107de1d084d_720w.jpg" alt="img"></p>
+<p>SAP的标准功能中没有类似于上图的报表，以上报表都是自定义开发的。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>致远Dee接口堵塞弹窗记录</title>
+    <url>/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>在致远OA传输到SAP接口时，需要校验下接口能否调用成功，比如OA询比价写入SAP的时候没有维护供应商，如果不加校验这一步的话会导致SAP返回错误，OA流程结束，这样只能去SAP调整问题，然后手工调用接口，很麻烦。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>利用Dee的高级功能，堵塞即可解决以上的需求，当传输接口有问题的时候，直接弹出报错弹窗，待处理人解决问题后提交SAP，也就是说只要是能提交到SAP的数据都是正确的。</p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>SAP接口要求：要求SAP的接口返回值包含TYPE&#x2F;FLAG的标识和MESSAGE的返回错误消息，不要在外面包一层，不然解析很麻烦。</li>
+<li>SAP接口配置完成以后，再写一个转换元数据的脚本，这个的意思就是把返回的数据解析为Dee能够解析的元数据，这个元数据就是来拼接XML，具体代码如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String MESSAGE=getParaByName(document,&quot;MESSAGE&quot;);  &quot;解析SAP返回的错误消息</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);  &quot;解析SAP返回标识</span><br><span class="line"></span><br><span class="line">String xml=&quot;&lt;root&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;area count=\&quot;1\&quot; totalCount=\&quot;1\&quot;&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;MESSAGE&gt;&quot;+MESSAGE+&quot;&lt;/MESSAGE&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;FLAG&gt;&quot;+FLAG+&quot;&lt;/FLAG&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/area&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/root&gt;&quot;;</span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>根据解析的元数据进行堵塞处理，具体代码如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sta = &quot;&quot;;</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);</span><br><span class="line">String MSG = getParaByName(document,&quot;MESSAGE&quot;);</span><br><span class="line">if(FLAG.equals(&quot;Y&quot;))&#123;</span><br><span class="line">  sta = &quot;T&quot;;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">  sta = &quot;F&quot;;</span><br><span class="line">&#125;;</span><br><span class="line">setHighSetStr(document,sta,&quot;Y&quot;,MSG,&quot;&quot;);</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
       </tags>
   </entry>
   <entry>
@@ -2974,78 +3081,6 @@
       </tags>
   </entry>
   <entry>
-    <title>致远Dee接口堵塞弹窗记录</title>
-    <url>/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>在致远OA传输到SAP接口时，需要校验下接口能否调用成功，比如OA询比价写入SAP的时候没有维护供应商，如果不加校验这一步的话会导致SAP返回错误，OA流程结束，这样只能去SAP调整问题，然后手工调用接口，很麻烦。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>利用Dee的高级功能，堵塞即可解决以上的需求，当传输接口有问题的时候，直接弹出报错弹窗，待处理人解决问题后提交SAP，也就是说只要是能提交到SAP的数据都是正确的。</p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>SAP接口要求：要求SAP的接口返回值包含TYPE&#x2F;FLAG的标识和MESSAGE的返回错误消息，不要在外面包一层，不然解析很麻烦。</li>
-<li>SAP接口配置完成以后，再写一个转换元数据的脚本，这个的意思就是把返回的数据解析为Dee能够解析的元数据，这个元数据就是来拼接XML，具体代码如下：</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String MESSAGE=getParaByName(document,&quot;MESSAGE&quot;);  &quot;解析SAP返回的错误消息</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);  &quot;解析SAP返回标识</span><br><span class="line"></span><br><span class="line">String xml=&quot;&lt;root&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;area count=\&quot;1\&quot; totalCount=\&quot;1\&quot;&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;MESSAGE&gt;&quot;+MESSAGE+&quot;&lt;/MESSAGE&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;FLAG&gt;&quot;+FLAG+&quot;&lt;/FLAG&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/area&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/root&gt;&quot;;</span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>根据解析的元数据进行堵塞处理，具体代码如下：</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sta = &quot;&quot;;</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);</span><br><span class="line">String MSG = getParaByName(document,&quot;MESSAGE&quot;);</span><br><span class="line">if(FLAG.equals(&quot;Y&quot;))&#123;</span><br><span class="line">  sta = &quot;T&quot;;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">  sta = &quot;F&quot;;</span><br><span class="line">&#125;;</span><br><span class="line">setHighSetStr(document,sta,&quot;Y&quot;,MSG,&quot;&quot;);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>物料价格分析CKM3</title>
-    <url>/2022/07/01/%E7%89%A9%E6%96%99%E4%BB%B7%E6%A0%BC%E5%88%86%E6%9E%90CKM3/</url>
-    <content><![CDATA[<p>许多刚接触SAP的财务人员，对成本这一块可能比较困惑，产品的单台成本是多少？其中直接材料是多少，人工是多少？ 物料差异该如何分析？差异是怎么形成的？SAP中该如何查看这些信息呢？</p>
-<p>今天给大家介绍SAP成本控制模块中非常重要的报表CKM3N（CKM3 物料价格分析），成本会计必须读懂的一个报表！通过CKM3N可以分析物料的价格变化，以及成本构成（自制件）。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-f775359dde0313c9240cfb826fc4f293_720w.jpg" alt="img"></p>
-<p>按照如上路径，进入CKM3的主界面如下</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-80c0040d021bbe1a88a08d13c8530f12_720w.jpg" alt="img"></p>
-<p>CKM3显示的内容为“工厂&#x2F;物料”的明细账，记录了“工厂&#x2F;物料”的数量及价值变化情况。这个账本可以细化到“评估类型”以及“销售订单”或“项目”（即对项目库存单独评估）。</p>
-<p>其中，期间状态为绿色，表示已经在当前期间运行完ML（CKMLCP）的相关步骤，全部为绿色代表已经执行ML过账。点击“价格和存货值”，可以看到物料当前的库存量、单价，以及库存总金额（下图）。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9d4a6ec128233203242b2634dbae27af_720w.jpg" alt="img"></p>
-<p>在“查看”中选择“价格确定结构”显示内容如下，</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2ae448122b8059fef1418de844b459b9_720w.jpg" alt="img"></p>
-<p><strong>初始库存</strong>： 本期的初始值，等于上期期末数。</p>
-<p><strong>收 据</strong>： 本期增加部分，如采购入库、发票校验、生产入库、订单结算等。</p>
-<p><strong>库存累计</strong>： 初始库存 + 收据。</p>
-<p><strong>消 耗</strong>： 本期减少部分，如生产领用、成本中心消耗、销售出库、差异重估等。</p>
-<p><strong>期末库存</strong>： 库存累计 – 消耗。</p>
-<p><strong>初级评估</strong>： 数量 × 标准价得到的金额</p>
-<p><strong>价格差异</strong>： 实际价格与标准价之间的成本差异，例如标准价是100.00，入库价格为105.00，数量100，此时计入初级评估的成本为10000.00，计入差异的金额为500.00。</p>
-<p><strong>汇率差异</strong>： 汇率原因引起的差异，例如标准价65.00CNY，采购价格为10.00USD，订单数量为1；入库时汇率为6.80000，计入初级评估的金额为65.00，计入价格差异的金额为3.00；收到发票时汇率为6.90000，此时1.00的差异计入汇率差异。</p>
-<p><strong>价 格</strong>： 物料的实际价格。</p>
-<p>点击A列左边的小三角，可以展开查看每一项的明细数据，如下图。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b3e2510de4aa24aff37da04330f910a9_720w.jpg" alt="img"></p>
-<p>以收据中的生产为例，可以看到差异5825.00由两部分构成，订单的结算和底层物料差异的上卷。</p>
-<p>在“查看”中选择“成本组件”可以分析物料的成本构成</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-00210a50bd7720f5173efcce4cae37ae_720w.jpg" alt="img"></p>
-<p>从B行可以看到物料3010000001的成本构成中，直接材料、直接人工、燃料动力、折旧费用、制造费用的金额分别是多少。其中，直接人工、燃料动力、折旧费用、制造费用与作业类型相对应，SAP中最多可以定义6个作业。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d47d25b1fe8381070bec73c2f08d4cac_720w.jpg" alt="img"></p>
-<p>分析物料的成本组件时，可以分别查看实际值、标准值、价格差异、汇率差异等，并且可以分别查看本层、底层的成本（上图）。在CKM3N的界面上，点击如下按钮还可以查询价格的成本构成，以及ML结账的会计凭证。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a3dbc3773856dd64328bd8f44d2f4782_720w.jpg" alt="img"></p>
-<p>点击图标1，查看物料价格的成本构成，</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b21a6040d91ecb5bf03b5b72307b6add_720w.jpg" alt="img"></p>
-<p>点击图标2，查看ML（物料账）结账对应的会计凭证，</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-67ca7d38edffdfc2715c3ed4ac80718e_720w.jpg" alt="img"></p>
-<p><strong>说明</strong>： CKM3N为“工厂&#x2F;物料”的明细账，SAP针对工厂下的每一个物料都有这样的明细账（启用ML后），详细记录了“工厂&#x2F;物料”的数量及价值变化。经常有朋友询问SAP是否有可以批量输出CKM3N的信息呢？事实上，CKM3N本身是物料的明细账本，包含的信息非常丰富，SAP无法按照CKM3N的内容进行批量输出。大家想要的可能是同时输出多个物料的成本构成，或者是输出多个物料的期初、增加、减少、期末汇总数（数量和金额），类似于下图的报表。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d6de81c423200865e24a2885b7a52c92_720w.jpg" alt="img"></p>
-<p>或</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-11e8ae2ebccb5c3cbbc7a107de1d084d_720w.jpg" alt="img"></p>
-<p>SAP的标准功能中没有类似于上图的报表，以上报表都是自定义开发的。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>致远OA遇坑记录</title>
     <url>/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
@@ -3147,6 +3182,55 @@
       </tags>
   </entry>
   <entry>
+    <title>评估类别、评估类和评估类型</title>
+    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
+<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
+<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
+<p>  1）个别计价法一般用X按批次进行评估；</p>
+<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
+<ul>
+<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
+<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
+<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
+</ul>
+<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
+<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
+<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
+<p>  The valuation category defines the valuation types allowed for a material.</p>
+<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
+<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
+<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
+<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
+<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
+<hr>
+<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
+<p><strong>评估类的进一步解释：</strong></p>
+<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
+<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
+<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git的博客配置图床</title>
     <url>/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/</url>
     <content><![CDATA[<h2 id="1、配置git上传仓库"><a href="#1、配置git上传仓库" class="headerlink" title="1、配置git上传仓库"></a>1、配置git上传仓库</h2><p>省略</p>
@@ -3208,55 +3292,6 @@
       </categories>
       <tags>
         <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>评估类别、评估类和评估类型</title>
-    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
-<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
-<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
-<p>  1）个别计价法一般用X按批次进行评估；</p>
-<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
-<ul>
-<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
-<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
-<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
-</ul>
-<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
-<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
-<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
-<p>  The valuation category defines the valuation types allowed for a material.</p>
-<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
-<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
-<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
-<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
-<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
-<hr>
-<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
-<p><strong>评估类的进一步解释：</strong></p>
-<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
-<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
-<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
       </tags>
   </entry>
 </search>
