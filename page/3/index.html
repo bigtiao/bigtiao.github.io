@@ -1241,7 +1241,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-01 10:15:20" itemprop="dateModified" datetime="2022-07-01T10:15:20+08:00">2022-07-01</time>
+                <time title="修改时间：2022-07-16 08:40:11" itemprop="dateModified" datetime="2022-07-16T08:40:11+08:00">2022-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1272,10 +1272,8 @@
 <p>PicGo 是一个用于快速上传图片并获取图片 URL 链接的工具，支持多个图床进行使用，其中当然包括我们现在使用的 GitHub 图床了，它同时支持 Windows、macOS、Linux平台，详情可见：Molunerfinn&#x2F;PicGo: A simple &amp; beautiful tool for pictures uploading built by vue-cli-electron-builder (github.com)</p>
 <p>这里以 Windows 为例，说明 PicGo 的使用方法。</p>
 <ul>
-<li><p>下载并安装 PicGo，<a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe">https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe</a></p>
-</li>
-<li><p>打开 PicGo 软件，找到<code>图床设置</code>中的<code>GitHub图床</code>，填写相关信息。</p>
-</li>
+<li>下载并安装 PicGo，<a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe">https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe</a></li>
+<li>打开 PicGo 软件，找到<code>图床设置</code>中的<code>GitHub图床</code>，填写相关信息。</li>
 <li><ul>
 <li><strong>设定仓库名【必填】</strong>：填写<code>你的用户名/你的仓库名</code>，比如我的 yifeng-talking&#x2F;pictures</li>
 <li><strong>设定分支名【必填】</strong>：填写<code>main</code></li>
@@ -1284,12 +1282,9 @@
 <li><strong>设定自定义域名【选填】</strong>：图片上传后，PicGo 会按照【自定义域名+上传的图片名】的方式生成访问链接，放到剪贴板上，因为我们要使用 jsDeliver 进行加速，因而这里设置为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名</code>，比如我设置为<strong><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures</a></strong></li>
 </ul>
 </li>
-<li><p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png" alt="img"></p>
-</li>
-<li><p>接着就可以在<code>上传区</code>，将自己的图片上传，甚至可以直接将剪切板的截图上传，上传成功后会直接将相应链接复制到剪切板中，我们就可以直接复制到博客（MarkDown 编辑器）中。</p>
-</li>
-<li><p>在<code>PicGo设置中</code>，可以自定义一些设置，比如上传前重命名、时间戳重命名等，自行设置。</p>
-</li>
+<li><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png" alt="img"></li>
+<li>接着就可以在<code>上传区</code>，将自己的图片上传，甚至可以直接将剪切板的截图上传，上传成功后会直接将相应链接复制到剪切板中，我们就可以直接复制到博客（MarkDown 编辑器）中。</li>
+<li>在<code>PicGo设置中</code>，可以自定义一些设置，比如上传前重命名、时间戳重命名等，自行设置。</li>
 </ul>
 <h2 id="4、typora配置PicGo上传"><a href="#4、typora配置PicGo上传" class="headerlink" title="4、typora配置PicGo上传"></a>4、typora配置PicGo上传</h2><p>前面使用了 PicGo 工具快速上传图片并获取图片 URL 链接，方便了很多，但是每次都要先在 PicGo 中进行上传，然后将剪切板中链接复制到 MarkDown 编辑器中，有没有更优雅简便的方式，可以将两步合二为一呢？答案是<strong>Typera+PicGo</strong>。</p>
 <p>Typera 是一款轻便简洁的 Markdown 编辑器，可以即时渲染，并且完全免费，推荐大家用此软件进行写作，其官网为：Typora — a markdown editor, markdown reader.</p>
@@ -1317,6 +1312,10 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Local search</span><br><span class="line">local_search:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
 
 <p>成功</p>
+<hr>
+<p>如果用vscode来编辑md的话，使用markdown editor插件，图片上传使用picgo插件，但是需要重新配置图床。</p>
+<p>测试插入图片</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716083954.png" alt="20220716083954"></p>
 
       
     </div>
