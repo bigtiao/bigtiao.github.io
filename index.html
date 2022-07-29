@@ -178,6 +178,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/29/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/07/29/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/" class="post-title-link" itemprop="url">数据仓库命名规范</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-29 17:16:00 / 修改时间：17:12:56" itemprop="dateCreated datePublished" datetime="2022-07-29T17:16:00+08:00">2022-07-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">数据</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="一、数仓分层规范"><a href="#一、数仓分层规范" class="headerlink" title="一、数仓分层规范"></a>一、数仓分层规范</h3><p>数据仓库整体公分三层，分别为ODS、DWD、DWS。</p>
+<p>另外增加 维度层DIM，填报层 IN。</p>
+<h3 id="二、表命名规范"><a href="#二、表命名规范" class="headerlink" title="二、表命名规范"></a>二、表命名规范</h3><p>按照数据分层进行表命名规则制定。创建表时，需要给表增加中文注释。各层表名定义规则如下：</p>
+<p>1、ODS层：ods_公司系统_模块_业务含义，</p>
+<p>例：ods_xxxsap_sd_saleorder；</p>
+<p>2、DWD层：dwd_业务域_业务含义，</p>
+<p>例：dwd_wms_outboundstatistics；</p>
+<p>3、DWS层：dws_业务域_汇总维度_业务含义，</p>
+<p>例：dws_sale_cust_ordersum；</p>
+<p>4、DIM层：dim_公司系统_业务含义，</p>
+<p>例：dim_xxxsap_customer；</p>
+<p>5、IN层：in_公司_业务含义，</p>
+<p>例：in_xxx_futures 。</p>
+<h3 id="三、字段命名规范"><a href="#三、字段命名规范" class="headerlink" title="三、字段命名规范"></a>三、字段命名规范</h3><p>根据收集到的业务部门词根说明、NC命名规则（顾问提供），进行表字段的命名，在建表时，需要给字段增加中文注释。为方便后期维护，在开发过程中，逐渐完善 英文和中文的对应关系、简写和全拼的对应关系。</p>
+<h3 id="四、调度规则"><a href="#四、调度规则" class="headerlink" title="四、调度规则"></a>四、调度规则</h3><p>1、调度周期：任务调度根据具体业务需求确定，分为按天调度，分钟级调度；</p>
+<p>2、调度顺序：调度顺序在kettle的作业中进行配置。</p>
+<h3 id="五、ETL目录分层规则"><a href="#五、ETL目录分层规则" class="headerlink" title="五、ETL目录分层规则"></a>五、ETL目录分层规则</h3><p>ETL转换文件存储分4层放置，具体为：数仓层、公司系统层、模块、转换文件（文件名同表名）。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220729171252.png" alt="20220729171252"></p>
+<h3 id="六、数据抽取规则"><a href="#六、数据抽取规则" class="headerlink" title="六、数据抽取规则"></a>六、数据抽取规则</h3><p>根据实际业务需求，确定每个业务的抽取规则，包括全量抽取、增量抽取等，并根据实际开发配置形成ETL说明书文档。</p>
+<h3 id="七、共有字段说明"><a href="#七、共有字段说明" class="headerlink" title="七、共有字段说明"></a>七、共有字段说明</h3><p>数据表在创建时默认带入相关基础字段，保证数据唯一性、可追溯性，例如：</p>
+<p>1、唯一标识ID：默认使用UUID （填报表必带）；</p>
+<p>2、公司代码：使用SAP中公司代码；</p>
+<p>3、删除标识：标识逻辑删除 （填报表必带）；</p>
+<p>4、更新人；</p>
+<p>5、更新日期：yyyy-mm-dd；</p>
+<p>6、更新时间：hh-mm-ss。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/27/SAP%E5%B8%B8%E7%94%A8%E8%A1%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1340,169 +1432,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/05/%E4%BC%9A%E8%AE%A1%E7%A7%91%E7%9B%AE%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/07/05/%E4%BC%9A%E8%AE%A1%E7%A7%91%E7%9B%AE%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">会计科目知识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-07-05 18:10:00 / 修改时间：18:30:23" itemprop="dateCreated datePublished" datetime="2022-07-05T18:10:00+08:00">2022-07-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%B4%A2%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">财务</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>会计科目是记账的根本，主要分为一级、二级、三级或者更明细的层级，大家会发现SAP中会计科目都是末级科目，没法像国产软件那样分别查看一级、二级科目的余额，事实上，不管是一级、二级、还是三级科目，在财务记账时，都是对明细科目记账的，这和SAP是一致的。</p>
-<p>科目余额表，亦称”总账余额汇总表“，它是按照总账科目余额编制的。</p>
-<p><strong>1，科目余额表的标准格式如下：</strong></p>
-<p>表格格式</p>
-<table>
-<thead>
-<tr>
-<th>科目名称</th>
-<th>期初余额</th>
-<th>本期发生</th>
-<th>期末余额</th>
-<th></th>
-<th></th>
-<th align="right"></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>借方</td>
-<td>贷方</td>
-<td>借方</td>
-<td>贷方</td>
-<td>借方</td>
-<td>贷方</td>
-<td align="right"></td>
-</tr>
-<tr>
-<td>现金</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td align="right"></td>
-</tr>
-<tr>
-<td>银行存款</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td align="right"></td>
-</tr>
-<tr>
-<td>应收帐款</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td align="right"></td>
-</tr>
-<tr>
-<td>…</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td align="right"></td>
-</tr>
-<tr>
-<td>合计</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td align="right"></td>
-</tr>
-</tbody></table>
-<p><strong>2，科目余额表的具体编制方法：</strong></p>
-<p>1、所有已制单的单据（凭证）的余额，原理为期初余额+（或-）本期发生额（包括借方发生额和贷方发生额）&#x3D;期末余额；</p>
-<p>2、只是在选项时有无包括已记帐凭证，就是范围，一般应选择包括未记帐的凭证。</p>
-<p>3，做科目余额表的目的主要是为了方便做<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%B4%A2%E5%8A%A1%E6%8A%A5%E8%A1%A8">财务报表</a>。</p>
-<p>科目余额表就是各个科目的余额，一般包括上期余额,<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%9C%AC%E6%9C%9F%E5%8F%91%E7%94%9F%E9%A2%9D/2118923">本期发生额</a>,期末余额.0。</p>
-<p>通俗点说就是根据汇总的凭证而形成的每个科目的余额，而这些科目分属于资产、负债和<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%89%80%E6%9C%89%E8%80%85%E6%9D%83%E7%9B%8A">所有者权益</a>，所形成的等式就是资产&#x3D;负债+所有者权益。</p>
-<p>作用就是用于查询公司的会计科目的发生额、余额等会计信息。</p>
-<p>你按上面所示列表即可编制科目余额表，期初余额直接在总账上抄，本期发生额是根据凭证进行汇总得出，资产类期末余额&#x3D;期初余额借方余额+本期借方发生额-本期贷方发生额&#x3D;正数，余额在借方，负数则余额在贷方。负债类期末余额&#x3D;期初余额贷方余额+本期贷方发生额-本期借方发生额&#x3D;正数，余额在贷方，负数则余额在借方。</p>
-<p>科目余额表是为了做报表用的，所有凭证全部结转处理结束后才可以编制。</p>
-<hr>
-<p><strong>六个会计科目那个是借减贷增？那个是借增贷减?</strong></p>
-<ol>
-<li><p>首先6个会计科目：资产类科目、负债类科目、共同类科目、所有者权益类科目、成本类科目、损益类科目。</p>
-</li>
-<li><p>具体会计科目按其归属的会计要素分类：</p>
-</li>
-</ol>
-<p><strong>资产类科目：</strong>按资产的流动性分为反映<a target="_blank" rel="noopener" href="https://www.dongao.com/wdzt/zjzcgl_liudongzichan/">流动资产</a>的科目和反映非流动资产的科目。比如银行存款、库存现金</p>
-<p><strong>负债类科目：</strong>按负债的偿还期限分为反映流动负债的科目和反映长期负债的科目。比如短期借款、应付票据、应付账款、预收账款、应缴税费等。</p>
-<p><strong>共同类科目：</strong>共同类科目的特点是需要从其期末余额所在方向界定其性质。</p>
-<p><strong>所有者权益类科目：</strong>按权益的形成和性质可分为反映资本的科目和反映留存收益的科目。比如：实收资本、资本公积、本年利润、利润分配等。</p>
-<p><strong>成本类科目：</strong>包括“生产成本”，“劳务成本”，“制造费用”等科目。比如：生产成本、制造费用、劳务成本、研发支出等。</p>
-<p><strong>损益类科目：</strong>分为收入性科目和费用支出性科目。收入性科目包括“主营业务收入”，“其他业务收入”，“投资收益”，“营业外收入”等科目。费用支出性科目包括“主营业务成本”，“其他业务成本”，“税金及附加”，“其他业务支出”，“销售费用”，“管理费用”，“财务费用”，“<a target="_blank" rel="noopener" href="https://www.dongao.com/wdzt/zjzcgl_suodeshui/">所得税</a>费用”等科目。</p>
-<p>那么回答最初提出的问题：</p>
-<p><strong>资产类科目、成本类科目、损益类费用支出性科目是借增贷减。负债类科目、所有者权益类科目、损益类收入性科目是借减贷增。</strong></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1572,7 +1501,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
