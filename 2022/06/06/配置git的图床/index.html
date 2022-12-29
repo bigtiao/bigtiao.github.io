@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1、配置git上传仓库省略 2、使用 jsDelivr 进行 CDN 加速前面已经利用 GitHub 仓库实现了图床功能，但是大家都知道，GitHub 在国内访问很慢，甚至经常打不开，那么我们的图片就存在加载速度慢的问题，怎么办呢？jsDelivr 可以解决此问题，显著提高图片访问的响应速度，并且开源免费！其官网为：jsDelivr - A free, fast, and reliable CDN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git的博客配置图床">
+<meta property="og:url" content="http://example.com/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="1、配置git上传仓库省略 2、使用 jsDelivr 进行 CDN 加速前面已经利用 GitHub 仓库实现了图床功能，但是大家都知道，GitHub 在国内访问很慢，甚至经常打不开，那么我们的图片就存在加载速度慢的问题，怎么办呢？jsDelivr 可以解决此问题，显著提高图片访问的响应速度，并且开源免费！其官网为：jsDelivr - A free, fast, and reliable CDN">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4034970a304e251fdd70f5ea9ebedb1e7e3e53d9.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/11018813-eb5a93591305d185.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716084457.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716083954.png">
+<meta property="article:published_time" content="2022-06-06T06:12:00.000Z">
+<meta property="article:modified_time" content="2022-07-16T00:45:03.029Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png">
+
+<link rel="canonical" href="http://example.com/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>git的博客配置图床 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git的博客配置图床
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-06 14:12:00" itemprop="dateCreated datePublished" datetime="2022-06-06T14:12:00+08:00">2022-06-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-16 08:45:03" itemprop="dateModified" datetime="2022-07-16T08:45:03+08:00">2022-07-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/git/" itemprop="url" rel="index"><span itemprop="name">git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1、配置git上传仓库"><a href="#1、配置git上传仓库" class="headerlink" title="1、配置git上传仓库"></a>1、配置git上传仓库</h2><p>省略</p>
+<h2 id="2、使用-jsDelivr-进行-CDN-加速"><a href="#2、使用-jsDelivr-进行-CDN-加速" class="headerlink" title="2、使用 jsDelivr 进行 CDN 加速"></a>2、使用 jsDelivr 进行 CDN 加速</h2><p>前面已经利用 GitHub 仓库实现了图床功能，但是大家都知道，GitHub 在国内访问很慢，甚至经常打不开，那么我们的图片就存在加载速度慢的问题，怎么办呢？<strong>jsDelivr</strong> 可以解决此问题，显著提高图片访问的响应速度，并且开源免费！其官网为：jsDelivr - A free, fast, and reliable CDN for open source。</p>
+<p>使用方法也非常的简单，直接在浏览器通过地址<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名@发布的版本号/文件路径</code>就可以访问 GitHub 上的图片，并且响应速度非常快！其中@发布的版本号可以直接省略，默认加载最新版本，即直接可以简写为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名/文件路径</code></p>
+<p>比如：<a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures/avatar.jpg">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures/avatar.jpg</a></p>
+<h2 id="3、使用PicGo上传图片"><a href="#3、使用PicGo上传图片" class="headerlink" title="3、使用PicGo上传图片"></a>3、使用PicGo上传图片</h2><p>前面实现了 GitHub 仓库作为图床，jsDelivr 对图片进行加速。但是每次我们都需要使用 Git 工具或者在 GitHub 仓库中进行上传图片，并且要自己拼接图片地址，非常麻烦，有没有更快速更简洁的方式呢？此时神器 <strong>PicGo</strong> 就派上了用场，同样开源免费！</p>
+<p>PicGo 是一个用于快速上传图片并获取图片 URL 链接的工具，支持多个图床进行使用，其中当然包括我们现在使用的 GitHub 图床了，它同时支持 Windows、macOS、Linux平台，详情可见：Molunerfinn&#x2F;PicGo: A simple &amp; beautiful tool for pictures uploading built by vue-cli-electron-builder (github.com)</p>
+<p>这里以 Windows 为例，说明 PicGo 的使用方法。</p>
+<ul>
+<li>下载并安装 PicGo，<a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe">https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe</a></li>
+<li>打开 PicGo 软件，找到<code>图床设置</code>中的<code>GitHub图床</code>，填写相关信息。</li>
+<li><ul>
+<li><strong>设定仓库名【必填】</strong>：填写<code>你的用户名/你的仓库名</code>，比如我的 yifeng-talking&#x2F;pictures</li>
+<li><strong>设定分支名【必填】</strong>：填写<code>main</code></li>
+<li><strong>设定Token【必填】</strong>：在Github主页点击自己头像后，依次选择【Settings】-&gt;【Developer settings】-&gt;【Personal access tokens】-&gt;【Generate new token】，填写Note描述（随便），设置过期时间Expiration为永不过期No expiration，设定勾选【repo】，然后点击下方的【Generate token】生成一个Token，这个Token只会显示一次，自行保存，然后复制到 PicGo 中。</li>
+<li>指定存储路径【选填】：填写图片要存储的路径，比如填【images&#x2F;】，这样就会在仓库下创建一个名为 images 的文件夹，图片将会储存在此文件夹中，这里不填。</li>
+<li><strong>设定自定义域名【选填】</strong>：图片上传后，PicGo 会按照【自定义域名+上传的图片名】的方式生成访问链接，放到剪贴板上，因为我们要使用 jsDeliver 进行加速，因而这里设置为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名</code>，比如我设置为<strong><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures</a></strong></li>
+</ul>
+</li>
+<li><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png" alt="img"></li>
+<li>接着就可以在<code>上传区</code>，将自己的图片上传，甚至可以直接将剪切板的截图上传，上传成功后会直接将相应链接复制到剪切板中，我们就可以直接复制到博客（MarkDown 编辑器）中。</li>
+<li>在<code>PicGo设置中</code>，可以自定义一些设置，比如上传前重命名、时间戳重命名等，自行设置。</li>
+</ul>
+<h2 id="4、typora配置PicGo上传"><a href="#4、typora配置PicGo上传" class="headerlink" title="4、typora配置PicGo上传"></a>4、typora配置PicGo上传</h2><p>前面使用了 PicGo 工具快速上传图片并获取图片 URL 链接，方便了很多，但是每次都要先在 PicGo 中进行上传，然后将剪切板中链接复制到 MarkDown 编辑器中，有没有更优雅简便的方式，可以将两步合二为一呢？答案是<strong>Typera+PicGo</strong>。</p>
+<p>Typera 是一款轻便简洁的 Markdown 编辑器，可以即时渲染，并且完全免费，推荐大家用此软件进行写作，其官网为：Typora — a markdown editor, markdown reader.</p>
+<p>下面介绍 Typora 结合 PicGo 实现上传功能。</p>
+<ul>
+<li>下载 Typora，网址Typora — a markdown editor, markdown reader.</li>
+<li>打开 PicGo，在<code>PicGo设置</code>中，点击【设置 Server 】，将监听端口修改为：36677</li>
+<li>打开 Typera，点击【文件】 -&gt; 【偏好设置】-&gt; 【图像】，然后进行如下配置，其中 PicGo 路径是你的 PicGo 的安装路径。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4034970a304e251fdd70f5ea9ebedb1e7e3e53d9.png" alt="img"></p>
+<ul>
+<li>在 Typera 中书写文章，插入图片（也可以直接将截图复制）时会自动将图片进行上传，并显示在文章中，非常的方便。当然插入图片时也可以不选择上传图片，也就是不自动上传图片，可以手动在图片上右击上传图片。</li>
+</ul>
+<hr>
+<p>新增next样式的搜索：</p>
+<p>已经集成在Next主题中，只需要简单的配置即可使用，而且体验非常好。<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=http://theme-next.iissnan.com/third-party-services.html%23local-search">官方文档中</a>也有详细的安装说明，如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/11018813-eb5a93591305d185.png" alt="img"></p>
+<p>第一步，安装 <code>hexo-generator-searchdb</code>，在站点的根目录下执行以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
+
+<p>第二步，编辑【站点配置文件】，新增以下内容到任意位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Local Search搜索功能</span><br><span class="line">search:</span><br><span class="line">  path: search.xml</span><br><span class="line">  field: post</span><br><span class="line">  format: html</span><br><span class="line">  limit: 10000</span><br></pre></td></tr></table></figure>
+
+<p>第三步，编辑【主题配置文件】，启用本地搜索功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Local search</span><br><span class="line">local_search:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
+
+<p>成功</p>
+<hr>
+<p>如果用vscode来编辑md的话，使用markdown editor插件，图片上传使用picgo插件，但是需要重新配置图床。</p>
+<p>配置图床<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716084457.png" alt="20220716084457"></p>
+<p>测试插入图片</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716083954.png" alt="20220716083954"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/" rel="prev" title="致远Dee接口堵塞弹窗记录">
+      <i class="fa fa-chevron-left"></i> 致远Dee接口堵塞弹窗记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" rel="next" title="SAP会计凭证类型总结">
+      SAP会计凭证类型总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E9%85%8D%E7%BD%AEgit%E4%B8%8A%E4%BC%A0%E4%BB%93%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">1、配置git上传仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E4%BD%BF%E7%94%A8-jsDelivr-%E8%BF%9B%E8%A1%8C-CDN-%E5%8A%A0%E9%80%9F"><span class="nav-number">2.</span> <span class="nav-text">2、使用 jsDelivr 进行 CDN 加速</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E4%BD%BF%E7%94%A8PicGo%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87"><span class="nav-number">3.</span> <span class="nav-text">3、使用PicGo上传图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81typora%E9%85%8D%E7%BD%AEPicGo%E4%B8%8A%E4%BC%A0"><span class="nav-number">4.</span> <span class="nav-text">4、typora配置PicGo上传</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

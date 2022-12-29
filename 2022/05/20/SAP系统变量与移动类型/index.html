@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="系统变量SY-SUBRC: 系统执行某指令后,表示执行成功与否的变量,0表示成功 SY-DBLNT: 被处理过的记录的笔数 SY-UNAME: 当前使用者登入SAP的USERNAME SY-DATUM: 当前系统日期 SY-UZEIT: 当前系统时间 SY-TCODE: 当前执行程序的Transaction code SY-REPID: 当前程序名称 SY-INDEX : 当前LOOP循环过的次数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SAP系统变量与移动类型">
+<meta property="og:url" content="http://example.com/2022/05/20/SAP%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="系统变量SY-SUBRC: 系统执行某指令后,表示执行成功与否的变量,0表示成功 SY-DBLNT: 被处理过的记录的笔数 SY-UNAME: 当前使用者登入SAP的USERNAME SY-DATUM: 当前系统日期 SY-UZEIT: 当前系统时间 SY-TCODE: 当前执行程序的Transaction code SY-REPID: 当前程序名称 SY-INDEX : 当前LOOP循环过的次数">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-20T06:12:00.000Z">
+<meta property="article:modified_time" content="2022-05-20T06:20:14.633Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="SAP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/05/20/SAP%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SAP系统变量与移动类型 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/20/SAP%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SAP系统变量与移动类型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-20 14:12:00 / 修改时间：14:20:14" itemprop="dateCreated datePublished" datetime="2022-05-20T14:12:00+08:00">2022-05-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="系统变量"><a href="#系统变量" class="headerlink" title="系统变量"></a>系统变量</h2><p>SY-SUBRC: 系统执行某指令后,表示执行成功与否的变量,0表示成功</p>
+<p>SY-DBLNT: 被处理过的记录的笔数</p>
+<p>SY-UNAME: 当前使用者登入SAP的USERNAME</p>
+<p>SY-DATUM: 当前系统日期</p>
+<p>SY-UZEIT: 当前系统时间</p>
+<p>SY-TCODE: 当前执行程序的Transaction code</p>
+<p>SY-REPID: 当前程序名称</p>
+<p>SY-INDEX : 当前LOOP循环过的次数</p>
+<p>SY-TABIX: 当前处理的是internal table 的第几笔</p>
+<p>SY-TMAXL: Internal table的总笔数</p>
+<p>SY-SROWS: 屏幕总行数</p>
+<p>SY-SCOLS: 屏幕总列数</p>
+<p>SY-MANDT: 當前系統編號(CLIENT NUMBER)</p>
+<p>SY-VLINE: 画竖线</p>
+<p>SY-ULINE: 画横线</p>
+<p>SY-PAGNO: 当前页号</p>
+<p>SY-LINSZ: 当前报表宽度</p>
+<p>SY-LINCT: 当前报表长度</p>
+<p>SPACE: 空字符串</p>
+<p>SY-LSIND: 列表索引页</p>
+<p>SY-LISTI: 上一个列表的索引</p>
+<p>SY-LILLI: 绝对列表中选定行的行号</p>
+<p>SY-CUROW: 屏幕上的行</p>
+<p>SY-CUCOL: 光标列</p>
+<p>SY-CPAGE: 列表的当前显示页</p>
+<p>SY-STARO:真实行号</p>
+<p>SY-LISEL: 选择行的内容，长度为255</p>
+<p>SY-LINNO: 当前行</p>
+<p>SY-SUBRC：语句执行后的返回值，0表示成功</p>
+<p>SY-DATUM：当前服务器日期</p>
+<p>SY-UZEIT：当前服务器时间</p>
+<p>SY-ULINE：255长度的水平线</p>
+<p>SY-VLINE：垂直线</p>
+<p>SY-INDEX：循环说执行的次数</p>
+<p>SY-TABIX：内表循环的次数</p>
+<p>SY-DYNNR：当前Screen号</p>
+<p>SY-MANDT：当前登录的Client号</p>
+<p>SY-STEPL：返回当前操作的屏幕行号（Table Control）</p>
+<p>SY-LOOPC：当前表格控件在屏幕中的总行数（Table Control）</p>
+<p>SY-UCOMM：PAI所出发的功能代码</p>
+<p>SY-DYNNR：当前屏幕号</p>
+<p>SY-MSGID：Message Class</p>
+<p>SY-MSGNR：Message Number</p>
+<p>SY-MSGTY：Message Type</p>
+<p>SY-MSGV1~4：Message Variant</p>
+<p>SY-LINCT：REPROT语句中设定的LINE-COUNT</p>
+<p>SY-LINSZ：REPROT语句中设定的LINE-SIZE</p>
+<p>SY-SROWS：当前窗口的列表行数</p>
+<p>SY-SCOLS：当前窗口的列表栏目数</p>
+<p>SY-PAGNO：当前页的页码</p>
+<p>SY-LINNO：当前选定行的行号</p>
+<p>SY-COLNO：当前选定列的列号</p>
+<p>SY-LSIND：当前列表索引，第一级列表为1</p>
+<p>SY-LILLI：选择某行时光标行位置</p>
+<p>SY-CUROW：选择某行时光标列位置 </p>
+<p>SY-ABCDE 常量，A-Z字母表</p>
+<p>SY-BATCH 后台的程序运行</p>
+<p>SY-COLNO：当前选定列的列号</p>
+<p>SY-CPAGE 列表的当前显示页</p>
+<p>SY-CUCOL 屏幕，PAI 的水平光标位置</p>
+<p>SY-CUROW：选择某行时光标列位置</p>
+<p>sy-datar:在PAI中，如果屏幕上至少有一个输入字段的值被用户或其他数据传输所更改，则为“X”，否则为初始值。</p>
+<p>sy-datlo:用户的当前日期</p>
+<p>SY-DATUM 服务器日期</p>
+<p>SY-DYNNR 当前屏幕的编号</p>
+<p>SY-INDEX 循环的次数(DO While)</p>
+<p>SY-LANGU 当前登录语言</p>
+<p>SY-LILLI：选择某行时光标行位置</p>
+<p>SY-LINCT 当前报表长度 (REPROT语句中设定的LINE-COUNT)</p>
+<p>SY-LINNO 当前选定行的行号</p>
+<p>SY-LINSZ 当前报表宽度(REPROT语句中设定的LINE-SIZE)</p>
+<p>SY-LISEL 选择行的内容,长度为255</p>
+<p>SY-LISTI 上一个列表的索引</p>
+<p>SY-LOOPC：当前表格控件在屏幕中的总行数（Table Control）</p>
+<p>SY-LSIND：当前列表索引，第一级列表为1</p>
+<p>SY-MSGID 消息, 消息类</p>
+<p>SY-MSGTY 消息，消息类型</p>
+<p>SY-MSGNO 消息, 消息编号</p>
+<p>SY-MSGV1 消息,消息变量1</p>
+<p>SY-MSGV2 消息,消息变量2</p>
+<p>SY-MSGV3 消息,消息变量3</p>
+<p>SY-MSGV4 消息,消息变量4</p>
+<p>SY-PAGNO 当前页号</p>
+<p>SY-SCOLS：当前窗口的列表栏目数</p>
+<p>SY-SLSET 选择屏幕的变式名称</p>
+<p>SY-SROWS：当前窗口的列表行数</p>
+<p>SY-STARO 真实行号</p>
+<p>SY-STEPL：返回当前操作的屏幕行号（Table Control）</p>
+<p>SY-SUBRC 执行状态</p>
+<p>SY-TABIX 当前处理的内表的Index</p>
+<p>SY-TCODE 当前的事务代码</p>
+<p>SY-UCOMM：PAI所出发的功能代码</p>
+<p>SY-ULINE 水平线</p>
+<p>SY-UNAME 用户名</p>
+<p>SY-UZEIT 服务器时间</p>
+<p>SY-VLINE 垂直线</p>
+<p>附加几个系统常用函数</p>
+<p>SHIFT STRING：左移字符串。长度减1。</p>
+<p>CONCATENATE：连接字符串。</p>
+<p> SPLIT：拆分字符串。</p>
+<p>SEARCH：查询字符串。</p>
+<p>REPLACE：替换字符串。</p>
+<p>CONDENSE：删除多余的空格。</p>
+<p>TRANSLATE：转换字符格式，如将’ABC’转换为’ABC’</p>
+<p>CONVERT TEXT：创建一个可排序的字符串。</p>
+<p>OVERLAY：用一个字符串覆盖另一个字符串。</p>
+<p>STRLEN：字符串长度。</p>
+<p>ABS：取绝对值。</p>
+<p>COS、SIN、TAN：取三角函数值。</p>
+<p>ACOS、ASIN、ATAN：反三角函数。</p>
+<p>COSH、SINH、TANH：双曲函数。</p>
+<p>EXP：E的幂函数。</p>
+<p>LOG：底数为E的对数。</p>
+<p>LOG10：底数为10的对数。</p>
+<p>SQRT：平方根。</p>
+<p>SIGN：返回参数符号。</p>
+<p>TRUNC：返回参数的整数部分。</p>
+<p>FRAC：输入参数的小数部分。</p>
+<p>CEIL：返回不小于参数的最小整数。</p>
+<p>FLOOR：返回不大于参数的最小整数。</p>
+<h2 id="移动类型"><a href="#移动类型" class="headerlink" title="移动类型"></a>移动类型</h2><ul>
+<li>01 MB01 按采购订单的货物移动</li>
+<li>02 MB31 按生产订单的货物移动</li>
+<li>03 MB1A 货物提取（工单退料）</li>
+<li>04 MB1B 转移过帐</li>
+<li>05 MB1C 其他收货</li>
+<li>06 MB11 货物移动</li>
+<li>07 MB04 “物料供应”消耗的事后调整</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>移动类型</strong></th>
+<th><strong>移动类型文本</strong></th>
+<th><strong>含义</strong></th>
+<th><strong>事务码</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>101</td>
+<td>GR 收货</td>
+<td>直接收货</td>
+<td>MIGO&#x2F;CO11N</td>
+</tr>
+<tr>
+<td>102</td>
+<td>用于PO冲销的收货</td>
+<td>冲销直接收货</td>
+<td>MIGO&#x2F;CO11N</td>
+</tr>
+<tr>
+<td>103</td>
+<td>进入冻结库存的收货</td>
+<td>收入质检仓</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>104</td>
+<td>到冻结冲销的收货</td>
+<td>冲销收入质检仓（待检退货等）</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>105</td>
+<td>来自冻结库存的收货</td>
+<td>从质检仓收货入库</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>106</td>
+<td>来自冻结的收货冲销</td>
+<td>冲销入库异常及向供应商退货</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>121</td>
+<td>收货后续调整</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>122</td>
+<td>RE 向供应商退货</td>
+<td>向供应商退货（101、105）</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>123</td>
+<td>RE退货供应商冲销</td>
+<td>冲销向供应商退货（122）</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>124</td>
+<td>收货退货冻结库存</td>
+<td>冻结库存退货（103）</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>125</td>
+<td>收货退货冻结库存冲销</td>
+<td>冲销冻结库存退货（124）</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>131</td>
+<td>收货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>132</td>
+<td>收货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>141</td>
+<td>收货后续调整</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>142</td>
+<td>收货后续调整</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>161</td>
+<td>收货退货</td>
+<td>创建退货采购订单向供应商退货</td>
+<td></td>
+</tr>
+<tr>
+<td>162</td>
+<td>收货退货冲销</td>
+<td>冲销创建退货采购订单向供应商退货</td>
+<td></td>
+</tr>
+<tr>
+<td>201</td>
+<td>有关成本中心的发货</td>
+<td>向成本中心发料</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>202</td>
+<td>有关成本中心的收货</td>
+<td>成本中心退料或冲销成本中心发料</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>221</td>
+<td>有关项目的发货</td>
+<td>向项目发货</td>
+<td></td>
+</tr>
+<tr>
+<td>222</td>
+<td>有关项目的收货</td>
+<td>项目退货或冲销项目发货</td>
+<td></td>
+</tr>
+<tr>
+<td>231</td>
+<td>有关销售订单的发货</td>
+<td>销售订单的发货</td>
+<td></td>
+</tr>
+<tr>
+<td>232</td>
+<td>有关销售订单的收货</td>
+<td>销售订单的退货或重销销售订单的发货</td>
+<td></td>
+</tr>
+<tr>
+<td>241</td>
+<td>有关资产的发货</td>
+<td>向资产的发货</td>
+<td></td>
+</tr>
+<tr>
+<td>242</td>
+<td>有关资产的收货</td>
+<td>向资产的发货</td>
+<td></td>
+</tr>
+<tr>
+<td>251</td>
+<td>有关销售的发货</td>
+<td>有关销售的发货</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>252</td>
+<td>有关销售的收货</td>
+<td>有关销售的收货</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>261</td>
+<td>有关订单的发货</td>
+<td>工单领料</td>
+<td>MIGO&#x2F;MB1A</td>
+</tr>
+<tr>
+<td>262</td>
+<td>有关订单的收货</td>
+<td>工单退料（或冲销工单领料）</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>281</td>
+<td>有关网络的发货</td>
+<td>有关网络的发货</td>
+<td></td>
+</tr>
+<tr>
+<td>282</td>
+<td>有关网络的收货</td>
+<td>有关网络的收货</td>
+<td></td>
+</tr>
+<tr>
+<td>291</td>
+<td>发货的全部帐户分配</td>
+<td>向所有对象发货（可选择发货到对象的类型）</td>
+<td></td>
+</tr>
+<tr>
+<td>292</td>
+<td>收货的全部帐户分配</td>
+<td>向所有对象收货（可选择发货到对象的类型）</td>
+<td></td>
+</tr>
+<tr>
+<td>301</td>
+<td>TF工厂间的转移</td>
+<td>工厂间的转移（one step）</td>
+<td></td>
+</tr>
+<tr>
+<td>302</td>
+<td>TR工厂间的转储</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>303</td>
+<td>TF出库到工厂</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>304</td>
+<td>TR出库到工厂</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>305</td>
+<td>TF厂内库存转储计划</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>306</td>
+<td>TR厂内库存交易计划</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>309</td>
+<td>TF转储采购物料到物料</td>
+<td>TF转储采购物料到物料</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>310</td>
+<td>TR转储采购物料到物料</td>
+<td>TR转储采购物料到物料</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>311</td>
+<td>TF厂内移储</td>
+<td>TF厂内移储</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>312</td>
+<td>TR 厂内转储</td>
+<td>TR 厂内转储</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>313</td>
+<td>TF出库到库存地</td>
+<td>从出库库存到库存地</td>
+<td></td>
+</tr>
+<tr>
+<td>314</td>
+<td>TR出库到库存地</td>
+<td>冲销出库库存到库存地</td>
+<td></td>
+</tr>
+<tr>
+<td>315</td>
+<td>TF库存地库存转储计划</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>316</td>
+<td>TR库存地库存转储计划</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>317</td>
+<td>创建结构化物料</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>318</td>
+<td>RE创建结构化物料</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>319</td>
+<td>拆分结构化物料</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>320</td>
+<td>RE拆分结构化物料</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>321</td>
+<td>TF质量到非限制</td>
+<td>质检库存到非限制库存</td>
+<td></td>
+</tr>
+<tr>
+<td>322</td>
+<td>TR 质量到非限制</td>
+<td>冲销质检库存到非限制库存</td>
+<td></td>
+</tr>
+<tr>
+<td>323</td>
+<td>TF厂内质量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>324</td>
+<td>TR厂内质量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>325</td>
+<td>TF厂内冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>326</td>
+<td>TR厂内冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>331</td>
+<td>GI 到采样QI</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>332</td>
+<td>RE 到采样QI</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>333</td>
+<td>GI 到采样非限制</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>334</td>
+<td>RE 到采样非限制</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>335</td>
+<td>GI 到采样冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>336</td>
+<td>RE 到采样冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>340</td>
+<td>批次重估</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>341</td>
+<td>TF 非限制到限制</td>
+<td>从非限制库存移动到限制库存</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>342</td>
+<td>TF 限制到非限制</td>
+<td>从限制库存移动到非限制库存</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>343</td>
+<td>TF冻结到非限制</td>
+<td>冻结库存到非限制库存</td>
+<td></td>
+</tr>
+<tr>
+<td>344</td>
+<td>TR 冻结到非限制</td>
+<td>冲销冻结库存到非限制库存</td>
+<td></td>
+</tr>
+<tr>
+<td>349</td>
+<td>TF 冻结到QI</td>
+<td>冻结库存到质检库存</td>
+<td></td>
+</tr>
+<tr>
+<td>350</td>
+<td>TR冻结到QI</td>
+<td>冲销冻结库存到质检库存</td>
+<td></td>
+</tr>
+<tr>
+<td>351</td>
+<td>TF在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>352</td>
+<td>TR 在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>411</td>
+<td>TF库存地到库存地</td>
+<td>寄售转自有（K）、MTO到MTS</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>412</td>
+<td>TR库存地到库存地</td>
+<td>寄售转自有（K）、MTS到MTO</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>413</td>
+<td>TF库存地到销售订单</td>
+<td>销售订单库存之间转储</td>
+<td></td>
+</tr>
+<tr>
+<td>414</td>
+<td>TR库存地到销售订单</td>
+<td>销售订单库存之间转储</td>
+<td></td>
+</tr>
+<tr>
+<td>415</td>
+<td>TF 库存地到项目</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>416</td>
+<td>TR 库存地到项目</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>441</td>
+<td>TP 非限制到 tiedEmp</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>442</td>
+<td>TP tiedEmp.到非限制</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>451</td>
+<td>GI退货</td>
+<td>Returns  from customer without Shipping</td>
+<td>MB1C</td>
+</tr>
+<tr>
+<td>452</td>
+<td>RE 退货(冲销)</td>
+<td>冲销451</td>
+<td></td>
+</tr>
+<tr>
+<td>453</td>
+<td>总储备退回发出处</td>
+<td>总储备退回发出处</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>454</td>
+<td>总储备到退货</td>
+<td>总储备到退货</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>455</td>
+<td>TF库存转储退货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>456</td>
+<td>TR库存转储退货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>457</td>
+<td>TP 退货到总储备 QI</td>
+<td>客户退货的转回（质检库存）</td>
+<td></td>
+</tr>
+<tr>
+<td>458</td>
+<td>TP 总储备QI到退货</td>
+<td>客户退货的转回（质检库存）冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>459</td>
+<td>TP退货到总储备冻结</td>
+<td>客户退货的转回（冻结库存）</td>
+<td></td>
+</tr>
+<tr>
+<td>460</td>
+<td>TP 总储备冻结到退货</td>
+<td>客户退货的转回（冻结库存）冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>501</td>
+<td>无PO的收货</td>
+<td>无采购订单的收货</td>
+<td></td>
+</tr>
+<tr>
+<td>502</td>
+<td>RE无PO的收货</td>
+<td>无采购订单的退货</td>
+<td></td>
+</tr>
+<tr>
+<td>503</td>
+<td>收货到QI</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>504</td>
+<td>RE收货到数量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>505</td>
+<td>收据到收货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>506</td>
+<td>RE收货到冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>511</td>
+<td>免费交货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>512</td>
+<td>无费用的RE交货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>521</td>
+<td>无订单的收货</td>
+<td>无订单的收货</td>
+<td></td>
+</tr>
+<tr>
+<td>522</td>
+<td>RE无生产订单的收货</td>
+<td>无订单的收货的冲减</td>
+<td></td>
+</tr>
+<tr>
+<td>523</td>
+<td>无生产订单的QI收货</td>
+<td>质检库存无订单的收货</td>
+<td></td>
+</tr>
+<tr>
+<td>524</td>
+<td>RE无生产订单的质量</td>
+<td>质检库存无订单的收货冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>525</td>
+<td>无生产订单的冻结收货</td>
+<td>冻结库存无订单的收货</td>
+<td></td>
+</tr>
+<tr>
+<td>526</td>
+<td>RE无生产订单冻结</td>
+<td>冻结库存无订单的收货冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>531</td>
+<td>副产品收货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>532</td>
+<td>RE副产品</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>541</td>
+<td>对转包库存的GI仓库</td>
+<td>对转包库存的GI仓库</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>542</td>
+<td>RE转包库存到仓库</td>
+<td>RE转包库存到仓库</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>543</td>
+<td>GI发货销售订单存货</td>
+<td>GI发货销售订单存货</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>544</td>
+<td>GI收货销售订单存货</td>
+<td>GI收货销售订单存货</td>
+<td>MIGO</td>
+</tr>
+<tr>
+<td>545</td>
+<td>副产品SC收货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>546</td>
+<td>GI 发货 SC 副产品</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>551</td>
+<td>GI报废</td>
+<td>GI报废（仓库物料报废）</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>552</td>
+<td>RE报废</td>
+<td>RE报废（仓库物料报废）</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>553</td>
+<td>GI报废QI</td>
+<td>质检库存报废</td>
+<td></td>
+</tr>
+<tr>
+<td>554</td>
+<td>RE报废QI</td>
+<td>质检库存报废冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>555</td>
+<td>GI报废冻结</td>
+<td>冻结库存报废</td>
+<td></td>
+</tr>
+<tr>
+<td>556</td>
+<td>RE报废冻结</td>
+<td>冻结库存报废冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>557</td>
+<td>GI调整转运</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>558</td>
+<td>GI调整转运</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>561</td>
+<td>库存余额的初始条目</td>
+<td>库存余额的初始条目</td>
+<td></td>
+</tr>
+<tr>
+<td>562</td>
+<td>RE初始条目库存余额</td>
+<td>RE初始条目库存余额（初始库存冲销）</td>
+<td></td>
+</tr>
+<tr>
+<td>563</td>
+<td>初始条目库存余额:QI</td>
+<td>质检限制性初始库存</td>
+<td></td>
+</tr>
+<tr>
+<td>564</td>
+<td>RE库存余额输入:QI</td>
+<td>质检初始库存冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>565</td>
+<td>库存余额输入:冻结</td>
+<td>冻结初始库存</td>
+<td></td>
+</tr>
+<tr>
+<td>566</td>
+<td>RE库存余额输入:冻结</td>
+<td>冻结初始库存冲销</td>
+<td></td>
+</tr>
+<tr>
+<td>571</td>
+<td>收货装配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>572</td>
+<td>RE 收货装配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>573</td>
+<td>收货 QI 装配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>574</td>
+<td>RE 收货 QI 装配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>575</td>
+<td>收货冻结装配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>576</td>
+<td>RE 收货冻结装配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>581</td>
+<td>收货副产品网络</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>582</td>
+<td>RE 副产品  网络</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>601</td>
+<td>GD发货: 交货(内销)</td>
+<td>GD发货: 交货(内销)</td>
+<td></td>
+</tr>
+<tr>
+<td>602</td>
+<td>RE交货冲销(内销)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>603</td>
+<td>TF出库到工厂</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>604</td>
+<td>TR出库到工厂</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>605</td>
+<td>TF厂内库存转储计划</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>606</td>
+<td>TR厂内库存交易计划</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>621</td>
+<td>GI返回式包装:借贷</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>622</td>
+<td>GI返回式包装:退货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>623</td>
+<td>GI发货:客户退货包装</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>624</td>
+<td>GI收货:客户退货包装</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>631</td>
+<td>GI寄售: 借贷</td>
+<td>寄售订单发货到办事处</td>
+<td></td>
+</tr>
+<tr>
+<td>632</td>
+<td>GI寄售: 退货</td>
+<td>寄售订单发货到办事处</td>
+<td></td>
+</tr>
+<tr>
+<td>633</td>
+<td>GI发货: 客户寄售</td>
+<td>寄售结算发货订单由办事处发货到客户处</td>
+<td></td>
+</tr>
+<tr>
+<td>634</td>
+<td>GI收货: 客户寄售</td>
+<td>冲销633</td>
+<td></td>
+</tr>
+<tr>
+<td>635</td>
+<td>TF托售出租</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>636</td>
+<td>TR寄售退货交货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>641</td>
+<td>TF在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>642</td>
+<td>TR 在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>643</td>
+<td>TF 至跨公司间</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>644</td>
+<td>TR 至跨公司间</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>645</td>
+<td>TF 跨公司</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>646</td>
+<td>TR 跨公司</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>647</td>
+<td>TF在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>648</td>
+<td>TR 在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>651</td>
+<td>GD退货 退回</td>
+<td>客户退货退回（限制性使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>652</td>
+<td>GD退货 退货冲销</td>
+<td>冲销发货过账（标准及免费换货客户退货退回发货仓）</td>
+<td></td>
+</tr>
+<tr>
+<td>653</td>
+<td>GD 退货  非限制</td>
+<td>客户退货退回（非限制性使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>654</td>
+<td>GD 退货 非限制 冲销</td>
+<td>冲销客户退货退回（非限制性使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>655</td>
+<td>GD 退货 QI</td>
+<td>客户退货退回（质检状态使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>656</td>
+<td>GD 退货 QI 冲销</td>
+<td>冲销客户退货退回（质检状态使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>657</td>
+<td>GD 退货冻结</td>
+<td>客户退货退回（冻结使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>658</td>
+<td>GD 退货冻结冲销</td>
+<td>冲销客户退货退回（冻结使用库存的转回）</td>
+<td></td>
+</tr>
+<tr>
+<td>661</td>
+<td>GI向供应商退货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>662</td>
+<td>RE退货到供应商冲销</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>671</td>
+<td>TR 在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>672</td>
+<td>TF在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>673</td>
+<td>TF 至跨公司间</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>674</td>
+<td>TR 至跨公司间</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>675</td>
+<td>TR 跨公司</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>676</td>
+<td>TF 跨公司</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>677</td>
+<td>TR 在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>678</td>
+<td>TF在途库存</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A1</td>
+<td>TF  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A2</td>
+<td>TR  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A3</td>
+<td>TF CC  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A4</td>
+<td>TR CC  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A5</td>
+<td>TF CC  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A6</td>
+<td>TR CC  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A7</td>
+<td>TF  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6A8</td>
+<td>TR  GI1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B1</td>
+<td>TF  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B2</td>
+<td>TR  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B3</td>
+<td>TF CC  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B4</td>
+<td>TR CC  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B5</td>
+<td>TF CC  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B6</td>
+<td>TR CC  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B7</td>
+<td>TF  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6B8</td>
+<td>TR  GI2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6K5</td>
+<td>TF GI2 托售</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6K6</td>
+<td>TR GI2 托售</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6W5</td>
+<td>TF GI1 托售</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6W6</td>
+<td>TR GI1 托售</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>701</td>
+<td>GR实际盘点: 仓库</td>
+<td>盘盈</td>
+<td></td>
+</tr>
+<tr>
+<td>702</td>
+<td>GI实际盘点: 仓库</td>
+<td>盘亏</td>
+<td></td>
+</tr>
+<tr>
+<td>703</td>
+<td>GR实际盘点: QI</td>
+<td>质检物料盘盈</td>
+<td></td>
+</tr>
+<tr>
+<td>704</td>
+<td>GI实际盘点: QI</td>
+<td>质检物料盘亏</td>
+<td></td>
+</tr>
+<tr>
+<td>707</td>
+<td>GR实际盘点: 已冻结</td>
+<td>冻结物料盘盈</td>
+<td></td>
+</tr>
+<tr>
+<td>708</td>
+<td>GI实际盘点: 冻结</td>
+<td>冻结物料盘亏</td>
+<td></td>
+</tr>
+<tr>
+<td>711</td>
+<td>GI存货差异: 仓库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>712</td>
+<td>GR存货差异: 仓库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>713</td>
+<td>GI存货差异:QI</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>714</td>
+<td>GR存货差异: 质检</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>715</td>
+<td>GI存货差异: 退货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>716</td>
+<td>GR存货差异: 退货</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>717</td>
+<td>GI存货差异: 冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>718</td>
+<td>GR存货差异: 冻结</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>721</td>
+<td>SlsVal.rec.n.afftMgs</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>722</td>
+<td>SlsVal.iss.n.afftMgs</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>731</td>
+<td>SlsVal.rec.  afftgMgs</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>732</td>
+<td>SlsVal.iss.  afftgMgs</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>841</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>842</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>843</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>844</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>901</td>
+<td>GD发货: 交货(外销)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>902</td>
+<td>RE交货冲销(外销)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Z03</td>
+<td>有关内部订单的发货</td>
+<td>有关内部订单的发货</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>Z04</td>
+<td>有关内部订订单的收货</td>
+<td>有关内部订订单的收货</td>
+<td>MB1A</td>
+</tr>
+<tr>
+<td>Z09</td>
+<td>TF转储采购物料到物料</td>
+<td>TF转储采购物料到物料</td>
+<td>MB1B</td>
+</tr>
+<tr>
+<td>Z10</td>
+<td>TR转储采购物料到物料</td>
+<td>TR转储采购物料到物料</td>
+<td>MB1B</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SAP/" rel="tag"># SAP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/" rel="prev" title="SE21创建_复制包均报错">
+      <i class="fa fa-chevron-left"></i> SE21创建_复制包均报错
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/" rel="next" title="致远OA遇坑记录">
+      致远OA遇坑记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F"><span class="nav-number">1.</span> <span class="nav-text">系统变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">移动类型</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

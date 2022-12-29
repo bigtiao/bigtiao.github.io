@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="采购业务流程通过交流学习，现在将XX公司采购业务流程记录如下： 对于主料的采购业务主要记录如下： 1、销售部门根据销售计划制定备货计划，通过OA表单制定备货计划，并回传SAP系统。 2、在SAP系统中进行销售需求转采购计划的手动拆分，手动拆分完成后，点击审批，推送OA进行计划的审批。ZMM003 3、OA审批完成后，推送SAP回传采购计划审批状态。 4、在SAP中功能开发，直接查询出审批通过的采购">
+<meta property="og:type" content="article">
+<meta property="og:title" content="采购仓储业务学习">
+<meta property="og:url" content="http://example.com/2022/08/02/%E9%87%87%E8%B4%AD%E4%BB%93%E5%82%A8%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="采购业务流程通过交流学习，现在将XX公司采购业务流程记录如下： 对于主料的采购业务主要记录如下： 1、销售部门根据销售计划制定备货计划，通过OA表单制定备货计划，并回传SAP系统。 2、在SAP系统中进行销售需求转采购计划的手动拆分，手动拆分完成后，点击审批，推送OA进行计划的审批。ZMM003 3、OA审批完成后，推送SAP回传采购计划审批状态。 4、在SAP中功能开发，直接查询出审批通过的采购">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192443.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192652.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192730.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192841.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192341.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803083153.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803194459.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803194539.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803194658.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803083223.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802195628.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803185120.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803185729.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803190554.png">
+<meta property="article:published_time" content="2022-08-02T12:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-22T11:44:47.085Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="业务学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192443.png">
+
+<link rel="canonical" href="http://example.com/2022/08/02/%E9%87%87%E8%B4%AD%E4%BB%93%E5%82%A8%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>采购仓储业务学习 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/02/%E9%87%87%E8%B4%AD%E4%BB%93%E5%82%A8%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          采购仓储业务学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-02 20:00:00" itemprop="dateCreated datePublished" datetime="2022-08-02T20:00:00+08:00">2022-08-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-22 19:44:47" itemprop="dateModified" datetime="2022-09-22T19:44:47+08:00">2022-09-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">业务学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="采购业务流程"><a href="#采购业务流程" class="headerlink" title="采购业务流程"></a>采购业务流程</h3><p>通过交流学习，现在将XX公司采购业务流程记录如下：</p>
+<p>对于主料的采购业务主要记录如下：</p>
+<p>1、销售部门根据销售计划制定备货计划，通过OA表单制定备货计划，并回传SAP系统。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192443.png" alt="20220802192443"></p>
+<p>2、在SAP系统中进行销售需求转采购计划的手动拆分，手动拆分完成后，点击审批，推送OA进行计划的审批。<br>ZMM003<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192652.png" alt="20220802192652"></p>
+<p>3、OA审批完成后，推送SAP回传采购计划审批状态。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192730.png" alt="20220802192730"></p>
+<p>4、在SAP中功能开发，直接查询出审批通过的采购计划转采购订单<br>ZMM005<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192841.png" alt="20220802192841"></p>
+<p>5、点击创建PO后，自动跳转的创建采购订单界面，并录入表头，比如：合同号、交货日期、运输方式等。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802192341.png" alt="20220802192341"></p>
+<p>其中创建的PO的视图中，合同号、运输方式、采购组、仓库、合同数量、交货日期都是必填的，然后在计划转订单的明细行中，物料的指导价是自动带出来的。</p>
+<p><code>这里引申除了另外一个情况：物料的指导价是怎么带出来的，其实是在ZMM009存在指导价格维护，维护完成后，就在物料的会计视图中新增月份的计划价格，这里就是带出来了物料的计划价格。</code></p>
+<p>然后填写运费、短倒费等费用，点击保存，自动生成采购订单。</p>
+<p><strong>在这里需要明确锁价和结算价2个价格的问题：<br>锁价：就是你采购或者销售当天的价格，比如你今天想买1斤桃子是5块钱，那么就锁定桃子的价格是5元，以后桃子价格的涨跌和你没有关系，开票也是5元。<br>结算价：结算价是你今天想买桃子，但是桃子的价格还没出来，可能在25号才能出来桃子的具体价格，那么你先按照5元&#x2F;斤的价格付款，商家正常给你供应桃子，已25号出来的价格来结算，如果出来的价格是4.5元&#x2F;斤，那么商家给你的开票价格就是4.5元。在系统中你入的价格是5元&#x2F;斤，然后再通过导入优惠项等方式调整发票金额至4.5元&#x2F;斤。</strong></p>
+<hr>
+<h3 id="采购到货入库流程"><a href="#采购到货入库流程" class="headerlink" title="采购到货入库流程"></a>采购到货入库流程</h3><p>采购到到货入库分为信息齐全和信息不齐全2种。<br>信息齐全：到货信息齐全的入库业务，客服专员在SAP系统ZMM007导入到货明细生成到货通知单，司机到厂扫码登记，领取到货任务，司机自动过磅称取毛重，原料班卸车后PDA输入库位并提交，司机自动过磅称取皮重，保卫班PDA提交出厂后，到货数据回传SAP系统自动过账入库。</p>
+<p>信息不齐全：到货信息不全的入库业务，地磅员在ECP系统录入到货明细创建到货通知，司机过磅称取毛重，原料班卸车PDA输入库位并提交，司机过磅称取皮重，保卫班PDA提交出厂后，到货数据回传SAP系统，客服专员在SAP系统ZMM007关联采购订单后过账入库。</p>
+<p>啥信息都没有的：地磅员在ECP系统中维护车号、卷号，推送到SAP，SAP在ZMM007维护界面中“维护采购订单”自动关联到货车号，并维护采购订单信息。</p>
+<p>采购入库到货主要用ZMM007:采购到货平台，ZMM010:批量收货，migo标准功能<br>ZMM007：查询界面，主要查询所有的到货明细<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803083153.png" alt="20220803083153"><br>ZMM007: 创建界面，主要是客服专员来导入到货明细，创建到货通知单<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803194459.png" alt="20220803194459"><br>ZMM007: 维护界面，主要是客服专员来维护未关联采购订单的到货明细<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803194539.png" alt="20220803194539"><br>ZMM007: 到货通知单样式<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803194658.png" alt="20220803194658"></p>
+<p>ZMM010<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803083223.png" alt="20220803083223"></p>
+<hr>
+<h3 id="采购结算"><a href="#采购结算" class="headerlink" title="采购结算"></a>采购结算</h3><p>采购员根据钢厂给到的结算价导入，根据价差、优惠、运费补助等生成物料的结算价并生成优惠结算表，钢厂根据结算价开具发票。</p>
+<h3 id="采购发票预制"><a href="#采购发票预制" class="headerlink" title="采购发票预制"></a>采购发票预制</h3><p>采购员基于供应商结算价并根据结算政策计算最终结算价，制作优惠结算表导入SAP系统，经原材管理会计SAP系统审批后自动调整暂估差异，最后由采购员将发票明细导入SAP系统进行发票预制。<br>ZMM012<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220802195628.png" alt="20220802195628"></p>
+<p><strong>注意，利用ZMM012发票校验平台时，业务只有导入发票和优惠结算表的权限，财务只管过账，但是只限于结算价的采购订单，锁价的订单直接用MIRO标准功能进行校验与过账。</strong></p>
+<hr>
+<h3 id="采购仓储业务报表"><a href="#采购仓储业务报表" class="headerlink" title="采购仓储业务报表"></a>采购仓储业务报表</h3><p>1、ZMM006：进销存报表<br>主要是用来查询物料的库存数量、批次、批次特性等值，这个表是不断变动的，发货、产成品入库都会影响这个表里的数据。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803185120.png" alt="20220803185120"></p>
+<p>2、ZMM023: 采购订单执行情况跟踪报表<br>主要用来查询原料、辅料的采购订单执行情况，包括订单明细、订单金额、已付款金额、未付款金额等数据。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803185729.png" alt="20220803185729"></p>
+<p>3、ZMM024: 采购入库单打印<br>主要用来打印采购入库单和查询采购入库单明细<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220803190554.png" alt="20220803190554"></p>
+<p>4、ZMM013: 调拨明细表<br>主要用来操作场内转储311的物料移动，调拨、过账、冲销。并生成相关物料凭证</p>
+<p>5、ZMM043: 委外包装对账表<br>主要查询包装前、包装后的卷号、批次、包装单价等。其中在SAP中A是酸洗卷，B是冷硬卷，C是包装卷。</p>
+<table>
+<thead>
+<tr>
+<th>事务代码</th>
+<th>描述</th>
+<th>事务代码</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zmm000</td>
+<td>配置表</td>
+<td>mm01</td>
+<td>物料主数据创建</td>
+</tr>
+<tr>
+<td>zmm001</td>
+<td>物料主数据业务视图批导		    mm02</td>
+<td>物料主数据修改</td>
+<td></td>
+</tr>
+<tr>
+<td>zmm002</td>
+<td>供应商主数据业务视图批导</td>
+<td>mm03、mm60</td>
+<td>物料主数据查询</td>
+</tr>
+<tr>
+<td>zmm003</td>
+<td>依据销售计划创建采购计划</td>
+<td>bp</td>
+<td>供应商主数据创建</td>
+</tr>
+<tr>
+<td>zmm004</td>
+<td>批量关闭采购订单</td>
+<td>bp</td>
+<td>供应商主数据修改</td>
+</tr>
+<tr>
+<td>zmm005</td>
+<td>采购计划转采购订单</td>
+<td>bp</td>
+<td>供应商主数据查询</td>
+</tr>
+<tr>
+<td>zmm006</td>
+<td>物料库存表		               mmbe</td>
+<td>库存概览</td>
+<td></td>
+</tr>
+<tr>
+<td>zmm007</td>
+<td>采购到货平台（创建、维护、查看）</td>
+<td>me51n</td>
+<td>采购申请创建</td>
+</tr>
+<tr>
+<td>zmm008</td>
+<td>采购到货平台（冲销、过账）</td>
+<td>me52n</td>
+<td>采购申请修改</td>
+</tr>
+<tr>
+<td>zmm009</td>
+<td>采购指导价维护</td>
+<td>me53n、me5a</td>
+<td>采购申请查询</td>
+</tr>
+<tr>
+<td>zmm010</td>
+<td>正常采购受托加工批量收货</td>
+<td>me54n</td>
+<td>采购申请审批</td>
+</tr>
+<tr>
+<td>zmm011</td>
+<td>调拨单维护创建与维护</td>
+<td>me41</td>
+<td>建立报价邀请</td>
+</tr>
+<tr>
+<td>zmm012</td>
+<td>采购发票校验平台</td>
+<td>me21n</td>
+<td>采购订单创建</td>
+</tr>
+<tr>
+<td>zmm012A</td>
+<td>优惠结算表上传</td>
+<td>me22n</td>
+<td>采购订单修改</td>
+</tr>
+<tr>
+<td>zmm012B</td>
+<td>优惠结算表审批冲销</td>
+<td>me29n&#x2F;me28</td>
+<td>采购订单审批</td>
+</tr>
+<tr>
+<td>zmm012C</td>
+<td>发票明细上传</td>
+<td>me23n&#x2F;me2l&#x2F;me2n&#x2F;me2m</td>
+<td>采购订单 查询</td>
+</tr>
+<tr>
+<td>zmm012D</td>
+<td>发票明细审批冲销</td>
+<td>migo</td>
+<td>收货</td>
+</tr>
+<tr>
+<td>zmm013</td>
+<td>调拨单过账与冲销</td>
+<td>mi07</td>
+<td>盘盈亏过账</td>
+</tr>
+<tr>
+<td>zmm014</td>
+<td>部门领用单查询</td>
+<td>mi09</td>
+<td>输入盘点凭证</td>
+</tr>
+<tr>
+<td>zmm015</td>
+<td>批次进销存</td>
+<td>mir7</td>
+<td>发票预制</td>
+</tr>
+<tr>
+<td>zmm016</td>
+<td>质量异议信息维护及打印</td>
+<td>miro</td>
+<td>发票校验</td>
+</tr>
+<tr>
+<td>zmm020</td>
+<td>供应商主数据批导查询</td>
+<td>mr8m</td>
+<td>发票校验冲销</td>
+</tr>
+<tr>
+<td>zmm021</td>
+<td>物料主数据批导查询</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm022</td>
+<td>安全库存警示报表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm023</td>
+<td>采购订单执行跟踪报表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm024</td>
+<td>采购入库单打印</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm025</td>
+<td>委托加工平台</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm025A</td>
+<td>委托出库单维护</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm025B</td>
+<td>委托出库单过账与冲销</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm025C</td>
+<td>委托入库单维护</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm025D</td>
+<td>委托入库单过账与冲销</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm026</td>
+<td>委托出库单</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm027</td>
+<td>盘点记录表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm028</td>
+<td>物料到期登记表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm029</td>
+<td>以旧换新报表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm034</td>
+<td>调拨单派车</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm039</td>
+<td>库位调整明细报表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm042</td>
+<td>物料账龄表</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zmm043</td>
+<td>委外包装对账表</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/" rel="tag"># 业务学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/29/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/" rel="prev" title="数据仓库命名规范">
+      <i class="fa fa-chevron-left"></i> 数据仓库命名规范
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/" rel="next" title="记致远OA系统DEE挂掉遇坑">
+      记致远OA系统DEE挂掉遇坑 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E8%B4%AD%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">采购业务流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E8%B4%AD%E5%88%B0%E8%B4%A7%E5%85%A5%E5%BA%93%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">采购到货入库流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E8%B4%AD%E7%BB%93%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text">采购结算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E8%B4%AD%E5%8F%91%E7%A5%A8%E9%A2%84%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">采购发票预制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E8%B4%AD%E4%BB%93%E5%82%A8%E4%B8%9A%E5%8A%A1%E6%8A%A5%E8%A1%A8"><span class="nav-number">5.</span> <span class="nav-text">采购仓储业务报表</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

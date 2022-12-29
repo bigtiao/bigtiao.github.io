@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。 而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。 而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用一套逻辑连接起来(见下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何搭建一套完整的数据指标体系概述">
+<meta property="og:url" content="http://example.com/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。 而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。 而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用一套逻辑连接起来(见下">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg">
+<meta property="article:published_time" content="2022-07-08T07:18:00.000Z">
+<meta property="article:modified_time" content="2022-07-08T07:32:47.214Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg">
+
+<link rel="canonical" href="http://example.com/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何搭建一套完整的数据指标体系概述 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何搭建一套完整的数据指标体系概述
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-08 15:18:00 / 修改时间：15:32:47" itemprop="dateCreated datePublished" datetime="2022-07-08T15:18:00+08:00">2022-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">数据</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
+<p>而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。</p>
+<p><strong>而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用</strong><br><strong>一套逻辑连接起来(见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg" alt="img"></p>
+<p>在这套逻辑里，你能从局部看到整体，能从整体划分到局部。<br>例如你头疼(整体)， 医生能够按照人的生命体系一-检查, 直到发现你上呼吸道不正常，发生了感染(局部) ;也能从你手扎破了(局部) ，如果不及时处理伤口，可能由于感染丢失了性命(整体)。<br>企业也一样,通过企业的指标体系,也能看到企业利润没有达成，是哪个部门(个人)出现了问题，也可从一个销售员的业绩推断出公司的整体情况。</p>
+<p><strong>由此可以看出，指标体系最重要的是”指标”和“逻辑”。</strong></p>
+<hr>
+<h2 id="解决问题：指标体系到底如何搭建？"><a href="#解决问题：指标体系到底如何搭建？" class="headerlink" title="解决问题：指标体系到底如何搭建？"></a><strong>解决问题：指标体系到底如何搭建？</strong></h2><p>那么，如果我们想要搭建一完整指标体系,就得有一大堆衡量企业健康状况的指标，还得有一整套逻辑将企业的各个指标有机连接起来。</p>
+<p>“指标”和“逻辑”虽然是指标体系的两个组成部分,但是构造”指标”和“逻辑”的过程却是同一个过程，那就是“自上而下，从大到小”，层层拆解，步步细分(业绩目标的设定过程可能相反)。</p>
+<p><strong>1、首先，每个企业都有自己每年的整体目标，这个目标-般是营收、利润、或销量。</strong><br>这个大指标的问题在于，它无法把责任落在某-个具体的人或部门(CEO不算， 因为整个指标体系就是为了他达成大指标使用的管理工具，他又不能一个人把公司所有活干了)，所以就需要把这个大指标进行拆解，直到拆解到责任可以落实到每一个部门(个人)头上。</p>
+<p><strong>2、其次，就是如何拆解企业目标，这一步至关重要。一般来说， 指标体系是按照本企业的业务流程进行拆解。</strong><br>那什么是业务流程呢?它指的就是你要将从消费者(或者客户)那里收到钱所经历的所有的步骤进行拆解(也有人说按照消费者消费路径来拆解的,个人认为主要是业务流程，因为一般公司的部门是按照业务流程设置的)。</p>
+<p>例如一家汽车制造公司,要想从客户手里收到购车款，大体来说需要经历造车一-&gt;营销一-&gt; 物<br>流一一&gt;销售的环节。那如何将企业一年的收入在这些环节进行分解，这时可以就需要“将业务流<br>程抽象为数学公式”，因为指标本质上还是数据，所以指标的拆解当然离不开数学。<br>以上汽车销售的业务流程用数学公式表达出来如下:<br>汽车的销售收入&#x3D;Max{出厂车辆数，营销产生的销售线索数X销镌转化率x门店数量} X单车利润</p>
+<p>因此，要达成营业利润那么子指标就是销售车辆数，而销售车辆数的子指标就是出厂车辆数、销售线索数、销售转化率。<br>这是大指标的一级拆解，一级拆解，一 般建议子指标可以找到一 一个具体负责的部门。因为说一千道一万，企业是由各部门门组成的，不论是传统企业是互联网公司，当然集团除外，我们这里主要说的是某一板块业务。</p>
+<p>这样拆解的好处就是，虽然这个部门无法完全控制整个公司大指标，但是总可以控制部门的子指标。</p>
+<p>例如，营销部可能无法对整个公司的销售收入负责，毕竟如果你车造的很烂，或者销售人员不努力，即使我把产品吹天，消费者实际到店一试驾，还是不会买不是吗。但是，有多少人看广告,有多人看了广告愿意试驾(销售线索)你总不能甩锅吧。</p>
+<p><strong>3、就是将每个业务流程的目标再次在本流程的子流程层面进行二_级拆解 (见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg" alt="img"></p>
+<p>例如，营销部负责销售线索数，但是你可能在很多媒介上做广告,例如电视、门户网站、移动端APP等等，那么每一个媒介上有多少销售线索数，你总得有一个统计指标吧，或者每一个媒介都有一个具体的人员在负责，那么将“销售线索数”这个子指标再细分，就是“XX媒介产生的销售线索数”。</p>
+<p>这样，我们就可以看出这个媒介在整年的表现，如果责任到人的话，可以直接去看负责这个媒介投放的人员的业绩表现，进而通过这个子指标看其对整个营业收入(公司大指标)的影响。</p>
+<p>其实这方面没有很好的方法，网上很多人都在鼓吹”OSM模型” ，O就是Objective, S是Strategy, M是Measurement,其实它更多指的是一个概念框架， 而且是高度抽象、大道至简的那种，而在真实的应用上能够参考的意义是有限的(就像SWOT分析一样)。</p>
+<p>因此，最好的方法，就是你对这个业务流程相当了解，这也是现实中为什么HR部门门]无法设置好的指标体系了，因为他们对业务流程的了解一般少之又少。所以，指标的拆解(指标体系的搭建)，其实是非常内行的一件事情。</p>
+<p><strong>4、是将一些职能部门的指标以及业务部门的保障性指标加入进去。</strong></p>
+<p>如果按照上述方法拆解KPI,那么基本上只有销售部、营销部、生产部等主要业务部门]的指标，但是问题是整个公司的运行不是只有业务部门，还有很多职能部门，这些职能部]的工作也很重要，因为他们是保障整个公司的健康运行，也就是以上业务部[ ]的指标能够达成的基础环境(参见波特价值链)。</p>
+<p>举个例子，如果财务部门不好好工作，导致出现-个财务漏洞，那整个公司好几年的营收估计都搭进去了，又何谈一年的目标实现呢?</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg" alt="img"></p>
+<h4 id="那职能部门的指标如何拆解呢？"><a href="#那职能部门的指标如何拆解呢？" class="headerlink" title="那职能部门的指标如何拆解呢？"></a><strong>那职能部门的指标如何拆解呢？</strong></h4><p>首先，你必须得了解它们的主要工作内容、工作目标、工作流程。例如财务部门，主要指标可能是财务报告的及时性和准确性，以及预算管理的好与坏，这些都是可以量化的。</p>
+<p>还有数据分析部门可能主要是一个支撑部门， 那目标就是、及时准确地支撑业务部门数据需求、报表开发、给管理层的深度分析报告等，这些服务可以由各业务部门来打分，这样你就可以设置数据分析部门的指标诸如“数据提供满意度”、“数据分析报告满意度” 等。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg" alt="img"></p>
+<p>此外，业务部门]也有保障性指标。例如生产部的指标肯定不光是生产合格的产品数量，你还得在一定时间、按照一定成本、按照一定良品率把合格的产品生产出来，那这个部门(业务)的指标就不光是生产合格的产品数量，还有以上提到的保障性指标。通过之前搭建的业务指标体系(总指标–&gt; 细分一&gt;细分….)加上诸如风险管理、财务、人事等职能(支撑)部门的保障性指标以及业务部门门的业务保障性指标，覆盖整个公司的指标体系就搭建起来了。</p>
+<p>这个体系整体像一颗巨大的树，但是在内在结构_上又是枝与枝相关联，例如各部]的预算控制好了，整个财务的预算才能控制好;或者说数据部门门要提供好用的报表，也得开发部门]开发出好用的报表套件才行。毕竟，各部门相互连接，整个公司才是一个”有机的”整体(下图)。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE/" rel="tag"># 数据</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/" rel="prev" title="如何定义需求的优先级">
+      <i class="fa fa-chevron-left"></i> 如何定义需求的优先级
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/08/%E6%B7%B1%E5%BA%A6%E5%A5%BD%E6%96%87%EF%BC%9A%E5%85%B3%E4%BA%8E%E6%95%B0%E4%BB%93%E5%BB%BA%E8%AE%BE%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%B2%BB%E7%90%86%E7%9A%84%E8%B6%85%E5%85%A8%E6%A6%82%E6%8B%AC/" rel="next" title="深度好文：关于数仓建设及数据治理的超全概括">
+      深度好文：关于数仓建设及数据治理的超全概括 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98%EF%BC%9A%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E5%88%B0%E5%BA%95%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">解决问题：指标体系到底如何搭建？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%82%A3%E8%81%8C%E8%83%BD%E9%83%A8%E9%97%A8%E7%9A%84%E6%8C%87%E6%A0%87%E5%A6%82%E4%BD%95%E6%8B%86%E8%A7%A3%E5%91%A2%EF%BC%9F"><span class="nav-number">1.0.1.</span> <span class="nav-text">那职能部门的指标如何拆解呢？</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="销售业务流程1、客户主数据维护 由客服专员利用OCR工具将开票信息或者营业执照转换成文本进行整理核对后导入SAP系统，若客户为一般纳税人，则在SAP系统中经过天眼查验证，再完成SAP系统内创建过程，最后将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；若客户非一般纳税人，将客户身份证号作为税号录入到SAP中，经SAP系统税号唯一性验证后，将客户基础信息下发至MDM系统，并存储MDM系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="销售业务学习">
+<meta property="og:url" content="http://example.com/2022/08/13/%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="销售业务流程1、客户主数据维护 由客服专员利用OCR工具将开票信息或者营业执照转换成文本进行整理核对后导入SAP系统，若客户为一般纳税人，则在SAP系统中经过天眼查验证，再完成SAP系统内创建过程，最后将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；若客户非一般纳税人，将客户身份证号作为税号录入到SAP中，经SAP系统税号唯一性验证后，将客户基础信息下发至MDM系统，并存储MDM系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172416.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172753.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173049.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173339.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173534.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175110.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175136.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175351.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180254.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180358.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181217.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181311.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181624.png">
+<meta property="article:published_time" content="2022-08-13T09:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-26T12:49:36.148Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="业务学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172416.png">
+
+<link rel="canonical" href="http://example.com/2022/08/13/%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>销售业务学习 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/13/%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          销售业务学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-13 17:00:00" itemprop="dateCreated datePublished" datetime="2022-08-13T17:00:00+08:00">2022-08-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-26 20:49:36" itemprop="dateModified" datetime="2022-09-26T20:49:36+08:00">2022-09-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">业务学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="销售业务流程"><a href="#销售业务流程" class="headerlink" title="销售业务流程"></a>销售业务流程</h3><p>1、客户主数据维护</p>
+<p>由客服专员利用OCR工具将开票信息或者营业执照转换成文本进行整理核对后导入SAP系统，若客户为一般纳税人，则在SAP系统中经过天眼查验证，再完成SAP系统内创建过程，最后将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；若客户非一般纳税人，将客户身份证号作为税号录入到SAP中，经SAP系统税号唯一性验证后，将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；当客户信息变更时，客服专员在SAP系统内完成客户信息修改，并将客户全部基础信息下发至MDM系统的过程。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172416.png" alt="20220813172416"></p>
+<p>2、价格主数据维护</p>
+<p>实现本月结算合同的结算以及下月结算合同指导价在SAP系统中的应用，需要销售专员在每月25日与原料采购专员确定本月邯邢价格及优惠政策后，按照SAP价格表模板在线下完成《LY结算价格表》与《SX结算价格表》的制作，经过销售经理、销售总监线下审核后，由销售专员将结算价格表录入到SAP中，首次导入后，销售专员后期的维护只需要将需要修改的引用到OA系统中完成修改后发起审批流程，审批通过后SAP价格生效的流程。</p>
+<p>使用VK11或者ZSD020A进行批导<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172753.png" alt="20220813172753"></p>
+<p>3、原料备货申请<br>每月末根据当前运营库存和销售订单量，制定出下月的原料总需求，由销售专员在OA发起原料备货申请，经销售经理审批、原料采购专员确认后，自动将表单内容同步到SAP原料备货申请模块的过程；每月中随时产生原料变更与新需求时，销售专员在OA发起原料备货申请，对原先原料备货申请进行变更以及对新增原料需求申请的流程。</p>
+<p>OA发起备货申请-&gt; MM采购计划。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173049.png" alt="20220813173049"></p>
+<p>4、销售合同制作&#x2F;修改<br>由客服专员在SAP中创建（或修改）并打印销售合同，并与客户完成销售合同签字盖章确认后，客服专员在SAP内提交销售合同，系统自动生成OA销售合同审批流程，经销售经理、销售总监、结算管理会计在OA系统审批完成后，销售合同在SAP内开始生效，客服专员将纸质合同进行存档的流程。<br>ZSD001<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173339.png" alt="20220813173339"></p>
+<p>OA销售合同<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173534.png" alt="20220813173534"></p>
+<p>5、欠款质押发货额度申请<br>客户提出需要使用欠款&#x2F;质押手续进行发货时，销售专员与客户对接，客户来我司签订欠款证明，销售专员将纸质欠款证明提交至各级审批人的同时，在SAP中进行欠款额度的维护，线上线下同步催办审批，经过销售总监、经营副总、总经理、董事长、结算管理会计审批完成在OA中同步通知财务总监后，欠款额度在SAP中生效的流程。<br>ZSD003<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175110.png" alt="20220813175110"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175136.png" alt="20220813175136"></p>
+<p>6、分货流程<br>客服专员通过SAP对已产出成品不能按照正常订单进行分货，或者是无订单排产导致的合同号不存在的库存进行分货的业务，需要客服专员在SAP系统中将合同号匹配标注进行分货，合同号标注完成后通过客户微信提货群将每个客户的分货明细发至客户的流程。<br>ZSD002&#x2F;ZSD002A 创建发货单<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175351.png" alt="20220813175351"></p>
+<p>7、发货<br>客服专员通过微信接收客户的提货需求时，客户进行货款打款后将电子回单发至客服专员，客服专员在SAP系统中进行货款确认后制作发货订单，将客户需提的货物引入进发货订单并进行保存的同时，SAP系统对货款进行检查，若发生使用定金、质押、欠款进行发货时，发货订单需结算管理会计进行审核。发货订单保存并审核通过后，客服专员在发货订单中填入运输车辆车号进行发货的流程。<br>ZSD005，根据ZSD002中创建的发货单，推送OA审批<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180254.png" alt="20220813180254"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180358.png" alt="20220813180358"></p>
+<p>8、出库<br>客服专员在发货订单中填入车号后，司机入厂后由装车组进行货物的称重与装车，称重过程中若重量与标签重量不符，则由保管在SAP系统中进行重量的修改，轧机生产人员打印标签后替换原标签；若标签规格与PDA货物规格不符，则由品管员打印标签并替换原标签。更改重量后由客服专员在原发货订单中重新引入货物信息，装车完成后司机出厂过磅，若磅差超出合理范围则司机需返回车间再次复称后进行出厂过磅，过磅完成后由门岗使用PDA进行扫码对货物进行核验，核验信息无误后司机完成发货出厂的流程。<br>主要是在ECP系统中跑流程，主要流程：<br>扫码登记进厂过磅-&gt;ECP记录空车毛重-&gt;PDA接受销售发货单-&gt;货物复称-&gt;核对信息-&gt;装车，PDA扫码提交-&gt;出厂过磅-&gt;核对磅差-&gt;PDA扫码并打印出门证-&gt;（协议车辆）收货工厂保管在出门证签字确认，司机拍照上传小程序-&gt;自动确认收入-&gt;结束。</p>
+<p>9、销售补差<br>销售部某合同执行完成后，在发票开具前因在业务执行中产生的小卷优惠、购货优惠、质量异议、酸洗加工补料、酸洗运费结算、返利、降级品优惠、结算指导价调整、特殊优惠等需要对客户账户返款或扣款时，销售专员或客服专员需要在SAP系统中创建借贷项订单，经过销售经理、销售总监、经营副总、总经理、结算管理会计审核后，在系统内实现对客户账户余额在系统账中进行调整的流程。<br>ZSD009:政策补差&#x2F;ZSD010:其他补差<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181217.png" alt="20220813181217"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181311.png" alt="20220813181311"></p>
+<p>10、发票开具<br>营销中心销售部销售合同执行结束后客服专员及销售专员在发起开票申请前先将开票资料：销售合同复印件、销售对账单、收货确认函、业务委托书准备完成，并完成结算对账单、收货确认函中客户的签字盖章。开票资料准备完成后交至税务会计进行审核，审核通过后客服或销售专员在SAP系统中发起开票申请的流程。<br>ZSD013:开票申请<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181624.png" alt="20220813181624"><br>ZSD032:开票申请<br>红票会推送OA系统，非红票直接审批，推送金税系统。</p>
+<h3 id="销售业务其他流程"><a href="#销售业务其他流程" class="headerlink" title="销售业务其他流程"></a>销售业务其他流程</h3><p>1、冷硬客诉处理<br>2、红字发票开具<br>3、套筒押金退回<br>4、销售退货<br>5、虚拟退货<br>6、XX来料加工交货差异量付款<br>7、标签更改<br>8、销售部另用料销售<br>9、废料销售<br>10、外储调拨<br>11、销售运费付款<br>12、协议车辆保证金利息付款<br>13、运输事故处理<br>14、运输管理费收入<br>15、余款退回</p>
+<h3 id="销售业务报表"><a href="#销售业务报表" class="headerlink" title="销售业务报表"></a>销售业务报表</h3><p>1、ZSD019:发货清单报表<br>2、ZSD023:信贷报表<br>3、ZSD027:销售补差报表<br>4、ZSD028:开票报表<br>5、ZSD030:合同报表<br>6、ZSD039:自行优惠报表，这个报表的主要作用是客户在本月已经提货，但是没有出结算价，并且没有进行补差的，应收会计根据这个表里的差值（已出的当月结算价）手工制作凭证冲减当月的销售收入，并在次月对该凭证进行冲销，走完补差流程，自动生成准确的收入凭证。<br>7、ZSD021:XMD销售定金报表<br>8、ZSD038:ZLYD销售定金管理报表<br>9、ZSD022:ZLYD利用XMD的地方进行的仓储操作，提供仓储服务，卷是别人家的卷，只提供场地进行存储；因为仓储业务采用了511移动类型的免费收货，所以在收货时并没有生成有效的入库凭证，所以需要创建借贷项订单，并根据借贷项订单开票。</p>
+<p>ZSD022A:仓储入库，采用批导的方式进入，同时能查询到所有入库卷的信息（有无库存）。<br>ZSD022B:仓储货转，卷的所有人发生变化，操作卷的转入客户及转出客户。<br>ZSD022C:仓储提货，创建卷的提货单，并查看卷的费用情况，包括基本费用、超期费用、其他费用。<br>ZSD022D:仓储借贷项订单，付款后创建借贷项订单<br>ZSD022E:仓储开票，根据借贷项订单进行开票，并发送OA申请。</p>
+<p>10、ZSD037:仓储库存表，查询XMD仓库里热卷的实时库存及仓储费用情况。<br>11、ZSD040:ZLYD销售补差报表，查询ZLYD补差明细。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/" rel="tag"># 业务学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/" rel="prev" title="记致远OA系统DEE挂掉遇坑">
+      <i class="fa fa-chevron-left"></i> 记致远OA系统DEE挂掉遇坑
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/14/%E8%B4%A2%E5%8A%A1%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/" rel="next" title="财务业务学习">
+      财务业务学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">销售业务流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E5%85%B6%E4%BB%96%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">销售业务其他流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%8A%A5%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">销售业务报表</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

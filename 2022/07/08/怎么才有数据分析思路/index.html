@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：1）使用大众点评优惠吸引用户结账2）直接使用微信或支付宝结账 这两类结账方式，表面看是商家的促销行为不同。但是，从长远来看，第一类餐厅更容易胜出。 这是为什么呢？ 因为第一类餐厅的结账模式是建立在互联网产品基础设施（大众点评或者百度糯米）之上，通过与互联网产品结合，可以积累用户的消费信息，例如消费评论。这就好比">
+<meta property="og:type" content="article">
+<meta property="og:title" content="怎么才有数据分析思路">
+<meta property="og:url" content="http://example.com/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：1）使用大众点评优惠吸引用户结账2）直接使用微信或支付宝结账 这两类结账方式，表面看是商家的促销行为不同。但是，从长远来看，第一类餐厅更容易胜出。 这是为什么呢？ 因为第一类餐厅的结账模式是建立在互联网产品基础设施（大众点评或者百度糯米）之上，通过与互联网产品结合，可以积累用户的消费信息，例如消费评论。这就好比">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192214bhxvtxvg8vbheuxq.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192228s6r6dirxwswqox6b.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192246a44289c49c85xu9v.png">
+<meta property="article:published_time" content="2022-07-08T01:15:00.000Z">
+<meta property="article:modified_time" content="2022-07-08T01:17:09.067Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192214bhxvtxvg8vbheuxq.png">
+
+<link rel="canonical" href="http://example.com/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>怎么才有数据分析思路 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          怎么才有数据分析思路
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-08 09:15:00 / 修改时间：09:17:09" itemprop="dateCreated datePublished" datetime="2022-07-08T09:15:00+08:00">2022-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">数据</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：<br>1）使用大众点评优惠吸引用户结账<br>2）直接使用微信或支付宝结账</p>
+<p>这两类结账方式，表面看是商家的促销行为不同。但是，从长远来看，第一类餐厅更容易胜出。</p>
+<p>这是为什么呢？</p>
+<p>因为第一类餐厅的结账模式是建立在互联网产品基础设施（大众点评或者百度糯米）之上，通过与互联网产品结合，可以积累用户的消费信息，例如消费评论。这就好比线下商店老板比不过淘宝卖家一样，因为淘宝卖家有自己客户的详细购物信息，更了解自己的客户。</p>
+<p>更有远见的餐厅老板，会雇佣聪明的数据分析师，来整合挖掘餐厅线下软件（订餐管理软件）和 线上用户信息（如大众点评的评论），从而<strong>为制定餐厅未来的运营决策提供依据。</strong><br>然而，很多传统的公司并没有意识去积累用户的消费数据，更别说对数据进行分析来指导公司运营了。说到底，其根本原因是公司的负责人没有数据分析思维。</p>
+<p><strong>那么，什么是数据分析思维呢？</strong><br>数据分析思维是通过各种方法收集用户的数据，了解用户需求，然后改进你的个人决策，不断迭代。</p>
+<p><strong>如何建立数据分析思维呢？</strong><br>对于数据分析师来说，刚开始肯定是能做一些有趣的分析，但是长期做数据分析工作，想法总会枯竭，寻找分析思路就变得异常痛苦。可以这么说，<strong>分析思路直接奠定了数据分析结论的准确性和实用性。</strong>因此，懂得如何寻找数据分析思路是每个数据分析师必须具备的能力。</p>
+<p>面对一个业务场景，我们如何能够寻找到正确的数据分析思路呢？在我看来，所谓正确的分析思路，本质上就是站在一定高度的业务思维逻辑，因此数据分析思路更多考量的还是一名数据分析师对业务的理解和眼界。今天给大家分享一些可以提升自己分析思路的5个方法，希望能给你们带来帮助。</p>
+<p>由浅至深分成4项：<strong>角色扮演、业务指标、现成模型、维度分析</strong><br>**<br>01 角色扮演**</p>
+<p>这个方法就是尝试把自己“扮演”成公司不同的角色，站在他人的视角上来寻找有哪些需要进行数据分析的点。用这种方式能够找到的数据分析思路往往是对方最需要的，自然也就具有更高的价值。</p>
+<p>比如，你可以把自己扮演成公司的销售、投资人、运营、财务、客户、供应商等，站在这些视角寻找有哪些有帮助的分析思路。<br>之前在一家公司，把自己放在销售的角色上，发现公司对于潜在客户的收集和分析非常缺失，这样就影响了整个公司的销售效果。于是从这个角度出发，专门去相关网站爬取数据，通过地域、规模、员工人数等方面去分析，找出最有可能购买我们服务的潜在客户。最后这个分析结果得到销售团队的极度认可，提升了公司销售业绩。<br>用这种方法做角色扮演的时候大家<strong>一定要尽量贴近角色的日常生活，只有这样才能发现最有价值的分析思路。</strong></p>
+<p><strong>02 业务指标</strong></p>
+<p>这个是非常常见的分析方法。比如公司这个月的销售指标下降了，那么你就着手去分析指标下降的原因；同样，如果指标上升了，也去分析原因。一个公司的指标往往比较标准，比如利润率，销售额，客户增长等等。所以这样的方法比较通用，也比较简单。<br>在分析指标时有一点一定要注意，<strong>就是除了分析出原因外，还有就是要给出解决方案。</strong>比如分析发现客户数近期有下降，那么除了给出原因外，还要给出增加客户数的方法以及这些方法背后的数据模型推理，形成一个完整的故事。</p>
+<p><strong>03 运用一些现成的模型</strong></p>
+<p>大家想好方向之后会遇到一个问题，那就是到底应该从几个维度用什么样子的模型来做分析呢？这个时候就体现一名数据分析师的基本功了。其实数据模型中包含了很多对于基础数据分析的思路，这些思路虽然比较单一，但哪个出彩的思路不是由单一的组合而成呢？<br>除了熟悉模型外，熟练的掌握数据分析的工具也能很大的帮助数据分析的验证。数据分析思路是需要打磨的，特别是刚刚产出的分析思路更<strong>需要通过数据去验证和调整。</strong>这个时候一个方便快速的数据分析工具会起到很重要的作用。下面就给大家分享一个具体的数据分析思维方法。</p>
+<p><strong>04 维度分析法</strong></p>
+<p>我们先了解一下维度分析法：维度是描述对象的参数，在具体分析中，我们可以把它认为是分析事物的角度。销量是一种角度、活跃率是一种角度，时间也是一种角度，所以它们都能算维度。<br>当我们有了维度后，就能够通过不同的维度组合，形成数据模型。数据模型不是一个高深的概念，它就是一个数据立方体。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192214bhxvtxvg8vbheuxq.png" alt="img"></p>
+<p>上图就是三个维度组成的数据模型／数据立方体。分别是产品类型、时间、地区。我们既能获得电子产品在上海地区的2010二季度的销量，也能知道书籍在江苏地区的2010一季度销量。<br>数据模型将复杂的数据以结构化的形式有序的组织起来。我们之前谈到的指标，都可以作为维度使用。下面是范例：<br>将用户类型、活跃度、时间三个维度组合，观察不同用户群体在产品上的使用情况，是否A群体使用的时长更明显？<br>将商品类型、订单金额、地区三个维度组合，观察不同地区的不同商品是否存在销量差异？<br>数据模型可以从不同的角度和层面来观察数据，这样提高了分析的灵活性，满足不同的分析需求、这个过程叫做OLAP（联机分析处理）。当然它涉及到更复杂的数据建模和数据仓库等，我们不用详细知道。‍</p>
+<p>数据模型还有几种常见的技巧、叫做钻取、上卷、切片。</p>
+<ul>
+<li>选取就是将维度继续细分。比如浙江省细分成杭州市、温州市、宁波市等，2010年一季度变成1月、2月、3月。</li>
+<li>上卷则是钻取的相反概念，将维度聚合，比如浙江、上海、江苏聚合成浙江沪维度。</li>
+<li>切片是选中特定的维度，比如只选上海维度、或者只选2010年一季度维度。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192228s6r6dirxwswqox6b.png" alt="img"></p>
+<p>上图的树状结构代表钻取（source和time的细分），然后通过对Route的air切片获得具体数据。<br>聪明的你可能已经想到，我们常用的数据透视表就是一种维度分析，将需要分析的维度放到行列组合进行求和、计数、平均值等计算。放一张曾经用到的案例图片：用城市维度和工作年限维度，计算平均工资。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/192246a44289c49c85xu9v.png" alt="img"></p>
+<p>除了Excel、BI、R、Python都能用维度分析法。BI是相对最简便的。谈到维度法，想要强调的是分析的核心思维之一：对比，不同维度的对比，这大概是对新人快速提高的最佳捷径之一。<br>总结一下：<strong>我们通过业务建立和筛选出指标，将指标作为维度，利用维度进行分析。</strong><br>这里我想强调，数据分析并不是一个结果，只是过程。还记得“如果你不能衡量它，那么你就不能有效增长它”这句话吗？<strong>数据分析的最终目的就是增长业务。</strong>如果数据分析需要绩效指标，一定不会是分析的对错，而是最终数据提升的结果。<br>数据分析是需要反馈的，当我分析出某项要素左右业务结果，那么就去验证它。告诉运营和产品人员，看看改进后的数据怎么样，一切以结果为准。如果结果并没有改善，那么就应该反思分析过程了。</p>
+<p>作者：miao君<br>链接：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/284174976/answer/835282007">https://www.zhihu.com/question/284174976/answer/835282007</a><br>来源：知乎</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE/" rel="tag"># 数据</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/05/%E4%BC%9A%E8%AE%A1%E7%A7%91%E7%9B%AE%E7%9F%A5%E8%AF%86/" rel="prev" title="会计科目知识">
+      <i class="fa fa-chevron-left"></i> 会计科目知识
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/" rel="next" title="你真的了解ELT和ETL吗">
+      你真的了解ELT和ETL吗 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="物料账介绍物料分类账（Material Ledger）是SAP财务模块的重要功能之一，用于对标准价计价的物料进行差异处理。激活ML后，系统会在“工厂+物料”层（或更细的层次）为每个物料建立子账簿，记录该物料在各个期间的数量、价值变化情况。月底运行完物料分类账之后，系统自动对差异进行处理。物料分类账满足大多数企业对差异的处理需求，一般生产型企业均会启用ML功能，极少有企业通过自开发的程序进行差异处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SAP物料分类账">
+<meta property="og:url" content="http://example.com/2022/07/01/SAP%E7%89%A9%E6%96%99%E5%88%86%E7%B1%BB%E8%B4%A6/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="物料账介绍物料分类账（Material Ledger）是SAP财务模块的重要功能之一，用于对标准价计价的物料进行差异处理。激活ML后，系统会在“工厂+物料”层（或更细的层次）为每个物料建立子账簿，记录该物料在各个期间的数量、价值变化情况。月底运行完物料分类账之后，系统自动对差异进行处理。物料分类账满足大多数企业对差异的处理需求，一般生产型企业均会启用ML功能，极少有企业通过自开发的程序进行差异处理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-0080e58b08ce21acdcba7954c8a485a6_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1989f7cf7aa1af527d8c1b544c8afb14_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-7b732a3d5e71e3a067f046469eb8f576_720w.jpg">
+<meta property="article:published_time" content="2022-07-01T05:33:00.000Z">
+<meta property="article:modified_time" content="2022-07-01T05:54:22.246Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="SAP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-0080e58b08ce21acdcba7954c8a485a6_720w.jpg">
+
+<link rel="canonical" href="http://example.com/2022/07/01/SAP%E7%89%A9%E6%96%99%E5%88%86%E7%B1%BB%E8%B4%A6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SAP物料分类账 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/01/SAP%E7%89%A9%E6%96%99%E5%88%86%E7%B1%BB%E8%B4%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SAP物料分类账
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-01 13:33:00 / 修改时间：13:54:22" itemprop="dateCreated datePublished" datetime="2022-07-01T13:33:00+08:00">2022-07-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="物料账介绍"><a href="#物料账介绍" class="headerlink" title="物料账介绍"></a><strong>物料账介绍</strong></h4><p>物料分类账（Material Ledger）是SAP财务模块的重要功能之一，用于对标准价计价的物料进行差异处理。激活ML后，系统会在“工厂+物料”层（或更细的层次）为每个物料建立子账簿，记录该物料在各个期间的数量、价值变化情况。月底运行完物料分类账之后，系统自动对差异进行处理。物料分类账满足大多数企业对差异的处理需求，一般生产型企业均会启用ML功能，极少有企业通过自开发的程序进行差异处理。</p>
+<p>在SAP中半成品、产成品使都用标准价（价格控制S）计价，材料可以使用标准价（价格控制S），也可使用移动平均价（价格控制V）。对于以S价计价的物料，月中物料收发以标准价生成会计凭证，同时会在物料分类账中记录每一物料的差异归集情况，月末ML将归集的所有差异按期末库存和当期消耗的比例进行分摊。因此，对S价计价的物料，ML进行“全月加权平均”处理，这样更符合实际。</p>
+<p>例如物料A的标准价为10.00，期初库存为10个，总金额为100.00。本月第一次采购10个的价格为13.00，第二次采购20个的价格为14.00，生产消耗18个，成本中心领用2个，月末库存为20个。 这样，物料A的平均成本为（ 100 + 10<em>13 + 20</em>14 ）&#x2F; 40 &#x3D; 12.75。因此，月末库存金额为255.00，计入生产成本的金额为229.50，成本中心消耗的金额为25.50。</p>
+<h4 id="差异分摊原理"><a href="#差异分摊原理" class="headerlink" title="差异分摊原理"></a><strong>差异分摊原理</strong></h4><p>上例演示了对物料A进行全月加权平均处理的逻辑，但实际上SAP是月中收集差异，月底处理差异。差异处理遵循如下三大逻辑：</p>
+<ol>
+<li><strong>差异层层上卷</strong>：根据订单的投入产出顺序，原材料-&gt;半成品-&gt;产成品，ML将上一环节的差异逐层按相关的数量比例进行结转；</li>
+<li><strong>差异随库存走</strong>：应该由期末库存承担的部分，ML将对应的差异金额还原到存货科目，将期末存货还原成实际成本；</li>
+<li><strong>谁消耗，谁承担</strong>：当期消耗的存货，ML对差异进行重估，将差异调整到原始消耗中。例如：物料投入到成本中心，差异重估到成本中心；物料销售出库了，差异重估到主营业务成本。</li>
+</ol>
+<p>对于上例，SAP实际的处理逻辑为： 采购30个物料A时，计入材料科目的成本为300.00，同时ML记录差异10<em>3 + 20</em>4 &#x3D; 110.00；生产消耗18个时计入成本的金额为180.00，成本中心消耗2个时计入成本的金额为20.00；月底ML计算出每个物料的差异为110.00 &#x2F; （10 + 10 + 20） &#x3D; 2.75。运行ML之后，将18<em>2.75的差异调整至上级产品（<strong>差异层层上卷</strong>），将2</em>2.75的差异调整到成本中心（<strong>谁消耗，谁承担</strong>），剩余差异调整到物料A（<strong>差异随库存走</strong>）。</p>
+<p>经过ML处理后，正常情况下，月末差异科目余额为0。因此，一般运行完ML之后需要检查差异科目余额是否为0，不为0需要进一步分析原因。</p>
+<h4 id="WIP重估功能"><a href="#WIP重估功能" class="headerlink" title="WIP重估功能"></a>WIP重估功能</h4><p>一般情况下，企业进行SAP功能设计时会尽量避免出现在制品，这样可以简化处理逻辑。但在有的情况下，WIP是无法避免的。根据逻辑，物料成本计入WIP后，其差异也应该计入WIP。ML可以激活WIP重估功能，实现WIP也承担差异。</p>
+<p>如果没有启用WIP重估功能。ML处理差异的逻辑是“完工产品承担价差，WIP承担量差”。 例如，半成品A投入产成品B，产出一个B需要一个A，当月订单投入10个A，产出1个B。运行ML月结时，1个B会带走10个A的差异，这不是很合理。所以，尽量避免出现在制品，如果避免不了需要评估是否启用WIP重估功能。</p>
+<h4 id="物料计价方式"><a href="#物料计价方式" class="headerlink" title="物料计价方式"></a>物料计价方式</h4><p>启用ML之后，物料会计视图中出现“价格确定”，如下图，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-0080e58b08ce21acdcba7954c8a485a6_720w.jpg" alt="img"></p>
+<p>如果物料采用V价，则价格确定维护2；如果物料采用S，则价格确定维护3。“V+2”和 “S+3”是固定的组合，否则可能出现差异无法分摊的情况，如错误地维护为“S+2”。</p>
+<p>一般情况下，建议原材料采用V价，半成品及产成品采用S价。如果企业原材料种类不多，价格波动大，需要对差异原因进行分析，建议原材料也采用S价。如果企业原材料种类繁多，使用S价计价时需要谨慎，因为采用S价的物料过多时，可能会降低ML运行的效率。</p>
+<p>启用ML之后，物料标准价格在一个期间只能发布一次，因为月底处理差异时需要以标准价为参照，如果有多个标准价，该以哪一个价格为准呢？ 启用ML之后，物料标准价格发布也有限制，发布前不能有物料移动。</p>
+<h4 id="物料账的不足"><a href="#物料账的不足" class="headerlink" title="物料账的不足"></a>物料账的不足</h4><p>物料分类账是SAP财务模块的重要功能，解决了企业差异分摊的困扰。在国内，许多企业选择启用该功能，以实现实际成本核算。然而，ML还是有一些不完美的地方，例如：</p>
+<ol>
+<li>如果没有启用WIP重估功能，完工产品承担价差，WIP承担量差；</li>
+<li>发料到固定资产，ML无法将差异重估到原始的资产科目；</li>
+<li>如果启用发出商品科目，货物发出但未开票，ML将差异重估到主营业务成本，需要将这部分差异还原到发出商品。</li>
+</ol>
+<p>针对以上问题，启用ML后，需要设计相应的方案进行处理，尽量避免手工调整。常用的方法是开发程序进行自动处理。</p>
+<hr>
+<h3 id="深挖物料分类账"><a href="#深挖物料分类账" class="headerlink" title="深挖物料分类账"></a>深挖物料分类账</h3><p>关于物料分类账，其实有些业内人士已经写的非常好了，大家也可以去搜集一下相关的资料，这一篇是根据我自己在项目中的一些体会和总结写的。</p>
+<p>首先我们还是了解一下物料帐分类账的功能，然后呢，我们还是按照问答的方式完成这篇文章。物料分类账的功能概括起来有如下三点：</p>
+<ol>
+<li><p>归集差异</p>
+</li>
+<li><p>分摊差异</p>
+</li>
+<li><p>计算实际成本或者叫还原实际成本</p>
+</li>
+<li><p>多货币、多级评估（有时候也叫平行评估，英文是multiple valuation），严格来讲，这个功能不是物料分类账的，只是要启用物料分类账，才可以使用这个功能，所以也一起列在这里。</p>
+</li>
+</ol>
+<p>第一点和第二点的归集差异和分摊差异都是为第三点服务的，最终目的就是实现物料（产品）级别的实际成本还原，也就是说我们要知道我们每个产品到底是多少成本。有人说，这个很重要吗？我知道自己一共赚了多少不就可以了，干嘛非得知道每个产品的实际成本呢，的确，我们很容易知道一共花了多少成本，也知道一共有多少收入，不过我们并不知道到底哪个产品赚钱，哪个产品亏钱，哪个产品最赚钱，哪个产品最亏钱，这样就不能从产品层面调整经营策略。另外就是我不知道每个产品的成本，我又怎么知道我的定价是不是合适的，以前就出现过卖的越多，亏的越多的案例啊，那就是因为产品的成本都比销售价格高了。为什么这里叫实际成本还原呢，是因为这还是一个事后才能做的事情，按照财务概念来说，是财务月结才能做的事情。那么为什么要等到月底才能知道实际成本呢？这里就存在一个问题，就是我们是无法实现真正的实时的实际成本（注意“实时”这两个字）的。这里面有很多的业务实际和系统逻辑是无法做到的，我们首先说相对容易的原材料吧，原材料主要来源于采购，可能有些还会有返工的产成品拆解出来的，或者回收再加工的。单纯讲采购的话，也存在各种情况，比如不同供应商的，也可能存在供应商免费赠送的。不过既然是采购，就会有采购价格（免费送的采购价格可以认为是零嘛），如果我们用移动平均价是不是就可以准确计算出材料的实际成本呢？只要每次采购收货的时候重新计算移动平均价就可以了呀，这样就可以计算出原材料的实时的实际成本了。不过这里有个前提条件是采购价格要准确无误，而且最终发票开出的价格要和采购价格完全一致，否则在发票入账的时候如果发票价格和采购价格不一致，而且库存又没有了，那么就会出现这块差异实际上应该计入材料成本，却又无法计入材料成本（如果计入材料成本，会出现无数量、有金额的情况，SAP的逻辑是数量如果为零，金额一定为零）的情况。另外就是其他的成本包括人工、折旧、水电费、维修费等，这些成本在月底前是没有实际的数字的（实际上有的时候月底也没有实际数字，比如人工，可能要到下个月15号才会发上个工资，那么这个时候为了满足成本核算的需要，月底就需要预估人工成本），如何在成品制造完成就知道其实际成本，这几乎是不可能的。所以SAP设计了标准成本的概念（其实就是我们国内说的计划成本），就是说一个材料在平时是用标准价进行计价，收发存都用这个标准价，发生的所有差异（包括采购环节、生产环节、修改价格等）都先归集在一个“差异池”中，到月底我再按照一定的逻辑分摊这些差异（基本的规则是谁受益、谁承担，比如这个材料被生产产品消耗了，那么这个差异就计入上层产品的差异，这在SAP中叫多层差异，如果材料被研发领用到了，差异就计入研发费用，如果买来什么都没做，那么差异就计入材料本身，重新计算材料的实际价格，SAP把这个分摊差异或结算出来的实际成本叫PUP（Periodic Unit Price），其实就是月底的移动平均价，如果上层产品又给更上一层产品消耗，那么差异就层层上卷，一直卷到最上层的产品，最上层的产品归集的差异再分配到销售成本或者留在库存商品中）。到这里呢，我们就是说明一件事，实时的实际成本是不可能的，我们只能做到事后（一般是月底）的实际成本还原，SAP物料分类账就是干这个用的。另外物料帐的后台配置并不复杂，主要就是物料帐激活以及哪些移动类型要进行评估，还有就是考虑物料帐的成本组件（包括计划和实际）传输到COPA进行分析。接下来开始问答：</p>
+<ol>
+<li>309移动类型（物料转物料）差异能否吸收？</li>
+</ol>
+<p>答：据说默认情况下309移动类型转出方物料的差异不能被转入方吸收，不过可以按如下设置，是可以被吸收的。</p>
+<p>SM30修改视图V_CKMLMV01，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1989f7cf7aa1af527d8c1b544c8afb14_720w.jpg" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-7b732a3d5e71e3a067f046469eb8f576_720w.jpg" alt="img"></p>
+<ol start="2">
+<li>物料分类账启用的前提条件有哪些？</li>
+</ol>
+<p>答：在如下的条件下启用物料分类账会比较合适，不过并非绝对条件。</p>
+<ol>
+<li><p>采用标准价格对物料进行管理，至少是自制的半成品、产成品采取标准价格对物料进行管理，而且是通过CK11N&#x2F;CK40N发布标准价格，原材料可以采用移动平均价，不过如果采用移动平均价的话，产生的差异物料分类账不进行分摊。</p>
+</li>
+<li><p>企业材料采购差异较大，价格不稳定，如果价格很稳定，差异不大，就表示标准价格和实际价格接近，物料帐的意义就不大了。</p>
+</li>
+<li><p>企业每月的在制品较少，或订单数量较少，这一条只是说订单量越大，执行物料帐结账的速度会慢一些，另外就是SAP早期版本不支持在制品分摊差异，后来较高的版本都支持了，所以这一条可以不算前提条件。</p>
+</li>
+<li><p>企业物料数量较少，BOM结构较为简单。这个意思也是物料少，BOM层次少，物料帐分摊差异就比较容易，出现问题也容易查找，如果物料很多，BOM层次多，第一是结算速度比较慢，另外就是出现问题查找比较麻烦。</p>
+</li>
+<li><p>物料帐使用过账<strong>中不可以直接使用反向移动类型直接进行物料移动</strong>（包括库存转移）<strong>操作</strong>，反向移动类型只应在冲销时体现，这一点往往容易被忽视而出现问题，因为如果直接使用反向移动类型操作，SAP默认的逻辑是在收货和消耗中均体现为负数，这样可能出现累计库存数量很小，但差异除以累计库存数量乘以消耗值时会方法分摊出去的差异，而消耗的负数系统默认不分摊差异，可能导致大额差异无法被分摊。</p>
+</li>
+</ol>
+<ol start="3">
+<li>物料分类账启用的情况下修改物料标准价格的前提有哪些？</li>
+</ol>
+<p>答：一旦启用物料分类帐，SAP对于修改价格要求是很严格的，具体如下：</p>
+<ol>
+<li><p>只能在当前期间修改（即不能修改上个月价格）；</p>
+</li>
+<li><p>该物料无任何物料移动；</p>
+</li>
+<li><p>该物料无发票校验，即无发票校验修改物料价值；</p>
+</li>
+<li><p>该物料分类账状态为“Periods opened“或“Price change completed”或“’New objects”，这个状态CKM3可以看到（或者查看表CKMLPP字段Status）</p>
+</li>
+</ol>
+<p>满足以上条件可使用CK11N计算标准成本并使用CK24发布标准成本的方式修改价格，如果同时还满足“该物料不存在将来计划价格和当前计划价格”，可使用MR21修改价格。实际MR21修改价格很有限，只要有了评估计划价格（即执行过CK11N和CK24），是不允许MR21再修改的。</p>
+<ol start="4">
+<li>物料分类账启用后如何进行标准成本估算？</li>
+</ol>
+<p>答：启用物料分类账ML后，成本估算可采用两种方式：</p>
+<ol>
+<li><p>一种是沿用原来CK11N&#x2F;CK24&#x2F;CK40N方式评估，ML只用来计算实际成本和成本差异分摊</p>
+</li>
+<li><p>另外一种是部分产品（如原材料、贸易商品）采用原方式CK11N&#x2F;CK24&#x2F;CK40N评估，自制半成品、产成品使用ML在计算单层差异和多层差异（事务代码CKMLCP）后计算出实际成本，使用实际成本作为下期标准成本标记并发布（事务代码CKMPRPN标记，CKME发布）。这种方式使用不多，主要的原因是物料帐实际结账的时间和标准成本发布的时间要求有冲突（物料帐结账通常是月结的最后一个步骤，此时一般是下月3号到5号左右，实际的物流移动从1号就开始了，标准价格发布又需要无物料移动，因此物料帐结完时通常已经无法发布标准成本了），实际业务难以达到。</p>
+</li>
+</ol>
+<ol start="5">
+<li>修改物料价格出现C+811错误如何处理？</li>
+</ol>
+<p>答：这是因为在修改物料价格时，已经发生了物料移动，此时即使冲销了物料移动，SAP默认仍然会出现这个错误，标准逻辑是如果物料主数据价格确定是3（物料帐激活一般会设置为3），标准价格只能在期间状态小于30（表示“数量和值已输入”）时才可以修改（小于30的期间状态包括01“新对象”，10“期间未清”，20“价格更改已完成”），一旦发生物料移动，期间状态就会变成30，就无法更改了。SAP提供了一个程序可以修改期间状态（前提是物料移动已经全部冲销），在物料帐启用的公司，通常是把这个程序拷贝在系统中的。这个程序在note：574930中有提供。</p>
+<p>对于C+811错误的详细说明及处理方法，可参考note：1492789。</p>
+<ol start="6">
+<li>物料分类账C+048问题如何处理？</li>
+</ol>
+<p>答：这个错误消息是指物料的数量、价格、库存价值、价格单位信息在物料主数据（MM层面）和物料明细账层面（ML层面）数据有不一致的地方，可使用CKMC检查不一致的信息，然后可使用CKMREP去修改不一致的数据，CKMREP涉及大的相关的表是CKMLPR(价格单位，计划价格)&#x2F;CKMLPP（库存数量）&#x2F;CKMLCR（库存价值，价格）。当然，也可以考虑使用自开发程序或者修改表的方式去修复数据（建议谨慎！）。</p>
+<ol start="7">
+<li>物料分类账启用后在上线的月份必须执行物料分类账结账吗？</li>
+</ol>
+<p>答：是的，启用物料分类账后，在导入完期初库存数据后，需要对切换的月份执行物料分类账结账（实际上最迟在下月结账前执行即可），因为SAP在执行物料帐结账时，会判断上月是否执行过结账，否则会有报错信息“上个月的物料帐还没结账”。</p>
+<ol start="8">
+<li>分割评估和物料分类账可以同时启用吗？</li>
+</ol>
+<p>答：可以同时启用。同时启用的情况下，工厂级别只能用V价，评估类型级别就变成最底层，物料分类账差异归集和分摊也根据评估类型的级别进行。</p>
+<ol start="9">
+<li>生产系统物料帐正式启用前的操作有哪些？</li>
+</ol>
+<p>答：在物料分类账配置完成后，正式启用前，需要进行如下的操作：</p>
+<ol>
+<li><p>CKM9检查物料帐的配置；</p>
+</li>
+<li><p>物料主数据导入后，CKMM批量更改物料价格确定（从2到3，根据物料类型），也可以导入物料主数据时直接导入为3，那就无需更改了；</p>
+</li>
+<li><p>执行CKMSTART设置评估范围为正式的。</p>
+</li>
+</ol>
+<p>对于第9点，物料帐启用和物料主数据导入、期初库存导入、期初物料帐结账的顺序，再次记录一下个人看法：</p>
+<p>首先激活物料帐分为后台和前台两步，后台的步骤是OMX1，前台的步骤是CKMSTART，按照SAP note：596558的说明，这两步是需要同时激活的，这两步期间不能发生任何创建物料和物料移动的操作。此note也说创建物料既可以在执行CKMLSTART之前，也可以在执行CKMSTART之后，不过个人认为此note主要针对是已经上线的情况激活物料帐进行的说明，如果新的系统实施，个人认为通常的步骤如下：</p>
+<ol>
+<li><p>传输物料帐配置；</p>
+</li>
+<li><p>CKMSTART设置工厂的物料帐为正式的；</p>
+</li>
+<li><p>导入物料主数据；</p>
+</li>
+<li><p>导入物料主数据价格（针对标准价格的物料，MR21或开发程序批量导入）或执行标准成本估算（通常国内项目不进行，因为标准价格和老系统价格往往不一致，产生的尾差不好处理，不过如果不执行标准成本估算，则会产生导入库存没有实际成本组件的问题，如果执行标准成本估算，则系统导入的库存可参考标准成本的组件计算实际成本组件，这个事情没有办法，只能二选一）；</p>
+</li>
+<li><p>导入期初库存（在正式上线月份的上月，比如5月1日上线，则库存导入日期为4月30日）；</p>
+</li>
+<li><p>打开下月物料期间；</p>
+</li>
+<li><p>执行导入库存月份的物料帐结账；</p>
+</li>
+<li><p>关闭上月物料期间。</p>
+</li>
+</ol>
+<p>另外，补充CKMSTART程序的用途和作用：</p>
+<ol>
+<li><p>对已有物料创建物料帐的主数据（比如财务视图勾选“ML”）和转换现有库存价格和价值的货币（是物料帐设置的货币，OMX2配置）；</p>
+</li>
+<li><p>转换采购订单历史到第二&#x2F;第三本位币；</p>
+</li>
+<li><p>对现有库存创建成本分割数据。</p>
+</li>
+</ol>
+<p>说明：对于新实施的公司来说，不存在上述1）和2）的影响，只有第3）点的影响，这一点已经说明，如果在导入库存的月份不进行标准成本估算，则无成本分割数据，成本组件只体现为一个总值。</p>
+<p>-——————————————————————————————</p>
+<ol start="10">
+<li>财务角度来说，物料分类账的日常操作或者说检查有哪些？</li>
+</ol>
+<p>答：主要的日常操作如下：</p>
+<ol>
+<li><p>通过差异科目检查是否有异常差异产生（差异科目通常配置为表外科目，以便分摊后可以检查差异科目是否已分配完）；</p>
+</li>
+<li><p>CKM3对单个物料进行价格分析。</p>
+</li>
+</ol>
+<ol start="11">
+<li>物流角度来说，物料分类账的日常操作注意事项有哪些？</li>
+</ol>
+<p>答：建议操作时注意如下事项，避免差异过大或导致差异无法分摊。</p>
+<ol>
+<li><p>严格按照移动类型规定的业务进行规范操作；比如不要使用反向移动类型进行操作，否则会导致差异分摊混乱和无法分摊的情况，另外，对于特殊库存，都要先转为自有库存再消耗，直接消耗会导致差异无法分摊；</p>
+</li>
+<li><p>发票入账及时，发票差异不宜过大；</p>
+</li>
+<li><p>采购价格维护准确；</p>
+</li>
+<li><p>生产订单及时关闭，采购发票及时入账，否则可能因为价格限制数量的原因导致差异无法完全分摊。</p>
+</li>
+</ol>
+<ol start="12">
+<li>物料帐的月结注意事项有哪些？</li>
+</ol>
+<p>答：月结的主要注意事项如下：</p>
+<ol>
+<li><p>执行物料帐月结时，结账月份没有任何物料移动；</p>
+</li>
+<li><p>在执行完CO月结后，执行物料帐月结；</p>
+</li>
+<li><p>执行第七步“过账清算”前，通过值流监视器CKMVFM查看差异的分摊情况；如发现差异分摊异常，建议修正后再执行“过账清算”；</p>
+</li>
+<li><p>对于分摊到库存的差异，系统下月会自动冲回；</p>
+</li>
+<li><p>结账事物代码:CKMLCP；</p>
+</li>
+<li><p>所有的过账都在第七步“过账清算”完成；</p>
+</li>
+<li><p>发货过账（601）移动类型总是会被重估的，即进入销售成本的差异会被分摊到对应的销售成本科目；</p>
+</li>
+<li><p>发布新的标准成本应在物料帐结账（CKMLCP执行）之前，且下月未发生任何物料移动，系统时间必须在下月，下月物料账期需要打开。</p>
+</li>
+</ol>
+<ol start="13">
+<li>物料分类账结账产生的相关凭证有哪些？</li>
+</ol>
+<p>答：相关的会计凭证如下：</p>
+<ol>
+<li><p>FI层面差异分摊凭证，ML凭证类型；</p>
+</li>
+<li><p>消耗重估凭证，ML凭证类型；</p>
+</li>
+<li><p>WIP重估凭证，ML凭证类型；</p>
+</li>
+<li><p>当月产生ML凭证（三类凭证在一起），下月冲销ML凭证。</p>
+</li>
+</ol>
+<ol start="14">
+<li>物料分类账的常用查询报表有哪些？</li>
+</ol>
+<p>答：主要的查询报表如下：</p>
+<ol>
+<li><p>S_P99_41000062，查看工厂下物料的实际价格、标准价格、库存价值、库存数量、期间状态；</p>
+</li>
+<li><p>CKMB，查看所有物料分类账凭证；</p>
+</li>
+<li><p>CKMPCD，查看价格修改凭证；</p>
+</li>
+<li><p>COMLWIPDISP，显示在产品的实际成本；</p>
+</li>
+<li><p>CKM3&#x2F;CKM3N，物料价格分析（含成本组件）；</p>
+</li>
+<li><p>CKMVFM，值流监视器，查看差异估计和分摊情况。</p>
+</li>
+</ol>
+<ol start="15">
+<li>配置物料分类账时，配置点“定义材料分类账组的变化类型”中“消耗重估”为灰色，无法选择，如何处理？</li>
+</ol>
+<p>答：SFW5激活激活组件EA-FIN，参考note：1657787</p>
+<ol start="16">
+<li>出现C+704消息是什么原因？</li>
+</ol>
+<p>答：按照SAP note：802632的说明，有两种情况可能导致这个错误消息，其中一个是库存在某个月的数量在ML层面不满足期初库存+当期收货-当期消耗&#x3D;期末库存的逻辑导致的，这种情况是是逻辑错误，必须要修正错误。第二种情况是有重估金额（由于价格修改）在上个月存在，在结账后物料又在上个月发生了过账。针对第二种情况，SAP给出了note：1120947，根据该note可把消息号修改为警告，不过不建议。</p>
+<ol start="17">
+<li>常见的导致差异无法分摊的情况有哪几种？</li>
+</ol>
+<p>答：有如下几种情况：</p>
+<ol>
+<li><p>对于供应商寄售库存，如果不转为自有库存就直接通过201K&#x2F;261K移动类型进行消耗的话，其产生的差异是不会被分摊的，必须通过411K转为自有库存再通过201&#x2F;261消耗后，才可以正常分摊差异；</p>
+</li>
+<li><p>对于V价格标识的物料，其产生的差异，物料帐无法进行分摊；</p>
+</li>
+<li><p>对于特殊库存（项目库存、销售订单库存）的消耗，如果使用直接消耗的移动类型，则其产生的差异无法被分摊，需要先转为自有库存再进行消耗，类似于供应商寄售库存，比如对于Q（项目）库存，如果直接使用416 Q消耗，其差异无法分摊，需要使用411 Q转为自有库存；</p>
+</li>
+<li><p>SAP为了避免出现物料实际价格为负数的情况（如果负数差异大于目前负数金额，可能出现物料成本为负）<br>，系统中有一个fallback strategy，这个时候会自动把一部分差异留在未分摊差异中。此时未分摊差异会体现在“累计库存”上面的“Not Distributed”对应的行，参考note：908776。这些策略的处理方式包括：一种是是好用当期收货的金额作为累计库存行，对应消息号C+135；第二种是第一种情况下当期没有收货，系统使用期初库存为累计库存行，对应消息号C+138；第三种是前两种都没有值，则使用前一个期间的周期单位价格作为本期的，对应消息号C+136；第四种是前三种都没有，则使用前期的标准价作为本地的周期单位价格，对应消息号C+137。SAP给出差异分摊方式是MR22更改库存价值（当然更优先的方式应该是找出原来过账的凭证进行修正），使不产生负数周期单位价格，然后结账，下月再MR22更改回来。</p>
+</li>
+<li><p>价格限制数量原因，系统标准逻辑是当价格限制数量（CKMLCP-PBPOPO）大于累计库存数量时，只把累计数量对应比例的差异分摊出去。这个价格限制数量系统逻辑是对于采购的物料，发票校验时会更新，比如5月份收货100，下月又收货100，同时收到发票200，发票差异为10块，那么下月的10块差异就只被被分一半出去，因为200会作为下月的价格限制数量，对于生产的物料，系统以关闭生产订单月份统计的收货数量（收货数量可能在当月也可能下月）合计为价格限制数量，比如4月份生产订单下达1000，收货950，5月份对订单TECO，那么5月份的价格限制数量为950。处理方法：在值流监视器中删除价格限制数量，在单层差异确定时勾选“不经库存覆盖检查”。</p>
+</li>
+</ol>
+<p>说明：删除价格限制数量时不需要选择物料，选择对应的评估类点击删除按钮即可。删除价格限制数量和勾选“不经库存覆盖检查”分别进行即可，不需要同时进行。参考SAP note：2207543。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SAP/" rel="tag"># SAP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/01/%E7%89%A9%E6%96%99%E4%BB%B7%E6%A0%BC%E5%88%86%E6%9E%90CKM3/" rel="prev" title="物料价格分析CKM3">
+      <i class="fa fa-chevron-left"></i> 物料价格分析CKM3
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/04/SAP%E7%9B%91%E6%8E%A7%E5%B8%B8%E7%94%A8TCODE/" rel="next" title="SAP监控常用TCODE">
+      SAP监控常用TCODE <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%A9%E6%96%99%E8%B4%A6%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">物料账介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%AE%E5%BC%82%E5%88%86%E6%91%8A%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">差异分摊原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WIP%E9%87%8D%E4%BC%B0%E5%8A%9F%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">WIP重估功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%A9%E6%96%99%E8%AE%A1%E4%BB%B7%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">物料计价方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%A9%E6%96%99%E8%B4%A6%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">5.</span> <span class="nav-text">物料账的不足</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E6%8C%96%E7%89%A9%E6%96%99%E5%88%86%E7%B1%BB%E8%B4%A6"><span class="nav-number"></span> <span class="nav-text">深挖物料分类账</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

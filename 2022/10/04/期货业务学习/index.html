@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 什么是头寸？在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货">
+<meta property="og:type" content="article">
+<meta property="og:title" content="期货业务学习">
+<meta property="og:url" content="http://example.com/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="1. 什么是头寸？在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-10-04T09:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-13T12:13:45.008Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="业务学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>期货业务学习 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          期货业务学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-04 17:00:00" itemprop="dateCreated datePublished" datetime="2022-10-04T17:00:00+08:00">2022-10-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-13 20:13:45" itemprop="dateModified" datetime="2022-10-13T20:13:45+08:00">2022-10-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">业务学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-什么是头寸？"><a href="#1-什么是头寸？" class="headerlink" title="1. 什么是头寸？"></a>1. 什么是头寸？</h3><p>在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货合约数量。对做多者，称处于多头头寸；对做空者，称处于空头头寸。多单与空单的差值，称为“净头寸”。</p>
+<h3 id="2-什么是点价？"><a href="#2-什么是点价？" class="headerlink" title="2. 什么是点价？"></a>2. 什么是点价？</h3><p>点价我知道原来在大豆进出口贸易有这个概念。美国是最大的大豆出口国，我国是最大的大豆进口国。大豆价格波动很大，这个交易涉及到三方，美国农民、美国贸易商、中国油厂。美国农民通过点价卖货的方式把大豆卖给贸易商，即卖出后并不确定卖出价，而是相对某月期货确定一个升贴水，农民可自行选择一定期限内约定期货的价格，再计算上升贴水就是农民获得的售货款。中国油厂点价买货则是接受贸易商的升贴水报价，签订进口合同时，并不直接确定大豆的价格，在合同中约定以CBOT某月大豆合约作为标的合约，在一定期限内 以期货价格均价加升贴水作为最终的进口价格。而贸易商在中间则是利用期货套期保值的功能，达到低风险交易的目的。<br>具体分三步：<br>第一步：贸易商向农民收购大豆，同时在期货市场卖出相应期货保值，手中持有大豆现货多头和相应期货空头；<br>第二步：向中国油厂报升贴水价格，并与之签订合同，中国油厂接受升贴水报价，并在一定期限内购买相应数量的期货（即中国油厂点价）<br>第三步：中国油厂将期货多单转给贸易商，贸易商平提手中的期货空头，同时中国油厂从贸易商手中购买相应数量的大豆现货，过程完成后，贸易商手中的大豆现货多头和期货空头同时平仓。<br>最初大豆交易并非用的点价方式，但有几年大豆价格跌的厉害，大豆在运送过程中，比如40天，价格大跌，船到港后，大豆购买方宁愿不要保证金也要违约，贸易商损失惨重，而在大豆价格大幅上涨时，这一情形又反过来。反正渐渐的，大豆就使用点价交易了。另外，感觉中国大豆的进口史也是有挺多值得细细说一说的。</p>
+<h3 id="3-什么是正套、反套？"><a href="#3-什么是正套、反套？" class="headerlink" title="3. 什么是正套、反套？"></a>3. 什么是正套、反套？</h3><p>近有很多交易者问我关于套利的事情，我发现很多交易者甚至连正套和反套都不是很理解，也有的人是死记硬背、生搬硬套，所以今天我们来一起了解一下正套和反套。<br>我从以下三个角度来帮助你理解正反套：</p>
+<ol>
+<li>时间维度——跨期套利</li>
+<li>产业链维度——产业套利</li>
+<li>贸易流维度——跨市套利<br>首先，从跨期套利角度来讲。通常情况下，只有先拥有商品，才有对商品的卖出处置权。人们可以通过生产、采购甚至借贷现货来实现最终的卖出交割，这种符合商品正常流向的近期买入、远期卖出的套利方式，我们称之为正向套利。同样，由于时间的不可逆性，我们无法让未来的拥有来满足现在的需要，所以期货市场中近期卖出、远期买入的套利方式，我们称之为反向套利。</li>
+</ol>
+<p>其次，从产业套利角度来讲。在产业套利当中，整个产业链分为原材料、产成品。产成品是由原材料生产和加工而来的，所以做多原料做空成品属于正向套利，反之，做空原料做多成品属于反向套利。我们以最常见的大豆产业链来说，做多大豆做空豆油豆粕属于正向套利，而做空大豆做多豆油豆粕就属于反向套利。</p>
+<p>最后，从跨市套利角度来讲。在跨市场套利中，正向套利的意思是做多国外，做空国内。之所以称之为正向套利，原因在于中国是净进口国，净贸易流方向为国外到国内。正向套利的实物逻辑在于进口贸易流，做多国外同时做空国内，意味着从国外买入，再卖到国内，与贸易流方向一致。以棉花为例，国内棉花价格一直高于美棉的原因有两个：一是国内棉花种植的机械化程度不强，种植成本远超美国；二是中国和美国对棉花种植的扶持政策存在差异，美国直接补贴棉农，而国内则是通过发改委国储局的棉花收抛储政策来影响市场供给，进而维持价格稳定，达到保障棉农利益、调控国内棉价的双重目的。所以，每年我们国家都会从美国进口一部分棉花，贸易流是从美国流向中国，所以做多美棉，做空郑棉，这就属于跨市套利中的正向套利。当然，棉花和白糖这两个品种都是配额制的，在一定程度上会受政策的干预和影响。</p>
+<h3 id="4-杨老师普及期货知识"><a href="#4-杨老师普及期货知识" class="headerlink" title="4. 杨老师普及期货知识"></a>4. 杨老师普及期货知识</h3><p>对于期货的开仓，就是开多和开空，然后平仓的时候就是平多和平空。<br>对于这个ZLYD&#x2F;XMD公司来说，有套期保值和套利2种方式。具体如下：<br>在梳理套期保值和套利之前首先要明确几个名词：<br>1、持仓：也可以叫头寸，就是你现在手头上的合约，比如持有202210的豆粕空单10手。<br>2、基差：现货和期货的价差，比如现货市场价5000，期货市场价5500，基差就是现货-期货 &#x3D; -500。<br>3、正套：买现货，卖期货，适用预期后面要涨的市场。<br>4、反套：卖现货，买期货，使用预期后面要降的市场。<br>5、套期保值：买现货的同时卖期货。</p>
+<p><strong>正套</strong>：正套可以做套期保值也可以做套利。<br>正套主要的操作是买现货的时候开一个期货的空单，比如现货的价格是4000，期货的价格是4500，基差是-500。<br>那么当这笔货交货的时候现货的价格是4100，期货价格是4550，当前基差是-450。<br>这个时候我们可以平掉这个空单，那么基差就是-450 - （-500） &#x3D; 50。<br>我们在这笔交易中盈利50。</p>
+<p><strong>反套</strong>：完全参考正套的方式，所有买卖操作全部相反。</p>
+<p><strong>套期保值</strong>：套期保值主要用在采购中。<br>套期保值完全是作为采购保值的操作来做的，比如我们采购1000吨的卷，价格为4000，但是交期为3个月，那么我们就会担心3个月后价格跌了就会造成损失，那么我们就可以在期货市场中做一笔空单，卖出1000吨的货（100手，一般10吨为1手，豆粕、热卷、螺纹钢都是）价格为4100。<br>那么当我们1000吨的现货在3个月后入库后（比如3个月后直接全部入库，举例子，实际陆续入库的话对应期货操作是一样的），当前价格是3900，我们每吨赔了100，那么我们对应期货的价格可能跌倒了3990。那么我们就平掉期货的仓位，这个时候我们在现货中赔了100块，但是在期货市场中赚了110块，总体每吨赚10块。如果期货价格为4010，那么我们在现货中赔了100，但是在期货市场赚了90，总体每吨赔了10块钱。<br>所以套期保值可以锁定大部分的利润，明细的降低了价格的波动风险。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/" rel="tag"># 业务学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/06/SAP%E6%96%B0%E7%89%B9%E6%80%A7/" rel="prev" title="SAP新特性">
+      <i class="fa fa-chevron-left"></i> SAP新特性
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/20/Kettle%E5%AE%9E%E6%88%98%E5%AD%A6%E4%B9%A0/" rel="next" title="Kettle实战学习">
+      Kettle实战学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%B4%E5%AF%B8%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">1. 什么是头寸？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E7%82%B9%E4%BB%B7%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">2. 什么是点价？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E6%AD%A3%E5%A5%97%E3%80%81%E5%8F%8D%E5%A5%97%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">3. 什么是正套、反套？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9D%A8%E8%80%81%E5%B8%88%E6%99%AE%E5%8F%8A%E6%9C%9F%E8%B4%A7%E7%9F%A5%E8%AF%86"><span class="nav-number">4.</span> <span class="nav-text">4. 杨老师普及期货知识</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

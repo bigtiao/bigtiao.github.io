@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="许多刚接触SAP的财务人员，对成本这一块可能比较困惑，产品的单台成本是多少？其中直接材料是多少，人工是多少？ 物料差异该如何分析？差异是怎么形成的？SAP中该如何查看这些信息呢？ 今天给大家介绍SAP成本控制模块中非常重要的报表CKM3N（CKM3 物料价格分析），成本会计必须读懂的一个报表！通过CKM3N可以分析物料的价格变化，以及成本构成（自制件）。  按照如上路径，进入CKM3的主界面如下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="物料价格分析CKM3">
+<meta property="og:url" content="http://example.com/2022/07/01/%E7%89%A9%E6%96%99%E4%BB%B7%E6%A0%BC%E5%88%86%E6%9E%90CKM3/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="许多刚接触SAP的财务人员，对成本这一块可能比较困惑，产品的单台成本是多少？其中直接材料是多少，人工是多少？ 物料差异该如何分析？差异是怎么形成的？SAP中该如何查看这些信息呢？ 今天给大家介绍SAP成本控制模块中非常重要的报表CKM3N（CKM3 物料价格分析），成本会计必须读懂的一个报表！通过CKM3N可以分析物料的价格变化，以及成本构成（自制件）。  按照如上路径，进入CKM3的主界面如下">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-f775359dde0313c9240cfb826fc4f293_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-80c0040d021bbe1a88a08d13c8530f12_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9d4a6ec128233203242b2634dbae27af_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2ae448122b8059fef1418de844b459b9_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b3e2510de4aa24aff37da04330f910a9_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-00210a50bd7720f5173efcce4cae37ae_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d47d25b1fe8381070bec73c2f08d4cac_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a3dbc3773856dd64328bd8f44d2f4782_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b21a6040d91ecb5bf03b5b72307b6add_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-67ca7d38edffdfc2715c3ed4ac80718e_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d6de81c423200865e24a2885b7a52c92_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-11e8ae2ebccb5c3cbbc7a107de1d084d_720w.jpg">
+<meta property="article:published_time" content="2022-07-01T02:16:00.000Z">
+<meta property="article:modified_time" content="2022-07-01T02:20:00.398Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="SAP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-f775359dde0313c9240cfb826fc4f293_720w.jpg">
+
+<link rel="canonical" href="http://example.com/2022/07/01/%E7%89%A9%E6%96%99%E4%BB%B7%E6%A0%BC%E5%88%86%E6%9E%90CKM3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>物料价格分析CKM3 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/01/%E7%89%A9%E6%96%99%E4%BB%B7%E6%A0%BC%E5%88%86%E6%9E%90CKM3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          物料价格分析CKM3
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-01 10:16:00 / 修改时间：10:20:00" itemprop="dateCreated datePublished" datetime="2022-07-01T10:16:00+08:00">2022-07-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>许多刚接触SAP的财务人员，对成本这一块可能比较困惑，产品的单台成本是多少？其中直接材料是多少，人工是多少？ 物料差异该如何分析？差异是怎么形成的？SAP中该如何查看这些信息呢？</p>
+<p>今天给大家介绍SAP成本控制模块中非常重要的报表CKM3N（CKM3 物料价格分析），成本会计必须读懂的一个报表！通过CKM3N可以分析物料的价格变化，以及成本构成（自制件）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-f775359dde0313c9240cfb826fc4f293_720w.jpg" alt="img"></p>
+<p>按照如上路径，进入CKM3的主界面如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-80c0040d021bbe1a88a08d13c8530f12_720w.jpg" alt="img"></p>
+<p>CKM3显示的内容为“工厂&#x2F;物料”的明细账，记录了“工厂&#x2F;物料”的数量及价值变化情况。这个账本可以细化到“评估类型”以及“销售订单”或“项目”（即对项目库存单独评估）。</p>
+<p>其中，期间状态为绿色，表示已经在当前期间运行完ML（CKMLCP）的相关步骤，全部为绿色代表已经执行ML过账。点击“价格和存货值”，可以看到物料当前的库存量、单价，以及库存总金额（下图）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9d4a6ec128233203242b2634dbae27af_720w.jpg" alt="img"></p>
+<p>在“查看”中选择“价格确定结构”显示内容如下，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2ae448122b8059fef1418de844b459b9_720w.jpg" alt="img"></p>
+<p><strong>初始库存</strong>： 本期的初始值，等于上期期末数。</p>
+<p><strong>收 据</strong>： 本期增加部分，如采购入库、发票校验、生产入库、订单结算等。</p>
+<p><strong>库存累计</strong>： 初始库存 + 收据。</p>
+<p><strong>消 耗</strong>： 本期减少部分，如生产领用、成本中心消耗、销售出库、差异重估等。</p>
+<p><strong>期末库存</strong>： 库存累计 – 消耗。</p>
+<p><strong>初级评估</strong>： 数量 × 标准价得到的金额</p>
+<p><strong>价格差异</strong>： 实际价格与标准价之间的成本差异，例如标准价是100.00，入库价格为105.00，数量100，此时计入初级评估的成本为10000.00，计入差异的金额为500.00。</p>
+<p><strong>汇率差异</strong>： 汇率原因引起的差异，例如标准价65.00CNY，采购价格为10.00USD，订单数量为1；入库时汇率为6.80000，计入初级评估的金额为65.00，计入价格差异的金额为3.00；收到发票时汇率为6.90000，此时1.00的差异计入汇率差异。</p>
+<p><strong>价 格</strong>： 物料的实际价格。</p>
+<p>点击A列左边的小三角，可以展开查看每一项的明细数据，如下图。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b3e2510de4aa24aff37da04330f910a9_720w.jpg" alt="img"></p>
+<p>以收据中的生产为例，可以看到差异5825.00由两部分构成，订单的结算和底层物料差异的上卷。</p>
+<p>在“查看”中选择“成本组件”可以分析物料的成本构成</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-00210a50bd7720f5173efcce4cae37ae_720w.jpg" alt="img"></p>
+<p>从B行可以看到物料3010000001的成本构成中，直接材料、直接人工、燃料动力、折旧费用、制造费用的金额分别是多少。其中，直接人工、燃料动力、折旧费用、制造费用与作业类型相对应，SAP中最多可以定义6个作业。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d47d25b1fe8381070bec73c2f08d4cac_720w.jpg" alt="img"></p>
+<p>分析物料的成本组件时，可以分别查看实际值、标准值、价格差异、汇率差异等，并且可以分别查看本层、底层的成本（上图）。在CKM3N的界面上，点击如下按钮还可以查询价格的成本构成，以及ML结账的会计凭证。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a3dbc3773856dd64328bd8f44d2f4782_720w.jpg" alt="img"></p>
+<p>点击图标1，查看物料价格的成本构成，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-b21a6040d91ecb5bf03b5b72307b6add_720w.jpg" alt="img"></p>
+<p>点击图标2，查看ML（物料账）结账对应的会计凭证，</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-67ca7d38edffdfc2715c3ed4ac80718e_720w.jpg" alt="img"></p>
+<p><strong>说明</strong>： CKM3N为“工厂&#x2F;物料”的明细账，SAP针对工厂下的每一个物料都有这样的明细账（启用ML后），详细记录了“工厂&#x2F;物料”的数量及价值变化。经常有朋友询问SAP是否有可以批量输出CKM3N的信息呢？事实上，CKM3N本身是物料的明细账本，包含的信息非常丰富，SAP无法按照CKM3N的内容进行批量输出。大家想要的可能是同时输出多个物料的成本构成，或者是输出多个物料的期初、增加、减少、期末汇总数（数量和金额），类似于下图的报表。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-d6de81c423200865e24a2885b7a52c92_720w.jpg" alt="img"></p>
+<p>或</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-11e8ae2ebccb5c3cbbc7a107de1d084d_720w.jpg" alt="img"></p>
+<p>SAP的标准功能中没有类似于上图的报表，以上报表都是自定义开发的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SAP/" rel="tag"># SAP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/" rel="prev" title="评估类别、评估类和评估类型">
+      <i class="fa fa-chevron-left"></i> 评估类别、评估类和评估类型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/01/SAP%E7%89%A9%E6%96%99%E5%88%86%E7%B1%BB%E8%B4%A6/" rel="next" title="SAP物料分类账">
+      SAP物料分类账 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

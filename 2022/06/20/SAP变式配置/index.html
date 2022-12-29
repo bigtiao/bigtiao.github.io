@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 VC基本概念及应用场景  VC是Variant Configuration，是依据客户需求做选择配置，完成后通过Super BOM及Super Routing结合相关性找到找到所需要物料及工序，来简化客户操作，减少BOM、物料及工艺路线的维护工作量。 但启用VC会增加BOM的维护复杂度，增加IT部门的工作量。VC的使用非常广泛，例如：电子消费品行业，家居行业(沙发)，凡是定制化生产的企业均可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SAP变式配置">
+<meta property="og:url" content="http://example.com/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="1 VC基本概念及应用场景  VC是Variant Configuration，是依据客户需求做选择配置，完成后通过Super BOM及Super Routing结合相关性找到找到所需要物料及工序，来简化客户操作，减少BOM、物料及工艺路线的维护工作量。 但启用VC会增加BOM的维护复杂度，增加IT部门的工作量。VC的使用非常广泛，例如：电子消费品行业，家居行业(沙发)，凡是定制化生产的企业均可以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9bd726088c625aff64211aacf1443e56_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a500d9b6457cef02b54e1bf53446e7c0_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-cde6df12d3ed219b21eaaf7e0b0bf3fd_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-01733add65bae6023090e03fe8e2a1ba_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-ddcba1356e1a60ec29b809485aa65e24_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-47fc798eb684c703181d97ac091c862d_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-bab2110e12201cdea3b9c974688e629c_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-988511e3a33747b997f9999c7fe603af_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-681631fc346f5e05981ddfba61bac9db_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a4859c752f353ba001a455b13933f844_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-33c69bb92077751d8de28cbd134e040c_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-6a11367b6229e55a7104a4482b3a99aa_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-07cca9881ea28f651a71d1318339693f_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9313882e48ada51610162938935d2c94_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-c3aef99cc899917f82ca985f3d32cae9_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2d59b792444a4f577155485ed08988c6_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-853fa2d0bf9f68cdce1257aec002f04f_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4f360f076d83333cf80c24a469a95b73_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-e745a75b6c256aeee931aba737350cfb_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-de9e5afed6c08c48477ceba8935540a2_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-c37c2d53b12a518f136c956945ff5d36_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-a4c86bcb6ce3d638c150cfaae3705d0e_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-51e06d7981f9073b1957bb53d11d8f6a_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-96f826c632f7be691f7339851d30b3ef_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-02beafa0236263c04bdb93fe3aa4f473_720w.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-53a7953ce940b0ebe78437dbbf480486_720w.jpg">
+<meta property="article:published_time" content="2022-06-20T06:33:00.000Z">
+<meta property="article:modified_time" content="2022-06-20T06:43:47.822Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="SAP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9bd726088c625aff64211aacf1443e56_720w.jpg">
+
+<link rel="canonical" href="http://example.com/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SAP变式配置 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SAP变式配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-20 14:33:00 / 修改时间：14:43:47" itemprop="dateCreated datePublished" datetime="2022-06-20T14:33:00+08:00">2022-06-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><strong>1 VC基本概念及应用场景</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9bd726088c625aff64211aacf1443e56_720w.jpg" alt="img"></p>
+<p>VC是Variant Configuration，是依据客户需求做选择配置，完成后通过Super BOM及Super Routing结合相关性找到找到所需要物料及工序，来简化客户操作，减少BOM、物料及工艺路线的维护工作量。</p>
+<p>但启用VC会增加BOM的维护复杂度，增加IT部门的工作量。VC的使用非常广泛，例如：电子消费品行业，家居行业(沙发)，凡是定制化生产的企业均可以尝试考虑一下VC是否能给企业带来便利。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a500d9b6457cef02b54e1bf53446e7c0_720w.jpg" alt="img"></p>
+<p>如图是联想针对ThinkPad定制化销售的WEB界面，界面上可以对“操作系统”、“显示屏”、“显卡”、“内存”等进行选配，但这不是SAP系统的标准的选配界面，但SAP可以向前和向后做扩展兼容，如：WEB，手机APP，SAP-Fiori等都可以用运用到可配置VC，同时</p>
+<p>VC功能不仅仅是运用在ERP上，在其他的系统也能通用，如：PLM, CRM, MES。</p>
+<p><strong>2 特性</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-cde6df12d3ed219b21eaaf7e0b0bf3fd_720w.jpg" alt="img"></p>
+<p><strong>特性：</strong>可以理解为是一种属性。</p>
+<p>举个例子，比如说人，有性别，年龄，民族等等这些区分，那么这些我们称为“特性”，特性里面会有“值”，比如民族有“汉族”，“蒙古族”，这些我们成为特性值，特性与特性值之间是一种从属关系，我们也可以定义这些特性它允许什么样的值存在，是什么类型的，数值型，货币型，日期型还是字段型，同时特性可以定义只允许被哪些类使用。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-01733add65bae6023090e03fe8e2a1ba_720w.jpg" alt="img"></p>
+<p>上图展示的是SAP标准中哪些表允许被修改，即依据特性值的内容更新表里面的字段，例如：你想通过这个特性值来影响BOM里的数量，就需要用到“参照”表STOP。</p>
+<p><strong>特性的价格应用</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-ddcba1356e1a60ec29b809485aa65e24_720w.jpg" alt="img"></p>
+<p>例，如何用一个特性去影响销售价，有4个步骤：</p>
+<ul>
+<li>首先建立一个特征；</li>
+<li>为条件类型“VA01”或“VA00”创建条件记录，需求维护变式值，指定某个变式对应单价；</li>
+<li>将条件类型增加到SD的价格控制过程内；</li>
+<li>分配条件记录给特性值，或者写程式相关性通过计算及选择之后使其能够等同于价格条件里面的变式，当两者匹配之后就能够带出价格出来。</li>
+</ul>
+<p>完成以上步骤之后，就可以达到效果：当用户选择了某个配置之后或某个特性之后，系统自动将价格计算出来。</p>
+<p><strong>特性影响BOM数量</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-47fc798eb684c703181d97ac091c862d_720w.jpg" alt="img"></p>
+<p>如上是表述如何通过特性影响BOM的数量，业务场景：如依据客户的选择来决定你要用某个材料用几个，比如我们的内存，规格是8G的，但客户选择的是16G,这样自然我们的内存是8G*2，在这个情况下我们需要去创建一个特性，然后用这个特性去更改我们的BOM值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-bab2110e12201cdea3b9c974688e629c_720w.jpg" alt="img"></p>
+<p>之前所列是允许被更改的表结构清单，上面列出的是仅能被读取的。主要是我们的销售的一些表，或物料的一些表，这些就不要希望能用特性去修改里面的数据。</p>
+<p><strong>3 分类</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-988511e3a33747b997f9999c7fe603af_720w.jpg" alt="img"></p>
+<p>SAP的分类有很多的类型，有针对物料、工作中心、供应商、客户的、批次的分类。每种分类的类型对应的系统后台表结构。故类类型决定了分类能被运用到哪个具体的对象，当然SAP标准存在的分类类型基本上可以满足正常的使用需求，用户无须自已新增类型。</p>
+<p>在使用的过程中，常见的分类有001，或者200，300,或者023等，另外组织范围，可以决定特性是不是在这个“组织范围”内被显示出来。</p>
+<p>分类可以理解为特性的集合，举个例子，电脑类是由什么特性组的，是由CPU，硬盘等特性组成的。 或者人这个类，是由民族，性别等特性组成的。那具体的对象，比如我这个人，那就是一个具体的实物对象，我们把这个叫做类的实例化。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-681631fc346f5e05981ddfba61bac9db_720w.jpg" alt="img"></p>
+<p>分类类型300，是VC的主要类类型，还有一个类节点200，也是VC分类类型。他们的目的都是一样，即通过Super Bom,依据客户的需求去精确的找到所需要的组件。</p>
+<p>那300和200有什么区别是，一般我们认为300是用在成品类型的。200运用于BOM里项目类别为K的分类。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-a4859c752f353ba001a455b13933f844_720w.jpg" alt="img"></p>
+<p>例子，有个销售需求，颜色是一个科选择特性，在BOM里面会维护一个类节点为K的分类，它会依据客户的选择之后会自动找到颜色所对应的一个物料。</p>
+<p>完成整套系统的配置，需要我们先创建一个300的成品分类。再创建一个200的分类，这个200的分类必须包含300里面的颜色的特性。完成后再把200的分类分配给对应的材料。这样做的好处：假设我们的颜色它有3种或4种5种，那么我们在BOM里面并不需要指定具体的物料号，而仅仅只需维护一行K类型的类节点。那通过销售订单的一个选择后系统会自动选择它所需要的材料，这种做法和我们传统的Super BOM不太一样。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-33c69bb92077751d8de28cbd134e040c_720w.jpg" alt="img"></p>
+<p><strong>总结：分类、特性、特性值</strong></p>
+<ul>
+<li>首先维护特性、特性值， 事务码： CT04；</li>
+<li>维护分类，将分类所需特性分配给类，事务码：CL02；</li>
+<li>将分类分配给具体的对象，一般为物料号。该物料的物料类型与常规物料类型不一样的，常规物料类型有成品，半成品，原材料等，此物料类型为可配置的物料类型；</li>
+<li>分配完后不会为物料指定对应的特征值，但可以指定（选择）物料的<strong>特征值</strong>能显示哪些，也就是说通过这个设置，可以完成不同的物料虽然分配是同一类，同一特性，但它允许客户选择的值可以不一样。 当然我们可以通过CU20，CU30去通过特性值查找哪一些物料有用到， 但如果查库存的话有些麻烦，这个后面会讲变式物料时提到。</li>
+</ul>
+<p><strong>4 相关性</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-6a11367b6229e55a7104a4482b3a99aa_720w.jpg" alt="img"></p>
+<p>相关性有4种类型，前提条件、选择条件、处理程序、约束。</p>
+<ul>
+<li><strong>相关性的目的：</strong>将分类或者特性，或特性值，跟BOM，Routing 做关联，使其 能过用户的选择之后，通过“相关性”来影响最终的值 和BOM项目</li>
+<li><strong>前提条件：</strong>指选择了某个值或者特性后才能出现。比如我选择了某个配件之后，另外的一个品牌才可以出现。再举个例了，选择了“市”之后，才能出现“省”，这样的一个前提条件。</li>
+<li><strong>选择条件：</strong>必须被选择, 当符合某种条件下，必须被选择。</li>
+<li><strong>处理程序：</strong>主要是写一段配置或代码。 讲变式表以及功能时上会用到。</li>
+<li><strong>约束：</strong>是判断多个对象配置的组合是不是合理的。比如说我们选不同的操作系统有Windows ,Linux的，那你在选Linux的时候，在选装软件时不能选微软Office；</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-07cca9881ea28f651a71d1318339693f_720w.jpg" alt="img"></p>
+<p>相关性的类型很多，它可以被运用于哪些对象是有规则的，如上图： 红色字母部分代表相关性的类型能被应用在什么对象上面。 从图上我们可以看到能被分配的对象有特征，特性值，类，配置参数文件，BOM，Routing等。</p>
+<p><strong>5 启用VC系统的前置因素-Super BOM</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-9313882e48ada51610162938935d2c94_720w.jpg" alt="img"></p>
+<p>首先我们需要一个Super BOM,会几乎穷举所有可能的组合，会把所有的东西放到这个里面。比如我们的CPU，CPU有这个1.2GHz，1.8 GHz，2.4 GHz的多种类型的，硬盘有1T，2T，3T等，那我们会把这些都放进去，组成一个超级BOM。 那当然这个BOM是不能被直接运用的。 维护完成后，需要维护相关性，针对每种不同的值去指定它的相关性的规则。</p>
+<p>相关性方面有两个类型：本地相关性、全局相关性。 建议大家使用全局相关性，因为本地相关性只是对这个BOM生效，如果要运用到其他BOM里面去就会非常不方便或不被允许。在相关性的命名规则一定要注意，相关性的命名规则一定要有可辨识性，避免维护完后不知如何进行选择，导致后期工作量相当巨大。</p>
+<p><strong>6 启用VC系统的前置因素-配置参数文件</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-c3aef99cc899917f82ca985f3d32cae9_720w.jpg" alt="img"></p>
+<p>创建配置参数文件之前，要求我们的物料类型是可配置的一个类型，要求MRP3视图，或者基本视图2里面，要把可配置给标识上，当然有一点我们需要注意，就是我们的“生产类型”，因选配是按订单式生产的，不是库存式生产的。需要设置MRP的策略为25。</p>
+<p>创建配置参数文件的 事务码是：CU41 ， 如果是按计划订单或生产订单无展开BOM的时候，我们只需要输入物料去保存即可。完成以上的设置之后，那我们就可以在SAP里面创建对应的销售订单，系统会提示进行特性选择。</p>
+<p><strong>7 变量表</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-2d59b792444a4f577155485ed08988c6_720w.jpg" alt="img"></p>
+<p>变量表是一个特征的组合，我们前面讲过约束，这个跟约束有点类似，我们会把特征值做在一个表里面，维护完之后我们会赋予他这个值，那我们用户在选择的时候，他只是能够选择这个表里面存在的内容。如果不在这个表里面，就是不符合规则。 维护表内容用CU60 ，CU61创建表结构大家看下面这个图 ， 右上角是维护好值的表。 下面红色部分是语法，然后会指定它的几个参数，一般会有几个输入和一个输出。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-853fa2d0bf9f68cdce1257aec002f04f_720w.jpg" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4f360f076d83333cf80c24a469a95b73_720w.jpg" alt="img"></p>
+<p>函数的应用，主要目的：依据某几个特性值来算出（ABAP）另外一个值，然后回写到这个界面里面。这个函数是通过CU65来创建，创建完后会出现激活按钮进行编辑ABAP程序，程序包含输入和输出特性，使用的语法和SE37里面是一样的。这种场景应用于比较复杂的运算，通过好几个值得到第3个值。 在特征的使用上，有些特征仅能被显示，一般是被运算出来的值。</p>
+<p><strong>8 计划订单&#x2F;生产订单-无BOM展开</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-e745a75b6c256aeee931aba737350cfb_720w.jpg" alt="img"></p>
+<p>在“配置参数文件”中，有三种选项：</p>
+<ul>
+<li>计划订单或生产订单</li>
+<li>销售订单集合</li>
+<li>订单BOM</li>
+</ul>
+<p>对应的展开的类型有：不展开，单层展开，多层展开 这些选择。 相互之间的搭配关系比较复杂的，从图上可以看到，就是我们的客户来了一个单后，它会做一个值的分配，所有的值的分配都是源自销售订单， 源自第一层。成品，半成品均可配置项，也就是多层可配置的情况。在这种情况下如果我们选择的是无BOM展开，那就意味着值分配是单一层的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-de9e5afed6c08c48477ceba8935540a2_720w.jpg" alt="img"></p>
+<p>从图上可以看到，我们的配置参数是在最上层的，那我们的半成品层其实是没有维护它的配置参数文件的。但是它的值的分配依然是生效的。它会从最上层继承下来。</p>
+<p>如果最上层没有指定连接器，而半成品层也是可配置的，如选择的是不展开BOM的方式，那也就是意味着你的原材料在连接器这一块是不可以被选择到的。所以针对这种情况下，我们要求我们的成品的分类一定要包含半成品分类的特性。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-c37c2d53b12a518f136c956945ff5d36_720w.jpg" alt="img"></p>
+<p><strong>9 计划订单&#x2F;生产订单-BOM展开</strong></p>
+<p><img src="https://pic3.zhimg.com/80/v2-a4c86bcb6ce3d638c150cfaae3705d0e_720w.jpg" alt="img"></p>
+<p>如有BOM展开，在这种情况下允许你的成品和半成品它的分类没有包含关系。而你的成品和半成品都可以选配。在做订单的时候会跳出两个产品的特性进行选配，即多层选配。</p>
+<p><strong>10 销售订单配置</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-51e06d7981f9073b1957bb53d11d8f6a_720w.jpg" alt="img"></p>
+<p>产品会一些配件或辅件，它是可以通过选择来进行配置的。这些辅件可能是不需要通过生产的，但需要通过用户的选择来加入，那这样我们的销售订单它在开始是一个行项目，但我们在选择完成后，它会把我们所选择的配置，所相关的组件给带出来，这就形成了一个销售集合。销售集合要求我们在维护这个BOM的时候就不能只是维护生产类型的BOM，那也要要维护我们5类型的BOM，也就是销售类型BOM。这里指的BOM类型有：生产BOM，销售BOM，研发BOM，成本BOM等等，这里讲的是销售BOM类型。 同样我们需要在这个销售BOM下面维护这个组件对应的“相关性”，以及与特性的关系。</p>
+<p>另外一个是订单BOM， 它会把选配的结果保存为订单BOM，我们正常维护BOM是CS01，CS02. 而订单BOM是CS61，CS62.也就是我们通过这个选配完成后，它会在系统里面去自动产生一个订单BOM。</p>
+<p><strong>11 物料变式</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-96f826c632f7be691f7339851d30b3ef_720w.jpg" alt="img"></p>
+<p>可配置物料的目的是为了节约我们的物料编码，减少BOM的维护的工作量。</p>
+<p>但是有一个部门不喜欢这个作业方式，比如我们的仓库。因为减少了物料的编码，那么仓库的管理难度会增加，因同样一个物料号，实际对应的配置，参数是不一样的。也就是在统计库存时候，这时用物料号去统计是没有任何意义的。如果有一天领导问你，某一种颜色的机器或者某一种配置的机器在仓库里有多少台？你很难去回答这个问题。所以就出现了这个“物料变式”。它的好处就是会将我们的成品进行实例化，那我们刚才讲，我们的配置物料在分配之后分类之后我们是不会给他赋予值。而物料变式它除了分配分类以后，它还会具体将对应的值输入进去，也就是我已经明确了这个物料号它代表的是哪一种配置参数。</p>
+<p>同时我也会在物料主数据里把这个物料所对应的这个可配置物料进行指定，就是做一个对应关系，那这样的好处就是我们可以在物料管理上进行严格区分，同时我们在BOM的时候也可以参照销售BOM进行生产，也就是减少了BOM的工作量，但是也没有给库存管理带来很大的问题。</p>
+<p><strong>12 SAP VC学习路径</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-02beafa0236263c04bdb93fe3aa4f473_720w.jpg" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-53a7953ce940b0ebe78437dbbf480486_720w.jpg" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SAP/" rel="tag"># SAP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/" rel="prev" title="会计凭证理解">
+      <i class="fa fa-chevron-left"></i> 会计凭证理解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/" rel="next" title="SAP变式配置BOM实现">
+      SAP变式配置BOM实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="问题背景在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。 问题查找1、尝试重启致远主服务、重启物理机均无效 2、查看线程日志发现是所有的dee任务都在运行中，如下所示： 3、通过咨询致远代老师，拿到了解决方案，有3种方案：方案一：1、停止OA服务2、将A8\base\dee\data下除了dee.mv.db或dee.h2.db外的，其他2个文件（dee">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记致远OA系统DEE挂掉遇坑">
+<meta property="og:url" content="http://example.com/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="问题背景在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。 问题查找1、尝试重启致远主服务、重启物理机均无效 2、查看线程日志发现是所有的dee任务都在运行中，如下所示： 3、通过咨询致远代老师，拿到了解决方案，有3种方案：方案一：1、停止OA服务2、将A8\base\dee\data下除了dee.mv.db或dee.h2.db外的，其他2个文件（dee">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155803.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ce47ecc297f7f5c4e035e32b08fe219.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ae78b02e0154845397879b58741ccda.png">
+<meta property="article:published_time" content="2022-08-08T07:53:02.000Z">
+<meta property="article:modified_time" content="2022-08-09T07:15:22.014Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="致远OA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png">
+
+<link rel="canonical" href="http://example.com/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>记致远OA系统DEE挂掉遇坑 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          记致远OA系统DEE挂掉遇坑
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-08 15:53:02" itemprop="dateCreated datePublished" datetime="2022-08-08T15:53:02+08:00">2022-08-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-09 15:15:22" itemprop="dateModified" datetime="2022-08-09T15:15:22+08:00">2022-08-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%87%B4%E8%BF%9COA/" itemprop="url" rel="index"><span itemprop="name">致远OA</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png" alt="20220808155648"></p>
+<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、尝试重启致远主服务、重启物理机均无效</p>
+<p>2、查看线程日志发现是所有的dee任务都在运行中，如下所示：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155803.png" alt="20220808155803"></p>
+<p>3、通过咨询致远代老师，拿到了解决方案，有3种方案：<br>方案一：<br>1、停止OA服务<br>2、将A8\base\dee\data下除了dee.mv.db或dee.h2.db外的，其他2个文件（dee.trace.db、dee.lock.db）删除<br>3、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>4、重启OA，连接上dee数据库</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>方案二：<br>如果上述操作后还是看不到dee控制台的数据，则按如下操作：<br>1、停止OA服务<br>2、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>3、新建一个名为data的空文件夹<br>4、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>5、重启OA<br>6、在A8\base\dee\drpHistory下找到日期最近的drp文件（2020-12-10.drp），在dee控制台部署一下即可</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>方案三：<br>如果上述操作后还不行，则如下操作：<br>1、如果有自己备份drp，或则有dee工具（包含所有OA的dee任务，则导出OA里的任务为drp包）<br>2、停止OA服务<br>3、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>4、新建一个名为data的空文件夹<br>5、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>6、重启OA<br>7、导入drp即可</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>4、通过测试，方案二解决问题，但是所有的任务全部失效，从dee平台中重新导出一份到OA解决问题。</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、dee插件在致远系统中的数据库是H2内存数据库，猜测由于没有正常停用服务进程导致H2数据库没有正常释放导致此问题。</p>
+<p>2、官方反馈原因<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ce47ecc297f7f5c4e035e32b08fe219.png" alt="ce47ecc297f7f5c4e035e32b08fe219"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ae78b02e0154845397879b58741ccda.png" alt="ae78b02e0154845397879b58741ccda"></p>
+<p>他的意思是， DEE数据库是H2. 是这个数据库的弊端。 如果连接比较频繁，容易造成卡死。一般重启服务是能解决的。总体来说，是DEE本身数据库的弊端</p>
+<p>7.1版本，日志是在在同一个数据库文件中dee.mv.db，高并发会出现线程中断，导致文件受损以至于dee任务无法执行；8.1新的版本，dee做了改良，把日志记录的数据给剥离出来了，放到另外的一个数据库文件中，his_mv.db中，能保证dee任务正常使用；</p>
+<p>解决方案就是代老师给的三个解决办法。然后把定时器关了，防止有频繁的连接。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%87%B4%E8%BF%9COA/" rel="tag"># 致远OA</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/02/%E9%87%87%E8%B4%AD%E4%BB%93%E5%82%A8%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/" rel="prev" title="采购仓储业务学习">
+      <i class="fa fa-chevron-left"></i> 采购仓储业务学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/13/%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/" rel="next" title="销售业务学习">
+      销售业务学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%9F%A5%E6%89%BE"><span class="nav-number">2.</span> <span class="nav-text">问题查找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">问题记录</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

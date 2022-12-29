@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。 ​      这样可保证当月收入与成本匹配。 2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SAP月结步骤">
+<meta property="og:url" content="http://example.com/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="打螺丝闲暇的记录">
+<meta property="og:description" content="1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。 ​      这样可保证当月收入与成本匹配。 2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者T">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-23T09:34:00.000Z">
+<meta property="article:modified_time" content="2022-06-23T09:35:13.882Z">
+<meta property="article:author" content="一骗树">
+<meta property="article:tag" content="SAP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SAP月结步骤 | 打螺丝闲暇的记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打螺丝闲暇的记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>Links</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SAP月结步骤
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-23 17:34:00 / 修改时间：17:35:13" itemprop="dateCreated datePublished" datetime="2022-06-23T17:34:00+08:00">2022-06-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
+<p>​      这样可保证当月收入与成本匹配。</p>
+<p>2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者TECO技术完成处理。这个要求，对保证生产成本的正确至关重要（为保险起见，请全部用DLV，如果生产订单中有联产品，则联产品也应打上交货已经完成的勾）。</p>
+<p>3，S_ALR_87013611  查看成本中心报表,在后续成本要素分配分摊过程中,做完每一步都要在这里刷新报表查看结果是不是正确。注意成本中心（组）及费用要素（组）的选择，生产成本中心不应该出现非制造费用科目有金额。管理费用要素组也不应该出现生产成本中心，一定要先做这个检查。发现不匹配，应做纠错分录处理。</p>
+<p>在进行下面的步骤之前，最好是先发出系统通知，请所有用户登出系统，以避免与结账操作互相冲突，对结账过程产生不利影响。</p>
+<p>4, KSV5&#x2F;KSU5  分配与分摊.   KSV5分配在初级成本要素之间,KSU5分摊则是在初级与次级之间进行费用的重分配,最终目标是把生产费用合理地分摊到生产成本中心去.如果是各车间共同费用分摊到各生产车间，最好是采用KSV5，这样可以费用的原始科目分摊转移（注：这个对后面的差异计算及作业价格重估有影响）。如果是采用KSU5，则要用到次级（43类型）成本要素进行结转，这样查看报表时看不清楚费用科目的来龙去脉。KSU5如果不用次级成本要素，则必须用到成本结构（TC：KSES维护）。还要注意循环的属性：重复和累计的选择，以及接受方以什么为基数分配接收。KSU5应该也可以实现KSV5的功能。如果要在生产成本中心之间再进行分摊转移，则应该采用KSU5。</p>
+<p>   我们选择使用KSV5。并且在ksv5之前，先用ksvb进行计划分配。</p>
+<p>5，KSS1  差异计算 （如果KSV5&#x2F;KSU5错误应用，差异计算也会错）</p>
+<p>6，KSS2  作业成本分割（固定与变动）（注意同上）</p>
+<p>7，KSII   作业价格重算 （得到实际作业价格）(结果受到上面三步的直接影响)。注意这里可以选择期间，意味着可以得到几个月的累计实际作业价格。这是进行成本计划时重要的参考数据。如果某个生产成本中心有作业发生，但是确没有成本金额产生，或者有金额产生但是没有作业发生，两种情况都会带来问题。没有作业发生等于是一个分式的分母为0，会发生无法相除的致命错误！如果没有金额，则分子为0，虽然现在不致命，但是到后面，会告诉你某个作业类型的实际价格无法确定，仍是致命错误！</p>
+<p>8，CO8A  联产品成本预结算（预分配），当存在联产品时必做。保险起见，一般都做一下这一步。</p>
+<p>9，KKAO  在产品成本计算  （在产品成本从生产成本状态转入在产品科目，形成存货，当使用物料分类账时，在产品并不分摊差异，这一点要特别注意，也是因为这一点，请避免产生在产品，这是神人SAP屠夫最有用的建议之一）。</p>
+<p>10，KKS1  生产订单成本差异计算，比较耗时，请耐心等待。结果出来后，会发现很多条错误类型的消息。这里需要经验判断，哪一些错误是不需要理睬的：例如某个订单没有dlv或者teco的状态，某个订单是clsd状态，或者别的已经知道原因并且处理过的错误信息。这一步要慎重对待。如果发现新的错误信息，则一定要先处理完错误才能继续。这时候请尊重顾问，向顾问虚心求教！切记。</p>
+<p>11，CO88  生产订单结算（这里，如果在结算版本中配置的在产品转出的会计科目同时生成了初级成本要素就会出错, 必须删除这个科目的成本要素）。如果前面都顺利，则生产订单的结算一般不会出现问题。这一步完成之后，生产订单就都处理完毕了。但是差异并没有实际结转，要继续以下重头戏：物料分类账的结账</p>
+<p>12，CKLMCP 以下物料分类账的结账内容较多，并且交错影响：</p>
+<p>物料账月末处理： a.选择        CKMLCP    物料账月末处理：b.确定顺序    CKMLCP 物料账月末处理：c.单级处理确定   CKMLCP  检查单级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作） 物料账月末处理：d.多级处理确定   CKMLCP  检查多级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作）</p>
+<p>物料账月末处理： e.消耗的重新评估  CKMLCP</p>
+<p>上面这几步完成后，要先打开新的期间才能继续： 打开新的物料期间   MMPV（打开期间前，必须已处理完所有的单级及多级的错误） </p>
+<p>打开新的会计期间 OB52  （打开这两个期间后，新的物料标准价格才能下达）</p>
+<p>然后继续：</p>
+<p>物料账月末处理： f.记账清算      CKMLCP （测试运行） （此步骤必须先测试运行）  检查物料账月末处理是否正确，OK后才能       物料账月末处理：f.记账清算     CKMLCP  （正式运行）   查询物料账相关报表，检查数据是否正确。其实只要查看F.01报表中的存货与生产成本，所有差异都结转为0，生产成本也结转为0，就表示正确无误了。但一般会存在几分钱的零头差异，这是正常的结果。生产成本的零头差异，一般在成本中心报表中可以看到。而存货差异的零头差异，则一般可用ckmvfm查看明细(未分摊的差异)。因均为零头，而且在系统运算过程中无法避免，所以一般都是用总账调整分录直接在FI中调整即可。 13，月末成本处理及物料账结算完成。打开锁定用户。通知大家可以继续正常使用系统了。</p>
+<p>最后在CKMLCP中的标志价格那一步，作用是在物料主档的会计1视图中以移动平均价更新未来价格。这一步没有必要做。</p>
+<p>至此，成本结算就差不多了。 再返回去看成本中心报表，所有生产成本中心应该结平（转走了），但一般情况下会出现几分钱的余额，这属正常现象。如果余额较大，应分析原因，以避免下一期再出现较大余额。但本期可以直接在FI中用调整分录调整一下就可以了。</p>
+<p>另外要看F.01 报表中在产品与生产成本科目的余额.   生产成本科目的余额按道理应为0才对,因为在产品结算后,生产成本的余额就全部转到在产品科目了. </p>
+<p> 此时所有物料，在系统中的成本已经转换成了实际成本。月末库存成本也为实际成本。实际成本：移动加权平均成本。系统中是使用周期成本来表述。</p>
+<p>以上为最重要的月末结账操作。从上面的描述可知，月末结账的内容很多，而且因为在结账过程中要冻结系统，一般人员不能使用，所以要求在半天，最多一天的时间内完成。过程中每一步都很重要，不允许出现错误，否则遗害整个系统。如果过程中出现错误，必须要有经验的人员进行处理，必须是处理完错误之后才能继续。因此需要资深的，对系统有全局把握的人员负责。当公司人员无法解决问题时，还必须得到外部顾问的帮助。（让人尴尬的是，SAP公司的技术支持人员，不会帮用户解决使用上碰到的非系统错误性质的问题）</p>
+<p>以下还有三个重要的结账操作：</p>
+<p>14，FAGL_FC_VAL  外币评估。  这一步要在所有外币业务处理完，特别是外销的收入。做完收入还要核对，例如跟报税的资料核对。一般配置两个变式，一个是要在下月初冲回，如果应收应付科目，一个则是不冲回，如货币资金科目。请按变式操作，不要随便动变式的任何配置。</p>
+<p>15，F.19  GI&#x2F;IR收货与收发票的对比，即在途存货与暂估应付账款的记账。 请按变式操作，不要随便动变式的任何配置。一般为暂估应付账款，即已经收货但没有收到发票的状态。这时的负债的是一个临时的，暂估的金额，因为最终是以发票金额确认负债的。</p>
+<p>16，FAGLF101 应收应付科目余额的重分类。请按变式操作，不要随便动变式的任何配置。应收科目的余额正常应该在借方，但如果出现在贷方呢？就应该重分类为负债。相反，应付科目的余额正常应该在贷方，但如果出现在借方呢？就应该重分类为资产。</p>
+<p>以上完成之后，SAP的系统月结就完成了。</p>
+<p>此时还可以做一些非生产制造成本费用的，非外币业务的，非应收应付的总账分录。如果没有，请及时关闭已经结账月份的期间。</p>
+<p>最终关闭旧期间： OB52  </p>
+<p>只有关闭了旧期间，这个期间的会计报表才是固定不变的。</p>
+<p>数据已经定型，接下来，各位分析师们，就开始各种数据分析了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SAP/" rel="tag"># SAP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/" rel="prev" title="SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference">
+      <i class="fa fa-chevron-left"></i> SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/" rel="next" title="SAP工单创建自动释放">
+      SAP工单创建自动释放 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一骗树</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一骗树</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
