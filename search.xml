@@ -18,6 +18,42 @@
       </tags>
   </entry>
   <entry>
+    <title>ABAP发票预制</title>
+    <url>/2022/11/24/ABAP%E5%8F%91%E7%A5%A8%E9%A2%84%E5%88%B6/</url>
+    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>MIR7的发票预制，不需要过账</p>
+<p>1、BAPI_INCOMINGINVOICE_PARK<br>2、BAPI_INCOMINGINVOICE_CREATE<br>3、BAPI_INCOMINGINVOICE_CREATE1</p>
+<p>1和2的价格可以输负数<br>2创建的发票直接过账</p>
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>BAPI_INCOMINGINVOICE_PARK例子</p>
+<p>需要注意：发票有四种事务类型，可以通过BAPI参数进行设置</p>
+<p>“发票:       headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; space<br>“贷项凭证:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; space<br>“后续借记:   headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; ‘X’<br>“后续贷记:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; ‘X’</p>
+<p>如果设置税率自动计算，则不需要传taxitem</p>
+<p>发票和后续借记金额传正数，贷项凭证和后续贷记金额传负数</p>
+<p>参照凭证必须传输，否则报错，默认借方凭证找101，贷方找161退货凭证，EKBE表找</p>
+<ol>
+<li>新增</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CREATE .</span><br><span class="line"> </span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_CREATE_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_CREATE_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_MESSAGE             TYPE STRING,</span><br><span class="line">        LV_POST_MSG            TYPE CHAR300,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_STATUS              TYPE CHAR01.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS NOT INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY LIFNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING LIFNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS,LS_HEADERDATA,LT_ITEMDATA[],LT_TAXDATA[].</span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND TYPE NE LS_ONLY-TYPE.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;同一个供应商下，事务类型不同；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      EXIT.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line">    LS_HEADERDATA-DOC_TYPE = &#x27;RE&#x27;. &quot;凭证类型</span><br><span class="line">    LS_HEADERDATA-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA-COMP_CODE = LS_ONLY-BUKRS. &quot;公司代码</span><br><span class="line">    LS_HEADERDATA-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA-CURRENCY = LS_ONLY-WAERS. &quot; 货币</span><br><span class="line">    LS_HEADERDATA-DELIV_POSTING = &#x27;S&#x27;.</span><br><span class="line">    LS_HEADERDATA-RETURN_POSTING = &#x27;H&#x27;.</span><br><span class="line">    LS_HEADERDATA-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    IF LS_ONLY-CAL_IND IS NOT INITIAL.</span><br><span class="line">      LS_HEADERDATA-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      CLEAR:LT_ITEMDATA.</span><br><span class="line">      LV_ITEM = LV_ITEM + 10.</span><br><span class="line">      LT_ITEMDATA-INVOICE_DOC_ITEM = LV_ITEM.</span><br><span class="line">      LT_ITEMDATA-PO_NUMBER = GS_RBKP_DATA-EBELN. &quot; 采购订单号</span><br><span class="line">      LT_ITEMDATA-PO_ITEM = GS_RBKP_DATA-EBELP. &quot; 采购订单行号</span><br><span class="line">      LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ. &quot; 税码</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 价格</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE. &quot; 开票数</span><br><span class="line">      LT_ITEMDATA-PO_UNIT = GS_RBKP_DATA-MEINS. &quot; 单位</span><br><span class="line">      LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line"> </span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line"> </span><br><span class="line">      SELECT</span><br><span class="line">        *</span><br><span class="line">        INTO TABLE @DATA(LT_REF)</span><br><span class="line">        FROM EKBE</span><br><span class="line">        WHERE EBELN = @GS_RBKP_DATA-EBELN AND</span><br><span class="line">              EBELP = @GS_RBKP_DATA-EBELP AND</span><br><span class="line">              BEWTP = &#x27;E&#x27; AND</span><br><span class="line">              BWART IN ( &#x27;101&#x27;, &#x27;105&#x27; , &#x27;161&#x27; ).</span><br><span class="line">      SORT LT_REF BY EBELN EBELP GJAHR DESCENDING BELNR DESCENDING.</span><br><span class="line"> </span><br><span class="line">      &quot; 非退货找101</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND IS INITIAL.</span><br><span class="line">          READ TABLE LT_REF INTO DATA(LS_REF) WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">      ELSE.</span><br><span class="line">        &quot; 退货找161</span><br><span class="line">        READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;161&#x27;.</span><br><span class="line">        IF SY-SUBRC NE 0.</span><br><span class="line">          READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">        ENDIF.</span><br><span class="line">      ENDIF.</span><br><span class="line"> </span><br><span class="line">      LT_ITEMDATA-REF_DOC = LS_REF-LFBNR. &quot;参考物料凭证</span><br><span class="line">      LT_ITEMDATA-REF_DOC_YEAR = LS_REF-LFGJA.  &quot;参考年份</span><br><span class="line">      LT_ITEMDATA-REF_DOC_IT = LS_REF-LFPOS.  &quot;参考凭证行</span><br><span class="line">      APPEND LT_ITEMDATA.</span><br><span class="line"> </span><br><span class="line">      CLEAR:LT_FTAXP.</span><br><span class="line">      CALL FUNCTION &#x27;GET_TAX_PERCENTAGE&#x27;</span><br><span class="line">        EXPORTING</span><br><span class="line">          ALAND   = &#x27;CN&#x27;</span><br><span class="line">          DATAB   = SY-DATUM</span><br><span class="line">          MWSKZ   = GS_RBKP_DATA-MWSKZ</span><br><span class="line">          TXJCD   = &#x27;&#x27;</span><br><span class="line">        TABLES</span><br><span class="line">          T_FTAXP = LT_FTAXP.</span><br><span class="line">      READ TABLE LT_FTAXP INTO DATA(LS_FTAXP) INDEX 1.</span><br><span class="line"> </span><br><span class="line">      LT_TAXDATA-ITEMNO_TAX = &#x27;0010&#x27;.</span><br><span class="line">      LT_TAXDATA-TAX_AMOUNT = LT_TAXDATA-TAX_AMOUNT + GS_RBKP_DATA-WRBTR * ( LS_FTAXP-KBETR / 1000 ). &quot; 税额</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_PARK&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONIN      =</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TM_ITEMDATA      =</span><br><span class="line">      .</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      LV_MESSAGE = |创建成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND BELNR IS INITIAL.</span><br><span class="line">      CLEAR:GS_RBKP_DATA-CELLTAB.</span><br><span class="line">      PERFORM FRM_SET_EDIT USING GS_RBKP_DATA.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      GS_RBKP_DATA-BELNR = LV_INVOICEDOCNUMBER.</span><br><span class="line">      GS_RBKP_DATA-GJAHR = LV_FISCALYEAR.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><p>修改：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CHANGE .</span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_DETAIL_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_DETAIL_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_DETAIL_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ITEMDATA_CHANGE     TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_DETAIL_TAX WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA_CHANGE      TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_STATUS              TYPE CHAR01,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_MESSAGE             TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA: LS_TABLE_CHANGE       TYPE BAPI_INCINV_CHNG_TABLES,</span><br><span class="line">        LS_HEADERDATA_CHANGE  TYPE  BAPI_INCINV_CHNG_HEADER,</span><br><span class="line">        LS_HEADERDATA_CHANGEX TYPE  BAPI_INCINV_CHNG_HEADERX.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS.</span><br><span class="line">    IF LS_ONLY-RBSTAT = &#x27;5&#x27;.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;凭证已过账，无法修改；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_GETDETAIL&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      IMPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">*       ADDRESSDATA      =</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TMDATA           =</span><br><span class="line">*       NFMETALLITMS     =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGE-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA_CHANGE-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA_CHANGE-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    LS_HEADERDATA_CHANGE-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line">    LS_HEADERDATA_CHANGE-CALC_TAX_IND = LS_ONLY-CAL_IND. &quot; 自动计算税额</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGEX-DOC_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-PSTNG_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-BLINE_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-DIFF_INV = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-REF_DOC_NO = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-HEADER_TXT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-GROSS_AMOUNT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    LOOP AT LT_ITEMDATA.</span><br><span class="line">      READ TABLE GT_RBKP_DATA INTO GS_RBKP_DATA WITH KEY BOX = &#x27;X&#x27; EBELN = LT_ITEMDATA-PO_NUMBER EBELP = LT_ITEMDATA-PO_ITEM.</span><br><span class="line">      IF SY-SUBRC = 0.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 金额</span><br><span class="line">        LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE.</span><br><span class="line">        LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ.</span><br><span class="line">        LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = ABS( LT_ITEMDATA-ITEM_AMOUNT ).</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line">      CLEAR:LT_ITEMDATA_CHANGE.</span><br><span class="line">      MOVE-CORRESPONDING LT_ITEMDATA TO LT_ITEMDATA_CHANGE.</span><br><span class="line">      APPEND LT_ITEMDATA_CHANGE.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_CODE = LS_ONLY-MWSKZ.</span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_AMOUNT = LS_ONLY-WMWST1.</span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA_CHANGE.</span><br><span class="line">      LS_TABLE_CHANGE-TAXDATA = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_TABLE_CHANGE-ITEMDATA = &#x27;X&#x27;.</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_CHANGE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER     = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR           = LS_ONLY-GJAHR</span><br><span class="line">        INVOICE_DOC_STATUS   = &#x27;A&#x27;</span><br><span class="line">        TABLE_CHANGE         = LS_TABLE_CHANGE</span><br><span class="line">        HEADERDATA_CHANGE    = LS_HEADERDATA_CHANGE</span><br><span class="line">        HEADERDATA_CHANGEX   = LS_HEADERDATA_CHANGEX</span><br><span class="line">*       ADRESSDATA_CHANGE    =</span><br><span class="line">*       ADRESSDATA_CHANGEX   =</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER_NEW = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR_NEW       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA             = LT_ITEMDATA_CHANGE</span><br><span class="line">*       ACCOUNTINGDATA       =</span><br><span class="line">*       GLACCOUNTDATA        =</span><br><span class="line">*       MATERIALDATA         =</span><br><span class="line">        TAXDATA              = LT_TAXDATA_CHANGE</span><br><span class="line">*       WITHTAXDATA          =</span><br><span class="line">*       VENDORITEMSPLITDATA  =</span><br><span class="line">        RETURN               = LT_RETURN</span><br><span class="line">*       EXTENSIONIN          =</span><br><span class="line">*       TM_ITEMDATA          =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CLEAR:LV_MESSAGE.</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line"> </span><br><span class="line">      LV_MESSAGE = |修改成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line"> </span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_DELETE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      DELETE GT_RBKP_DATA WHERE GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ELSE.</span><br><span class="line">      LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">        GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">        GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">        MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">      ENDLOOP.</span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>过账</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_POST&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      </span><br><span class="line">    ELSE.</span><br><span class="line"> </span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>&#x2F;</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference</title>
     <url>/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/</url>
     <content><![CDATA[<p>相比较于一般的数据类型（例如 I, P, F, N, C, D, T等）的变量，Field Symbol和Data Reference类型的变量是ABAP中两个相关复杂的类型。理解和使用这两种变量，对于编写高性能、高灵活性的ABAP程序是十分重要的。</p>
@@ -71,6 +107,75 @@
       </tags>
   </entry>
   <entry>
+    <title>OLTP与OLAP的区别</title>
+    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
+<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
+<ul>
+<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
+<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
+</ul>
+<p><strong>2、实时性要求不同：</strong></p>
+<ul>
+<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
+<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
+</ul>
+<p><strong>3、数据量不同：</strong></p>
+<ul>
+<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
+<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
+</ul>
+<p><strong>4、用户和系统的面向性不同：</strong></p>
+<ul>
+<li>OLTP是面向顾客的,用于事务和查询处理。</li>
+<li>OLAP是面向市场的,用于数据分析。</li>
+</ul>
+<p><strong>5、数据库设计不同：</strong></p>
+<ul>
+<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
+<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP NOTE安装过程</title>
+    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
+<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
+<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
+<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
+<p><strong>2.更改系统选项</strong></p>
+<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
+<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
+<p><strong>3.导入note</strong></p>
+<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
+<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
+<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
+<p> <strong>4.新建传输号</strong></p>
+<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
+<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Kettle实战学习</title>
     <url>/2022/10/20/Kettle%E5%AE%9E%E6%88%98%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h3 id="实现目标"><a href="#实现目标" class="headerlink" title="实现目标"></a>实现目标</h3><p>实现的目标是获取钉钉系统里所有日志信息，并写入数据库</p>
@@ -111,111 +216,6 @@
       </categories>
       <tags>
         <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>OLTP与OLAP的区别</title>
-    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
-<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
-<ul>
-<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
-<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
-</ul>
-<p><strong>2、实时性要求不同：</strong></p>
-<ul>
-<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
-<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
-</ul>
-<p><strong>3、数据量不同：</strong></p>
-<ul>
-<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
-<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
-</ul>
-<p><strong>4、用户和系统的面向性不同：</strong></p>
-<ul>
-<li>OLTP是面向顾客的,用于事务和查询处理。</li>
-<li>OLAP是面向市场的,用于数据分析。</li>
-</ul>
-<p><strong>5、数据库设计不同：</strong></p>
-<ul>
-<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
-<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ABAP发票预制</title>
-    <url>/2022/11/24/ABAP%E5%8F%91%E7%A5%A8%E9%A2%84%E5%88%B6/</url>
-    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>MIR7的发票预制，不需要过账</p>
-<p>1、BAPI_INCOMINGINVOICE_PARK<br>2、BAPI_INCOMINGINVOICE_CREATE<br>3、BAPI_INCOMINGINVOICE_CREATE1</p>
-<p>1和2的价格可以输负数<br>2创建的发票直接过账</p>
-<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>BAPI_INCOMINGINVOICE_PARK例子</p>
-<p>需要注意：发票有四种事务类型，可以通过BAPI参数进行设置</p>
-<p>“发票:       headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; space<br>“贷项凭证:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; space<br>“后续借记:   headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; ‘X’<br>“后续贷记:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; ‘X’</p>
-<p>如果设置税率自动计算，则不需要传taxitem</p>
-<p>发票和后续借记金额传正数，贷项凭证和后续贷记金额传负数</p>
-<p>参照凭证必须传输，否则报错，默认借方凭证找101，贷方找161退货凭证，EKBE表找</p>
-<ol>
-<li>新增</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CREATE .</span><br><span class="line"> </span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_CREATE_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_CREATE_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_MESSAGE             TYPE STRING,</span><br><span class="line">        LV_POST_MSG            TYPE CHAR300,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_STATUS              TYPE CHAR01.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS NOT INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY LIFNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING LIFNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS,LS_HEADERDATA,LT_ITEMDATA[],LT_TAXDATA[].</span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND TYPE NE LS_ONLY-TYPE.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;同一个供应商下，事务类型不同；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      EXIT.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line">    LS_HEADERDATA-DOC_TYPE = &#x27;RE&#x27;. &quot;凭证类型</span><br><span class="line">    LS_HEADERDATA-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA-COMP_CODE = LS_ONLY-BUKRS. &quot;公司代码</span><br><span class="line">    LS_HEADERDATA-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA-CURRENCY = LS_ONLY-WAERS. &quot; 货币</span><br><span class="line">    LS_HEADERDATA-DELIV_POSTING = &#x27;S&#x27;.</span><br><span class="line">    LS_HEADERDATA-RETURN_POSTING = &#x27;H&#x27;.</span><br><span class="line">    LS_HEADERDATA-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    IF LS_ONLY-CAL_IND IS NOT INITIAL.</span><br><span class="line">      LS_HEADERDATA-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      CLEAR:LT_ITEMDATA.</span><br><span class="line">      LV_ITEM = LV_ITEM + 10.</span><br><span class="line">      LT_ITEMDATA-INVOICE_DOC_ITEM = LV_ITEM.</span><br><span class="line">      LT_ITEMDATA-PO_NUMBER = GS_RBKP_DATA-EBELN. &quot; 采购订单号</span><br><span class="line">      LT_ITEMDATA-PO_ITEM = GS_RBKP_DATA-EBELP. &quot; 采购订单行号</span><br><span class="line">      LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ. &quot; 税码</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 价格</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE. &quot; 开票数</span><br><span class="line">      LT_ITEMDATA-PO_UNIT = GS_RBKP_DATA-MEINS. &quot; 单位</span><br><span class="line">      LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line"> </span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line"> </span><br><span class="line">      SELECT</span><br><span class="line">        *</span><br><span class="line">        INTO TABLE @DATA(LT_REF)</span><br><span class="line">        FROM EKBE</span><br><span class="line">        WHERE EBELN = @GS_RBKP_DATA-EBELN AND</span><br><span class="line">              EBELP = @GS_RBKP_DATA-EBELP AND</span><br><span class="line">              BEWTP = &#x27;E&#x27; AND</span><br><span class="line">              BWART IN ( &#x27;101&#x27;, &#x27;105&#x27; , &#x27;161&#x27; ).</span><br><span class="line">      SORT LT_REF BY EBELN EBELP GJAHR DESCENDING BELNR DESCENDING.</span><br><span class="line"> </span><br><span class="line">      &quot; 非退货找101</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND IS INITIAL.</span><br><span class="line">          READ TABLE LT_REF INTO DATA(LS_REF) WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">      ELSE.</span><br><span class="line">        &quot; 退货找161</span><br><span class="line">        READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;161&#x27;.</span><br><span class="line">        IF SY-SUBRC NE 0.</span><br><span class="line">          READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">        ENDIF.</span><br><span class="line">      ENDIF.</span><br><span class="line"> </span><br><span class="line">      LT_ITEMDATA-REF_DOC = LS_REF-LFBNR. &quot;参考物料凭证</span><br><span class="line">      LT_ITEMDATA-REF_DOC_YEAR = LS_REF-LFGJA.  &quot;参考年份</span><br><span class="line">      LT_ITEMDATA-REF_DOC_IT = LS_REF-LFPOS.  &quot;参考凭证行</span><br><span class="line">      APPEND LT_ITEMDATA.</span><br><span class="line"> </span><br><span class="line">      CLEAR:LT_FTAXP.</span><br><span class="line">      CALL FUNCTION &#x27;GET_TAX_PERCENTAGE&#x27;</span><br><span class="line">        EXPORTING</span><br><span class="line">          ALAND   = &#x27;CN&#x27;</span><br><span class="line">          DATAB   = SY-DATUM</span><br><span class="line">          MWSKZ   = GS_RBKP_DATA-MWSKZ</span><br><span class="line">          TXJCD   = &#x27;&#x27;</span><br><span class="line">        TABLES</span><br><span class="line">          T_FTAXP = LT_FTAXP.</span><br><span class="line">      READ TABLE LT_FTAXP INTO DATA(LS_FTAXP) INDEX 1.</span><br><span class="line"> </span><br><span class="line">      LT_TAXDATA-ITEMNO_TAX = &#x27;0010&#x27;.</span><br><span class="line">      LT_TAXDATA-TAX_AMOUNT = LT_TAXDATA-TAX_AMOUNT + GS_RBKP_DATA-WRBTR * ( LS_FTAXP-KBETR / 1000 ). &quot; 税额</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_PARK&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONIN      =</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TM_ITEMDATA      =</span><br><span class="line">      .</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      LV_MESSAGE = |创建成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND BELNR IS INITIAL.</span><br><span class="line">      CLEAR:GS_RBKP_DATA-CELLTAB.</span><br><span class="line">      PERFORM FRM_SET_EDIT USING GS_RBKP_DATA.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      GS_RBKP_DATA-BELNR = LV_INVOICEDOCNUMBER.</span><br><span class="line">      GS_RBKP_DATA-GJAHR = LV_FISCALYEAR.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li><p>修改：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CHANGE .</span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_DETAIL_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_DETAIL_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_DETAIL_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ITEMDATA_CHANGE     TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_DETAIL_TAX WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA_CHANGE      TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_STATUS              TYPE CHAR01,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_MESSAGE             TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA: LS_TABLE_CHANGE       TYPE BAPI_INCINV_CHNG_TABLES,</span><br><span class="line">        LS_HEADERDATA_CHANGE  TYPE  BAPI_INCINV_CHNG_HEADER,</span><br><span class="line">        LS_HEADERDATA_CHANGEX TYPE  BAPI_INCINV_CHNG_HEADERX.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS.</span><br><span class="line">    IF LS_ONLY-RBSTAT = &#x27;5&#x27;.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;凭证已过账，无法修改；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_GETDETAIL&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      IMPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">*       ADDRESSDATA      =</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TMDATA           =</span><br><span class="line">*       NFMETALLITMS     =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGE-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA_CHANGE-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA_CHANGE-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    LS_HEADERDATA_CHANGE-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line">    LS_HEADERDATA_CHANGE-CALC_TAX_IND = LS_ONLY-CAL_IND. &quot; 自动计算税额</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGEX-DOC_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-PSTNG_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-BLINE_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-DIFF_INV = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-REF_DOC_NO = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-HEADER_TXT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-GROSS_AMOUNT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    LOOP AT LT_ITEMDATA.</span><br><span class="line">      READ TABLE GT_RBKP_DATA INTO GS_RBKP_DATA WITH KEY BOX = &#x27;X&#x27; EBELN = LT_ITEMDATA-PO_NUMBER EBELP = LT_ITEMDATA-PO_ITEM.</span><br><span class="line">      IF SY-SUBRC = 0.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 金额</span><br><span class="line">        LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE.</span><br><span class="line">        LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ.</span><br><span class="line">        LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = ABS( LT_ITEMDATA-ITEM_AMOUNT ).</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line">      CLEAR:LT_ITEMDATA_CHANGE.</span><br><span class="line">      MOVE-CORRESPONDING LT_ITEMDATA TO LT_ITEMDATA_CHANGE.</span><br><span class="line">      APPEND LT_ITEMDATA_CHANGE.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_CODE = LS_ONLY-MWSKZ.</span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_AMOUNT = LS_ONLY-WMWST1.</span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA_CHANGE.</span><br><span class="line">      LS_TABLE_CHANGE-TAXDATA = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_TABLE_CHANGE-ITEMDATA = &#x27;X&#x27;.</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_CHANGE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER     = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR           = LS_ONLY-GJAHR</span><br><span class="line">        INVOICE_DOC_STATUS   = &#x27;A&#x27;</span><br><span class="line">        TABLE_CHANGE         = LS_TABLE_CHANGE</span><br><span class="line">        HEADERDATA_CHANGE    = LS_HEADERDATA_CHANGE</span><br><span class="line">        HEADERDATA_CHANGEX   = LS_HEADERDATA_CHANGEX</span><br><span class="line">*       ADRESSDATA_CHANGE    =</span><br><span class="line">*       ADRESSDATA_CHANGEX   =</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER_NEW = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR_NEW       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA             = LT_ITEMDATA_CHANGE</span><br><span class="line">*       ACCOUNTINGDATA       =</span><br><span class="line">*       GLACCOUNTDATA        =</span><br><span class="line">*       MATERIALDATA         =</span><br><span class="line">        TAXDATA              = LT_TAXDATA_CHANGE</span><br><span class="line">*       WITHTAXDATA          =</span><br><span class="line">*       VENDORITEMSPLITDATA  =</span><br><span class="line">        RETURN               = LT_RETURN</span><br><span class="line">*       EXTENSIONIN          =</span><br><span class="line">*       TM_ITEMDATA          =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CLEAR:LV_MESSAGE.</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line"> </span><br><span class="line">      LV_MESSAGE = |修改成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line"> </span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_DELETE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      DELETE GT_RBKP_DATA WHERE GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ELSE.</span><br><span class="line">      LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">        GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">        GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">        MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">      ENDLOOP.</span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>过账</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_POST&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      </span><br><span class="line">    ELSE.</span><br><span class="line"> </span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
-<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>&#x2F;</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP NOTE安装过程</title>
-    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
-<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
-<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
-<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
-<p><strong>2.更改系统选项</strong></p>
-<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
-<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
-<p><strong>3.导入note</strong></p>
-<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
-<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
-<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
-<p> <strong>4.新建传输号</strong></p>
-<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
-<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
       </tags>
   </entry>
   <entry>
@@ -892,35 +892,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP生产订单BOM组件修改ABAP函数</title>
-    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
-<p>​    一般SAP有2种方式可以处理：</p>
-<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
-<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
-<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
-<p>IT_METHODS是选择调用接口的对象与方法名，</p>
-<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
-<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
-<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
-<p>应用情况如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
-<p>即完成生产订单BOM数量的修改。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP知识点速查</title>
     <url>/2022/05/21/SAP%E7%9F%A5%E8%AF%86%E7%82%B9%E9%80%9F%E6%9F%A5/</url>
     <content><![CDATA[<p><strong>21、变量的范围</strong></p>
@@ -1029,6 +1000,35 @@
 <p>SM04进入查看所有会话实例，双击对应的实例，点击删除会话即可踢掉人。</p>
 <p><strong>20、 财务相关TCODE</strong></p>
 <p>FAGLL03H:总账科目行项目浏览（总账视图）<br>ZRFS002:财务报表<br>ZFI006:科目余额（三联帐）<br>ZFI023:票据管理平台<br>ZFI024:付款管理平台<br>ZFI025:收款管理平台<br>ZFI030:管理凭证平台</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP生产订单BOM组件修改ABAP函数</title>
+    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
+<p>​    一般SAP有2种方式可以处理：</p>
+<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
+<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
+<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
+<p>IT_METHODS是选择调用接口的对象与方法名，</p>
+<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
+<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
+<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
+<p>应用情况如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
+<p>即完成生产订单BOM数量的修改。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -3105,48 +3105,6 @@
       </tags>
   </entry>
   <entry>
-    <title>如何搭建一套完整的数据指标体系概述</title>
-    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/</url>
-    <content><![CDATA[<p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
-<p>而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。</p>
-<p><strong>而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用</strong><br><strong>一套逻辑连接起来(见下图)。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg" alt="img"></p>
-<p>在这套逻辑里，你能从局部看到整体，能从整体划分到局部。<br>例如你头疼(整体)， 医生能够按照人的生命体系一-检查, 直到发现你上呼吸道不正常，发生了感染(局部) ;也能从你手扎破了(局部) ，如果不及时处理伤口，可能由于感染丢失了性命(整体)。<br>企业也一样,通过企业的指标体系,也能看到企业利润没有达成，是哪个部门(个人)出现了问题，也可从一个销售员的业绩推断出公司的整体情况。</p>
-<p><strong>由此可以看出，指标体系最重要的是”指标”和“逻辑”。</strong></p>
-<hr>
-<h2 id="解决问题：指标体系到底如何搭建？"><a href="#解决问题：指标体系到底如何搭建？" class="headerlink" title="解决问题：指标体系到底如何搭建？"></a><strong>解决问题：指标体系到底如何搭建？</strong></h2><p>那么，如果我们想要搭建一完整指标体系,就得有一大堆衡量企业健康状况的指标，还得有一整套逻辑将企业的各个指标有机连接起来。</p>
-<p>“指标”和“逻辑”虽然是指标体系的两个组成部分,但是构造”指标”和“逻辑”的过程却是同一个过程，那就是“自上而下，从大到小”，层层拆解，步步细分(业绩目标的设定过程可能相反)。</p>
-<p><strong>1、首先，每个企业都有自己每年的整体目标，这个目标-般是营收、利润、或销量。</strong><br>这个大指标的问题在于，它无法把责任落在某-个具体的人或部门(CEO不算， 因为整个指标体系就是为了他达成大指标使用的管理工具，他又不能一个人把公司所有活干了)，所以就需要把这个大指标进行拆解，直到拆解到责任可以落实到每一个部门(个人)头上。</p>
-<p><strong>2、其次，就是如何拆解企业目标，这一步至关重要。一般来说， 指标体系是按照本企业的业务流程进行拆解。</strong><br>那什么是业务流程呢?它指的就是你要将从消费者(或者客户)那里收到钱所经历的所有的步骤进行拆解(也有人说按照消费者消费路径来拆解的,个人认为主要是业务流程，因为一般公司的部门是按照业务流程设置的)。</p>
-<p>例如一家汽车制造公司,要想从客户手里收到购车款，大体来说需要经历造车一-&gt;营销一-&gt; 物<br>流一一&gt;销售的环节。那如何将企业一年的收入在这些环节进行分解，这时可以就需要“将业务流<br>程抽象为数学公式”，因为指标本质上还是数据，所以指标的拆解当然离不开数学。<br>以上汽车销售的业务流程用数学公式表达出来如下:<br>汽车的销售收入&#x3D;Max{出厂车辆数，营销产生的销售线索数X销镌转化率x门店数量} X单车利润</p>
-<p>因此，要达成营业利润那么子指标就是销售车辆数，而销售车辆数的子指标就是出厂车辆数、销售线索数、销售转化率。<br>这是大指标的一级拆解，一级拆解，一 般建议子指标可以找到一 一个具体负责的部门。因为说一千道一万，企业是由各部门门组成的，不论是传统企业是互联网公司，当然集团除外，我们这里主要说的是某一板块业务。</p>
-<p>这样拆解的好处就是，虽然这个部门无法完全控制整个公司大指标，但是总可以控制部门的子指标。</p>
-<p>例如，营销部可能无法对整个公司的销售收入负责，毕竟如果你车造的很烂，或者销售人员不努力，即使我把产品吹天，消费者实际到店一试驾，还是不会买不是吗。但是，有多少人看广告,有多人看了广告愿意试驾(销售线索)你总不能甩锅吧。</p>
-<p><strong>3、就是将每个业务流程的目标再次在本流程的子流程层面进行二_级拆解 (见下图)。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg" alt="img"></p>
-<p>例如，营销部负责销售线索数，但是你可能在很多媒介上做广告,例如电视、门户网站、移动端APP等等，那么每一个媒介上有多少销售线索数，你总得有一个统计指标吧，或者每一个媒介都有一个具体的人员在负责，那么将“销售线索数”这个子指标再细分，就是“XX媒介产生的销售线索数”。</p>
-<p>这样，我们就可以看出这个媒介在整年的表现，如果责任到人的话，可以直接去看负责这个媒介投放的人员的业绩表现，进而通过这个子指标看其对整个营业收入(公司大指标)的影响。</p>
-<p>其实这方面没有很好的方法，网上很多人都在鼓吹”OSM模型” ，O就是Objective, S是Strategy, M是Measurement,其实它更多指的是一个概念框架， 而且是高度抽象、大道至简的那种，而在真实的应用上能够参考的意义是有限的(就像SWOT分析一样)。</p>
-<p>因此，最好的方法，就是你对这个业务流程相当了解，这也是现实中为什么HR部门门]无法设置好的指标体系了，因为他们对业务流程的了解一般少之又少。所以，指标的拆解(指标体系的搭建)，其实是非常内行的一件事情。</p>
-<p><strong>4、是将一些职能部门的指标以及业务部门的保障性指标加入进去。</strong></p>
-<p>如果按照上述方法拆解KPI,那么基本上只有销售部、营销部、生产部等主要业务部门]的指标，但是问题是整个公司的运行不是只有业务部门，还有很多职能部门，这些职能部]的工作也很重要，因为他们是保障整个公司的健康运行，也就是以上业务部[ ]的指标能够达成的基础环境(参见波特价值链)。</p>
-<p>举个例子，如果财务部门不好好工作，导致出现-个财务漏洞，那整个公司好几年的营收估计都搭进去了，又何谈一年的目标实现呢?</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg" alt="img"></p>
-<h4 id="那职能部门的指标如何拆解呢？"><a href="#那职能部门的指标如何拆解呢？" class="headerlink" title="那职能部门的指标如何拆解呢？"></a><strong>那职能部门的指标如何拆解呢？</strong></h4><p>首先，你必须得了解它们的主要工作内容、工作目标、工作流程。例如财务部门，主要指标可能是财务报告的及时性和准确性，以及预算管理的好与坏，这些都是可以量化的。</p>
-<p>还有数据分析部门可能主要是一个支撑部门， 那目标就是、及时准确地支撑业务部门数据需求、报表开发、给管理层的深度分析报告等，这些服务可以由各业务部门来打分，这样你就可以设置数据分析部门的指标诸如“数据提供满意度”、“数据分析报告满意度” 等。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg" alt="img"></p>
-<p>此外，业务部门]也有保障性指标。例如生产部的指标肯定不光是生产合格的产品数量，你还得在一定时间、按照一定成本、按照一定良品率把合格的产品生产出来，那这个部门(业务)的指标就不光是生产合格的产品数量，还有以上提到的保障性指标。通过之前搭建的业务指标体系(总指标–&gt; 细分一&gt;细分….)加上诸如风险管理、财务、人事等职能(支撑)部门的保障性指标以及业务部门门的业务保障性指标，覆盖整个公司的指标体系就搭建起来了。</p>
-<p>这个体系整体像一颗巨大的树，但是在内在结构_上又是枝与枝相关联，例如各部]的预算控制好了，整个财务的预算才能控制好;或者说数据部门门要提供好用的报表，也得开发部门]开发出好用的报表套件才行。毕竟，各部门相互连接，整个公司才是一个”有机的”整体(下图)。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg" alt="img"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>怎么才有数据分析思路</title>
     <url>/2022/07/08/%E6%80%8E%E4%B9%88%E6%89%8D%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF/</url>
     <content><![CDATA[<p>直接拿例子来说，大家去餐厅吃饭时，如果你仔细观察的话，餐厅大致可以分为以下两类付费模式：<br>1）使用大众点评优惠吸引用户结账<br>2）直接使用微信或支付宝结账</p>
@@ -3441,6 +3399,48 @@
       </categories>
       <tags>
         <tag>业务学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何搭建一套完整的数据指标体系概述</title>
+    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
+<p>而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。</p>
+<p><strong>而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用</strong><br><strong>一套逻辑连接起来(见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg" alt="img"></p>
+<p>在这套逻辑里，你能从局部看到整体，能从整体划分到局部。<br>例如你头疼(整体)， 医生能够按照人的生命体系一-检查, 直到发现你上呼吸道不正常，发生了感染(局部) ;也能从你手扎破了(局部) ，如果不及时处理伤口，可能由于感染丢失了性命(整体)。<br>企业也一样,通过企业的指标体系,也能看到企业利润没有达成，是哪个部门(个人)出现了问题，也可从一个销售员的业绩推断出公司的整体情况。</p>
+<p><strong>由此可以看出，指标体系最重要的是”指标”和“逻辑”。</strong></p>
+<hr>
+<h2 id="解决问题：指标体系到底如何搭建？"><a href="#解决问题：指标体系到底如何搭建？" class="headerlink" title="解决问题：指标体系到底如何搭建？"></a><strong>解决问题：指标体系到底如何搭建？</strong></h2><p>那么，如果我们想要搭建一完整指标体系,就得有一大堆衡量企业健康状况的指标，还得有一整套逻辑将企业的各个指标有机连接起来。</p>
+<p>“指标”和“逻辑”虽然是指标体系的两个组成部分,但是构造”指标”和“逻辑”的过程却是同一个过程，那就是“自上而下，从大到小”，层层拆解，步步细分(业绩目标的设定过程可能相反)。</p>
+<p><strong>1、首先，每个企业都有自己每年的整体目标，这个目标-般是营收、利润、或销量。</strong><br>这个大指标的问题在于，它无法把责任落在某-个具体的人或部门(CEO不算， 因为整个指标体系就是为了他达成大指标使用的管理工具，他又不能一个人把公司所有活干了)，所以就需要把这个大指标进行拆解，直到拆解到责任可以落实到每一个部门(个人)头上。</p>
+<p><strong>2、其次，就是如何拆解企业目标，这一步至关重要。一般来说， 指标体系是按照本企业的业务流程进行拆解。</strong><br>那什么是业务流程呢?它指的就是你要将从消费者(或者客户)那里收到钱所经历的所有的步骤进行拆解(也有人说按照消费者消费路径来拆解的,个人认为主要是业务流程，因为一般公司的部门是按照业务流程设置的)。</p>
+<p>例如一家汽车制造公司,要想从客户手里收到购车款，大体来说需要经历造车一-&gt;营销一-&gt; 物<br>流一一&gt;销售的环节。那如何将企业一年的收入在这些环节进行分解，这时可以就需要“将业务流<br>程抽象为数学公式”，因为指标本质上还是数据，所以指标的拆解当然离不开数学。<br>以上汽车销售的业务流程用数学公式表达出来如下:<br>汽车的销售收入&#x3D;Max{出厂车辆数，营销产生的销售线索数X销镌转化率x门店数量} X单车利润</p>
+<p>因此，要达成营业利润那么子指标就是销售车辆数，而销售车辆数的子指标就是出厂车辆数、销售线索数、销售转化率。<br>这是大指标的一级拆解，一级拆解，一 般建议子指标可以找到一 一个具体负责的部门。因为说一千道一万，企业是由各部门门组成的，不论是传统企业是互联网公司，当然集团除外，我们这里主要说的是某一板块业务。</p>
+<p>这样拆解的好处就是，虽然这个部门无法完全控制整个公司大指标，但是总可以控制部门的子指标。</p>
+<p>例如，营销部可能无法对整个公司的销售收入负责，毕竟如果你车造的很烂，或者销售人员不努力，即使我把产品吹天，消费者实际到店一试驾，还是不会买不是吗。但是，有多少人看广告,有多人看了广告愿意试驾(销售线索)你总不能甩锅吧。</p>
+<p><strong>3、就是将每个业务流程的目标再次在本流程的子流程层面进行二_级拆解 (见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg" alt="img"></p>
+<p>例如，营销部负责销售线索数，但是你可能在很多媒介上做广告,例如电视、门户网站、移动端APP等等，那么每一个媒介上有多少销售线索数，你总得有一个统计指标吧，或者每一个媒介都有一个具体的人员在负责，那么将“销售线索数”这个子指标再细分，就是“XX媒介产生的销售线索数”。</p>
+<p>这样，我们就可以看出这个媒介在整年的表现，如果责任到人的话，可以直接去看负责这个媒介投放的人员的业绩表现，进而通过这个子指标看其对整个营业收入(公司大指标)的影响。</p>
+<p>其实这方面没有很好的方法，网上很多人都在鼓吹”OSM模型” ，O就是Objective, S是Strategy, M是Measurement,其实它更多指的是一个概念框架， 而且是高度抽象、大道至简的那种，而在真实的应用上能够参考的意义是有限的(就像SWOT分析一样)。</p>
+<p>因此，最好的方法，就是你对这个业务流程相当了解，这也是现实中为什么HR部门门]无法设置好的指标体系了，因为他们对业务流程的了解一般少之又少。所以，指标的拆解(指标体系的搭建)，其实是非常内行的一件事情。</p>
+<p><strong>4、是将一些职能部门的指标以及业务部门的保障性指标加入进去。</strong></p>
+<p>如果按照上述方法拆解KPI,那么基本上只有销售部、营销部、生产部等主要业务部门]的指标，但是问题是整个公司的运行不是只有业务部门，还有很多职能部门，这些职能部]的工作也很重要，因为他们是保障整个公司的健康运行，也就是以上业务部[ ]的指标能够达成的基础环境(参见波特价值链)。</p>
+<p>举个例子，如果财务部门不好好工作，导致出现-个财务漏洞，那整个公司好几年的营收估计都搭进去了，又何谈一年的目标实现呢?</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg" alt="img"></p>
+<h4 id="那职能部门的指标如何拆解呢？"><a href="#那职能部门的指标如何拆解呢？" class="headerlink" title="那职能部门的指标如何拆解呢？"></a><strong>那职能部门的指标如何拆解呢？</strong></h4><p>首先，你必须得了解它们的主要工作内容、工作目标、工作流程。例如财务部门，主要指标可能是财务报告的及时性和准确性，以及预算管理的好与坏，这些都是可以量化的。</p>
+<p>还有数据分析部门可能主要是一个支撑部门， 那目标就是、及时准确地支撑业务部门数据需求、报表开发、给管理层的深度分析报告等，这些服务可以由各业务部门来打分，这样你就可以设置数据分析部门的指标诸如“数据提供满意度”、“数据分析报告满意度” 等。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg" alt="img"></p>
+<p>此外，业务部门]也有保障性指标。例如生产部的指标肯定不光是生产合格的产品数量，你还得在一定时间、按照一定成本、按照一定良品率把合格的产品生产出来，那这个部门(业务)的指标就不光是生产合格的产品数量，还有以上提到的保障性指标。通过之前搭建的业务指标体系(总指标–&gt; 细分一&gt;细分….)加上诸如风险管理、财务、人事等职能(支撑)部门的保障性指标以及业务部门门的业务保障性指标，覆盖整个公司的指标体系就搭建起来了。</p>
+<p>这个体系整体像一颗巨大的树，但是在内在结构_上又是枝与枝相关联，例如各部]的预算控制好了，整个财务的预算才能控制好;或者说数据部门门要提供好用的报表，也得开发部门]开发出好用的报表套件才行。毕竟，各部门相互连接，整个公司才是一个”有机的”整体(下图)。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg" alt="img"></p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
       </tags>
   </entry>
   <entry>
@@ -3961,6 +3961,56 @@
       </tags>
   </entry>
   <entry>
+    <title>致远OA遇坑记录</title>
+    <url>/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
+<p><strong>如果数据源更换，Dee任务中的查询链接可能失效，需要重新修改保存重置链接。</strong></p>
+<p>2、数据源配置外部数据库需要注意数据库的权限，不然可能会出现只能查询出前50条的情况，这个在链接SCC数据库中的遇到过。</p>
+<h2 id="常用OA数据库表"><a href="#常用OA数据库表" class="headerlink" title="常用OA数据库表"></a>常用OA数据库表</h2><p>COL_SUMMARY:流程表，主要记录了表单的发起日期、结束日期、标题、发起人等信息。object_id 和 CTP_AFFAIR表中的id匹配。<br>CTP_AFFAIR:审批记录表，主要记录表单中所有的发起人、审批人、审批权限、接受日期、处理日期等。<br>ORG_MEMBER:人员表<br>ORG_UNIT:部门表<br>FORM_DEFINITION:模板表<br>CAP_FORM_DEFINITION:CAP4模板表，一般来说和上一张表一块用，一个是CAP3的，一个是CAP4的。<br>COL_COMMENT:审批意见表</p>
+<h2 id="DEE任务"><a href="#DEE任务" class="headerlink" title="DEE任务"></a>DEE任务</h2><p><strong>1、在接收SAP任务回传时要主要看SAP接口是表还是结构，选择相对应的映射模块。</strong></p>
+<p><strong>2、Dee将接口传来的json解析为xml代码</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import static net.sf.json.JSONArray.fromObject;</span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">JSON json = toJSON(data);</span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>3、Dee将json解析为xml代码并按照部分字段排序：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line"></span><br><span class="line">import net.sf.json.JSONArray;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">JSONObject json = (JSONObject) toJSON(data);</span><br><span class="line">JSONArray intab = json.getJSONArray(&quot;intab&quot;);</span><br><span class="line"></span><br><span class="line">// 按posnr数字从小到大对intab排序</span><br><span class="line">intab.sort(new Comparator&lt;JSONObject&gt;() &#123;</span><br><span class="line">	public int compare(JSONObject o1, JSONObject o2) &#123;</span><br><span class="line">		return o1.optInt(&quot;posnr&quot;) - o2.optInt(&quot;posnr&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>4、Dee调用Dee任务代码</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line">import com.seeyon.v3x.dee.Parameters;</span><br><span class="line">import com.seeyon.v3x.dee.Document;</span><br><span class="line">import com.seeyon.v3x.dee.TransformException;</span><br><span class="line">import com.seeyon.v3x.dee.TransformFactory;</span><br><span class="line">import com.seeyon.v3x.dee.adapter.Adapter;</span><br><span class="line">import com.seeyon.v3x.dee.resource.DbDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.util.DocumentUtil;</span><br><span class="line">import java.sql.Connection;</span><br><span class="line">import java.sql.PreparedStatement;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line">import java.sql.SQLException;</span><br><span class="line">import java.sql.ResultSetMetaData;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Iterator;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.sql.Statement;</span><br><span class="line">import java.io.File;</span><br><span class="line">import org.dom4j.DocumentException;</span><br><span class="line">import com.seeyon.v3x.dee.Document.Element;</span><br><span class="line">import com.seeyon.v3x.dee.datasource.XMLDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.DEEClient;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Document  doc = formDataToDoc();</span><br><span class="line">Element root = doc.getRootElement();</span><br><span class="line">// 主表</span><br><span class="line">Element table = getChildByName(root,&quot;formmain_3647&quot;);</span><br><span class="line">Element row = getChildByName(table,&quot;row&quot;);</span><br><span class="line">Element shuzhi = row.getChild(&quot;field0074&quot;);</span><br><span class="line">Element shuzhi1 = row.getChild(&quot;field0060&quot;);</span><br><span class="line">Element fkzt = row.getChild(&quot;field0077&quot;);</span><br><span class="line">Object a=getElementValue(shuzhi);</span><br><span class="line">Object b=getElementValue(shuzhi1);</span><br><span class="line">Object fkzt1 = getElementValue(fkzt);</span><br><span class="line">double c=Double.parseDouble(b.toString());</span><br><span class="line">println(a);</span><br><span class="line">DEEClient deeClient = new DEEClient();</span><br><span class="line">Parameters parameters = doc.getContext().getParameters();</span><br><span class="line"></span><br><span class="line">if(a.equals(&quot;1&quot;)&amp;&amp;c&gt;0.00 &amp;&amp; fkzt1.equals(&#x27;01&#x27;))&#123;</span><br><span class="line">//银企费用报销费用审核-处理前</span><br><span class="line">deeClient.execute(&quot;-6384030398507104060&quot;,parameters);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">deeClient.execute(&quot;9192960576302960201&quot;,parameters);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>5、主机异常关闭导致Dee所有调用任务失败</strong></p>
+<p>现象是：重启A8进程后，所有的dee任务都失效，前台体现是任务监控是空，任务管理是空。</p>
+<p>主要原因是：关闭A8进程后，dee.mv.db没有正常shutdown，导致进程堵塞。</p>
+<p>解决办法是关闭对应的进程，或者直接重启服务器释放所有进程。</p>
+<p><strong>6、OA服务器链接不上数据库问题</strong></p>
+<p>因为我们的OA服务器与数据库是分离的，所以在A8进程启动时会首先校验数据源，这就导致在某些情况下会出现链接不到数据库的情况，主要情况如下：</p>
+<p>链接数据源超时。。。。（类似的控制台打印）</p>
+<p>解决此问题的方法：在数据库服务器中执行：netsh Winsock reset</p>
+<p>就是重置数据库服务器的所有基础网络，通过重置网络就可以恢复OA服务器 与数据库的链接。</p>
+<p><strong>7、跳号问题（怀疑是致远OA的bug）</strong></p>
+<p>跳号问题的表现原因是：比如在付款申请单中，发起一张单据，流水号在前台显示00001，但是审批结束后流水号实际就成了00002，出现了跳号。</p>
+<p>解决办法1：打补丁，截至2022-01-08还没有打上。</p>
+<p>解决办法2：改变流水号设置地方，出现这个问题主要是流水号利用公式写在表单上。改变流水号到操作设置里即可解决此问题。</p>
+<p><strong>8、Dee任务新增搜索</strong></p>
+<p>Dee任务搜索主要是靠后台搜索，所以需要拿到搜索框里的数据再去调用Dee任务去拿到搜索后的数据（后台搜索）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONArray;</span><br><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">Object json = getParaByName(document,&quot;cap4_magic_condition&quot;);</span><br><span class="line">//截取字符串</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;cap4_magic_condition&quot;);</span><br><span class="line">if(data != null)&#123;</span><br><span class="line">  String name = null;</span><br><span class="line">  String meins = null;</span><br><span class="line">  for (int i = 0;i&lt; data.size();i++)&#123;</span><br><span class="line">     HashMap&lt;String,String&gt; dataMap = (HashMap&lt;String, String&gt;) data.get(i);</span><br><span class="line">     namekey = dataMap.get(&quot;fieldName&quot;);</span><br><span class="line">     name = dataMap.get(&quot;fieldValue&quot;);</span><br><span class="line">    if(namekey == &quot;NAME1&quot;)&#123;</span><br><span class="line">     setParam(document, &quot;NAME1&quot;, name);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    System.out.println(name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>主要是利用cap4_magic_condition的这个字段，然后还需要根据这个字段拿到的搜索数据进行参数的增加。</p>
+<p><strong>9、外部系统请求致远OA写入文件接口</strong></p>
+<p>首先参照致远开放平台文件上传接口：<a href="http://open.seeyon.com/book/ctp/restjie-kou/wen-dang-fu-wu-guan-li.html">http://open.seeyon.com/book/ctp/restjie-kou/wen-dang-fu-wu-guan-li.html</a></p>
+<p>然后根据文档要求请求token，这里的token是需要绑定用户的，所以：具体请求token的参数里还需要加上loginName，如图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220722160222.png" alt="20220722160222"></p>
+<p>请求完成以后，根据文档要求上传file，这里要注意的是postman请求的地址需要是它允许上传的路径，具体的配置在：file-&gt;settings-&gt;working directory里面。</p>
+<p>具体的请求界面：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220722160136.png" alt="20220722160136"></p>
+<p>请求完成以后，可以在CTP_FILE表中查看具体的上传文件id，这里要区分下CTP_ATTACHMENT表的区别，后面这个只是单纯的附件表，前面的是所有上传文件都在CTP_FILE表中，其中CTP_FILE表相当于包含CTP_ATTACHEMENT表的内容。</p>
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>致远OA查询请求REST</title>
     <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
     <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
@@ -4011,56 +4061,6 @@
 <p>2、如果监控有问题，具体的排错是在</p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
 <p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>致远OA遇坑记录</title>
-    <url>/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
-<p><strong>如果数据源更换，Dee任务中的查询链接可能失效，需要重新修改保存重置链接。</strong></p>
-<p>2、数据源配置外部数据库需要注意数据库的权限，不然可能会出现只能查询出前50条的情况，这个在链接SCC数据库中的遇到过。</p>
-<h2 id="常用OA数据库表"><a href="#常用OA数据库表" class="headerlink" title="常用OA数据库表"></a>常用OA数据库表</h2><p>COL_SUMMARY:流程表，主要记录了表单的发起日期、结束日期、标题、发起人等信息。object_id 和 CTP_AFFAIR表中的id匹配。<br>CTP_AFFAIR:审批记录表，主要记录表单中所有的发起人、审批人、审批权限、接受日期、处理日期等。<br>ORG_MEMBER:人员表<br>ORG_UNIT:部门表<br>FORM_DEFINITION:模板表<br>CAP_FORM_DEFINITION:CAP4模板表，一般来说和上一张表一块用，一个是CAP3的，一个是CAP4的。<br>COL_COMMENT:审批意见表</p>
-<h2 id="DEE任务"><a href="#DEE任务" class="headerlink" title="DEE任务"></a>DEE任务</h2><p><strong>1、在接收SAP任务回传时要主要看SAP接口是表还是结构，选择相对应的映射模块。</strong></p>
-<p><strong>2、Dee将接口传来的json解析为xml代码</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import static net.sf.json.JSONArray.fromObject;</span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">JSON json = toJSON(data);</span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>3、Dee将json解析为xml代码并按照部分字段排序：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line"></span><br><span class="line">import net.sf.json.JSONArray;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">JSONObject json = (JSONObject) toJSON(data);</span><br><span class="line">JSONArray intab = json.getJSONArray(&quot;intab&quot;);</span><br><span class="line"></span><br><span class="line">// 按posnr数字从小到大对intab排序</span><br><span class="line">intab.sort(new Comparator&lt;JSONObject&gt;() &#123;</span><br><span class="line">	public int compare(JSONObject o1, JSONObject o2) &#123;</span><br><span class="line">		return o1.optInt(&quot;posnr&quot;) - o2.optInt(&quot;posnr&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>4、Dee调用Dee任务代码</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line">import com.seeyon.v3x.dee.Parameters;</span><br><span class="line">import com.seeyon.v3x.dee.Document;</span><br><span class="line">import com.seeyon.v3x.dee.TransformException;</span><br><span class="line">import com.seeyon.v3x.dee.TransformFactory;</span><br><span class="line">import com.seeyon.v3x.dee.adapter.Adapter;</span><br><span class="line">import com.seeyon.v3x.dee.resource.DbDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.util.DocumentUtil;</span><br><span class="line">import java.sql.Connection;</span><br><span class="line">import java.sql.PreparedStatement;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line">import java.sql.SQLException;</span><br><span class="line">import java.sql.ResultSetMetaData;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Iterator;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.sql.Statement;</span><br><span class="line">import java.io.File;</span><br><span class="line">import org.dom4j.DocumentException;</span><br><span class="line">import com.seeyon.v3x.dee.Document.Element;</span><br><span class="line">import com.seeyon.v3x.dee.datasource.XMLDataSource;</span><br><span class="line">import com.seeyon.v3x.dee.DEEClient;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> Document  doc = formDataToDoc();</span><br><span class="line">Element root = doc.getRootElement();</span><br><span class="line">// 主表</span><br><span class="line">Element table = getChildByName(root,&quot;formmain_3647&quot;);</span><br><span class="line">Element row = getChildByName(table,&quot;row&quot;);</span><br><span class="line">Element shuzhi = row.getChild(&quot;field0074&quot;);</span><br><span class="line">Element shuzhi1 = row.getChild(&quot;field0060&quot;);</span><br><span class="line">Element fkzt = row.getChild(&quot;field0077&quot;);</span><br><span class="line">Object a=getElementValue(shuzhi);</span><br><span class="line">Object b=getElementValue(shuzhi1);</span><br><span class="line">Object fkzt1 = getElementValue(fkzt);</span><br><span class="line">double c=Double.parseDouble(b.toString());</span><br><span class="line">println(a);</span><br><span class="line">DEEClient deeClient = new DEEClient();</span><br><span class="line">Parameters parameters = doc.getContext().getParameters();</span><br><span class="line"></span><br><span class="line">if(a.equals(&quot;1&quot;)&amp;&amp;c&gt;0.00 &amp;&amp; fkzt1.equals(&#x27;01&#x27;))&#123;</span><br><span class="line">//银企费用报销费用审核-处理前</span><br><span class="line">deeClient.execute(&quot;-6384030398507104060&quot;,parameters);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">deeClient.execute(&quot;9192960576302960201&quot;,parameters);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>5、主机异常关闭导致Dee所有调用任务失败</strong></p>
-<p>现象是：重启A8进程后，所有的dee任务都失效，前台体现是任务监控是空，任务管理是空。</p>
-<p>主要原因是：关闭A8进程后，dee.mv.db没有正常shutdown，导致进程堵塞。</p>
-<p>解决办法是关闭对应的进程，或者直接重启服务器释放所有进程。</p>
-<p><strong>6、OA服务器链接不上数据库问题</strong></p>
-<p>因为我们的OA服务器与数据库是分离的，所以在A8进程启动时会首先校验数据源，这就导致在某些情况下会出现链接不到数据库的情况，主要情况如下：</p>
-<p>链接数据源超时。。。。（类似的控制台打印）</p>
-<p>解决此问题的方法：在数据库服务器中执行：netsh Winsock reset</p>
-<p>就是重置数据库服务器的所有基础网络，通过重置网络就可以恢复OA服务器 与数据库的链接。</p>
-<p><strong>7、跳号问题（怀疑是致远OA的bug）</strong></p>
-<p>跳号问题的表现原因是：比如在付款申请单中，发起一张单据，流水号在前台显示00001，但是审批结束后流水号实际就成了00002，出现了跳号。</p>
-<p>解决办法1：打补丁，截至2022-01-08还没有打上。</p>
-<p>解决办法2：改变流水号设置地方，出现这个问题主要是流水号利用公式写在表单上。改变流水号到操作设置里即可解决此问题。</p>
-<p><strong>8、Dee任务新增搜索</strong></p>
-<p>Dee任务搜索主要是靠后台搜索，所以需要拿到搜索框里的数据再去调用Dee任务去拿到搜索后的数据（后台搜索）。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONArray;</span><br><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.JSONObject;</span><br><span class="line">Object json = getParaByName(document,&quot;cap4_magic_condition&quot;);</span><br><span class="line">//截取字符串</span><br><span class="line">Object data = document.getContext().getParameters().getValue(&quot;cap4_magic_condition&quot;);</span><br><span class="line">if(data != null)&#123;</span><br><span class="line">  String name = null;</span><br><span class="line">  String meins = null;</span><br><span class="line">  for (int i = 0;i&lt; data.size();i++)&#123;</span><br><span class="line">     HashMap&lt;String,String&gt; dataMap = (HashMap&lt;String, String&gt;) data.get(i);</span><br><span class="line">     namekey = dataMap.get(&quot;fieldName&quot;);</span><br><span class="line">     name = dataMap.get(&quot;fieldValue&quot;);</span><br><span class="line">    if(namekey == &quot;NAME1&quot;)&#123;</span><br><span class="line">     setParam(document, &quot;NAME1&quot;, name);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    System.out.println(name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>主要是利用cap4_magic_condition的这个字段，然后还需要根据这个字段拿到的搜索数据进行参数的增加。</p>
-<p><strong>9、外部系统请求致远OA写入文件接口</strong></p>
-<p>首先参照致远开放平台文件上传接口：<a href="http://open.seeyon.com/book/ctp/restjie-kou/wen-dang-fu-wu-guan-li.html">http://open.seeyon.com/book/ctp/restjie-kou/wen-dang-fu-wu-guan-li.html</a></p>
-<p>然后根据文档要求请求token，这里的token是需要绑定用户的，所以：具体请求token的参数里还需要加上loginName，如图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220722160222.png" alt="20220722160222"></p>
-<p>请求完成以后，根据文档要求上传file，这里要注意的是postman请求的地址需要是它允许上传的路径，具体的配置在：file-&gt;settings-&gt;working directory里面。</p>
-<p>具体的请求界面：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220722160136.png" alt="20220722160136"></p>
-<p>请求完成以后，可以在CTP_FILE表中查看具体的上传文件id，这里要区分下CTP_ATTACHMENT表的区别，后面这个只是单纯的附件表，前面的是所有上传文件都在CTP_FILE表中，其中CTP_FILE表相当于包含CTP_ATTACHEMENT表的内容。</p>
 ]]></content>
       <categories>
         <category>致远OA</category>
