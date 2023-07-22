@@ -71,33 +71,71 @@
       </tags>
   </entry>
   <entry>
-    <title>ABAP发票预制</title>
-    <url>/2022/11/24/ABAP%E5%8F%91%E7%A5%A8%E9%A2%84%E5%88%B6/</url>
-    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>MIR7的发票预制，不需要过账</p>
-<p>1、BAPI_INCOMINGINVOICE_PARK<br>2、BAPI_INCOMINGINVOICE_CREATE<br>3、BAPI_INCOMINGINVOICE_CREATE1</p>
-<p>1和2的价格可以输负数<br>2创建的发票直接过账</p>
-<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>BAPI_INCOMINGINVOICE_PARK例子</p>
-<p>需要注意：发票有四种事务类型，可以通过BAPI参数进行设置</p>
-<p>“发票:       headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; space<br>“贷项凭证:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; space<br>“后续借记:   headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; ‘X’<br>“后续贷记:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; ‘X’</p>
-<p>如果设置税率自动计算，则不需要传taxitem</p>
-<p>发票和后续借记金额传正数，贷项凭证和后续贷记金额传负数</p>
-<p>参照凭证必须传输，否则报错，默认借方凭证找101，贷方找161退货凭证，EKBE表找</p>
+    <title>Kettle实战学习</title>
+    <url>/2022/10/20/Kettle%E5%AE%9E%E6%88%98%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h3 id="实现目标"><a href="#实现目标" class="headerlink" title="实现目标"></a>实现目标</h3><p>实现的目标是获取钉钉系统里所有日志信息，并写入数据库</p>
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>使用kettle请求钉钉日志接口，解析获取到的json结构，然后写入数据库。由于钉钉日志接口最大每次获取20个人记录，所以还需要根据关键字段判断是否需要继续执行，直到执行完毕。<br>这里要注意的是kettle里只有作业才可以执行循环，转换不能执行循环作业。</p>
+<h3 id="具体思路"><a href="#具体思路" class="headerlink" title="具体思路"></a>具体思路</h3><p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201351.png" alt="20221020201351"></p>
+<p>先拖一个start，默认的组件，然后设置变量，这里的变量是has_more 和 zcursor，主要的作用是has_more查询是否还有下一条记录。zcursor是下一条记录的游标字段。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201623.png" alt="20221020201623"></p>
+<p>其次，获取token，获取token写了一个转换任务。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201747.png" alt="20221020201747"></p>
 <ol>
-<li>新增</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CREATE .</span><br><span class="line"> </span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_CREATE_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_CREATE_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_MESSAGE             TYPE STRING,</span><br><span class="line">        LV_POST_MSG            TYPE CHAR300,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_STATUS              TYPE CHAR01.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS NOT INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY LIFNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING LIFNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS,LS_HEADERDATA,LT_ITEMDATA[],LT_TAXDATA[].</span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND TYPE NE LS_ONLY-TYPE.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;同一个供应商下，事务类型不同；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      EXIT.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line">    LS_HEADERDATA-DOC_TYPE = &#x27;RE&#x27;. &quot;凭证类型</span><br><span class="line">    LS_HEADERDATA-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA-COMP_CODE = LS_ONLY-BUKRS. &quot;公司代码</span><br><span class="line">    LS_HEADERDATA-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA-CURRENCY = LS_ONLY-WAERS. &quot; 货币</span><br><span class="line">    LS_HEADERDATA-DELIV_POSTING = &#x27;S&#x27;.</span><br><span class="line">    LS_HEADERDATA-RETURN_POSTING = &#x27;H&#x27;.</span><br><span class="line">    LS_HEADERDATA-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    IF LS_ONLY-CAL_IND IS NOT INITIAL.</span><br><span class="line">      LS_HEADERDATA-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      CLEAR:LT_ITEMDATA.</span><br><span class="line">      LV_ITEM = LV_ITEM + 10.</span><br><span class="line">      LT_ITEMDATA-INVOICE_DOC_ITEM = LV_ITEM.</span><br><span class="line">      LT_ITEMDATA-PO_NUMBER = GS_RBKP_DATA-EBELN. &quot; 采购订单号</span><br><span class="line">      LT_ITEMDATA-PO_ITEM = GS_RBKP_DATA-EBELP. &quot; 采购订单行号</span><br><span class="line">      LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ. &quot; 税码</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 价格</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE. &quot; 开票数</span><br><span class="line">      LT_ITEMDATA-PO_UNIT = GS_RBKP_DATA-MEINS. &quot; 单位</span><br><span class="line">      LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line"> </span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line"> </span><br><span class="line">      SELECT</span><br><span class="line">        *</span><br><span class="line">        INTO TABLE @DATA(LT_REF)</span><br><span class="line">        FROM EKBE</span><br><span class="line">        WHERE EBELN = @GS_RBKP_DATA-EBELN AND</span><br><span class="line">              EBELP = @GS_RBKP_DATA-EBELP AND</span><br><span class="line">              BEWTP = &#x27;E&#x27; AND</span><br><span class="line">              BWART IN ( &#x27;101&#x27;, &#x27;105&#x27; , &#x27;161&#x27; ).</span><br><span class="line">      SORT LT_REF BY EBELN EBELP GJAHR DESCENDING BELNR DESCENDING.</span><br><span class="line"> </span><br><span class="line">      &quot; 非退货找101</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND IS INITIAL.</span><br><span class="line">          READ TABLE LT_REF INTO DATA(LS_REF) WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">      ELSE.</span><br><span class="line">        &quot; 退货找161</span><br><span class="line">        READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;161&#x27;.</span><br><span class="line">        IF SY-SUBRC NE 0.</span><br><span class="line">          READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">        ENDIF.</span><br><span class="line">      ENDIF.</span><br><span class="line"> </span><br><span class="line">      LT_ITEMDATA-REF_DOC = LS_REF-LFBNR. &quot;参考物料凭证</span><br><span class="line">      LT_ITEMDATA-REF_DOC_YEAR = LS_REF-LFGJA.  &quot;参考年份</span><br><span class="line">      LT_ITEMDATA-REF_DOC_IT = LS_REF-LFPOS.  &quot;参考凭证行</span><br><span class="line">      APPEND LT_ITEMDATA.</span><br><span class="line"> </span><br><span class="line">      CLEAR:LT_FTAXP.</span><br><span class="line">      CALL FUNCTION &#x27;GET_TAX_PERCENTAGE&#x27;</span><br><span class="line">        EXPORTING</span><br><span class="line">          ALAND   = &#x27;CN&#x27;</span><br><span class="line">          DATAB   = SY-DATUM</span><br><span class="line">          MWSKZ   = GS_RBKP_DATA-MWSKZ</span><br><span class="line">          TXJCD   = &#x27;&#x27;</span><br><span class="line">        TABLES</span><br><span class="line">          T_FTAXP = LT_FTAXP.</span><br><span class="line">      READ TABLE LT_FTAXP INTO DATA(LS_FTAXP) INDEX 1.</span><br><span class="line"> </span><br><span class="line">      LT_TAXDATA-ITEMNO_TAX = &#x27;0010&#x27;.</span><br><span class="line">      LT_TAXDATA-TAX_AMOUNT = LT_TAXDATA-TAX_AMOUNT + GS_RBKP_DATA-WRBTR * ( LS_FTAXP-KBETR / 1000 ). &quot; 税额</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_PARK&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONIN      =</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TM_ITEMDATA      =</span><br><span class="line">      .</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      LV_MESSAGE = |创建成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND BELNR IS INITIAL.</span><br><span class="line">      CLEAR:GS_RBKP_DATA-CELLTAB.</span><br><span class="line">      PERFORM FRM_SET_EDIT USING GS_RBKP_DATA.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      GS_RBKP_DATA-BELNR = LV_INVOICEDOCNUMBER.</span><br><span class="line">      GS_RBKP_DATA-GJAHR = LV_FISCALYEAR.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li><p>修改：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CHANGE .</span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_DETAIL_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_DETAIL_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_DETAIL_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ITEMDATA_CHANGE     TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_DETAIL_TAX WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA_CHANGE      TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_STATUS              TYPE CHAR01,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_MESSAGE             TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA: LS_TABLE_CHANGE       TYPE BAPI_INCINV_CHNG_TABLES,</span><br><span class="line">        LS_HEADERDATA_CHANGE  TYPE  BAPI_INCINV_CHNG_HEADER,</span><br><span class="line">        LS_HEADERDATA_CHANGEX TYPE  BAPI_INCINV_CHNG_HEADERX.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS.</span><br><span class="line">    IF LS_ONLY-RBSTAT = &#x27;5&#x27;.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;凭证已过账，无法修改；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_GETDETAIL&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      IMPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">*       ADDRESSDATA      =</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TMDATA           =</span><br><span class="line">*       NFMETALLITMS     =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGE-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA_CHANGE-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA_CHANGE-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    LS_HEADERDATA_CHANGE-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line">    LS_HEADERDATA_CHANGE-CALC_TAX_IND = LS_ONLY-CAL_IND. &quot; 自动计算税额</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGEX-DOC_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-PSTNG_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-BLINE_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-DIFF_INV = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-REF_DOC_NO = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-HEADER_TXT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-GROSS_AMOUNT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    LOOP AT LT_ITEMDATA.</span><br><span class="line">      READ TABLE GT_RBKP_DATA INTO GS_RBKP_DATA WITH KEY BOX = &#x27;X&#x27; EBELN = LT_ITEMDATA-PO_NUMBER EBELP = LT_ITEMDATA-PO_ITEM.</span><br><span class="line">      IF SY-SUBRC = 0.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 金额</span><br><span class="line">        LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE.</span><br><span class="line">        LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ.</span><br><span class="line">        LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = ABS( LT_ITEMDATA-ITEM_AMOUNT ).</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line">      CLEAR:LT_ITEMDATA_CHANGE.</span><br><span class="line">      MOVE-CORRESPONDING LT_ITEMDATA TO LT_ITEMDATA_CHANGE.</span><br><span class="line">      APPEND LT_ITEMDATA_CHANGE.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_CODE = LS_ONLY-MWSKZ.</span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_AMOUNT = LS_ONLY-WMWST1.</span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA_CHANGE.</span><br><span class="line">      LS_TABLE_CHANGE-TAXDATA = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_TABLE_CHANGE-ITEMDATA = &#x27;X&#x27;.</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_CHANGE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER     = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR           = LS_ONLY-GJAHR</span><br><span class="line">        INVOICE_DOC_STATUS   = &#x27;A&#x27;</span><br><span class="line">        TABLE_CHANGE         = LS_TABLE_CHANGE</span><br><span class="line">        HEADERDATA_CHANGE    = LS_HEADERDATA_CHANGE</span><br><span class="line">        HEADERDATA_CHANGEX   = LS_HEADERDATA_CHANGEX</span><br><span class="line">*       ADRESSDATA_CHANGE    =</span><br><span class="line">*       ADRESSDATA_CHANGEX   =</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER_NEW = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR_NEW       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA             = LT_ITEMDATA_CHANGE</span><br><span class="line">*       ACCOUNTINGDATA       =</span><br><span class="line">*       GLACCOUNTDATA        =</span><br><span class="line">*       MATERIALDATA         =</span><br><span class="line">        TAXDATA              = LT_TAXDATA_CHANGE</span><br><span class="line">*       WITHTAXDATA          =</span><br><span class="line">*       VENDORITEMSPLITDATA  =</span><br><span class="line">        RETURN               = LT_RETURN</span><br><span class="line">*       EXTENSIONIN          =</span><br><span class="line">*       TM_ITEMDATA          =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CLEAR:LV_MESSAGE.</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line"> </span><br><span class="line">      LV_MESSAGE = |修改成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line"> </span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+<li><p>先构造参数，将获取token中的url、body、method等关键字段先进行定义。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201841.png" alt="20221020201841"></p>
 </li>
-<li><p>删除</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_DELETE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      DELETE GT_RBKP_DATA WHERE GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ELSE.</span><br><span class="line">      LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">        GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">        GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">        MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">      ENDLOOP.</span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+<li><p>直接用rest组件根据构造参数里变量进行定义<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201923.png" alt="20221020201923"></p>
 </li>
-<li><p>过账</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_POST&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      </span><br><span class="line">    ELSE.</span><br><span class="line"> </span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
-<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>&#x2F;</p>
+<li><p>直接用json组件，根据路径获取返回的token结果<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202000.png" alt="20221020202000"></p>
+</li>
+<li><p>把拿到的token放到全局变量中，方便后面的job作业使用<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202030.png" alt="20221020202030"></p>
 </li>
 </ol>
+<p>token获取完毕后进入脚本验证，这里的脚本验证是判断has_more的变量是否发生了改变，然后根据判断条件是否进入循环和结束。在这个节点后面红色线条指向结束，即当判断条件为false的情况下结束，绿色线条指向循环，意思是当判断条件为true时进入循环。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202320.png" alt="20221020202320"></p>
+<p>如果判断条件为false直接进入结束组件。</p>
+<p>如果判断条件为true进入循环组件。循环组件中定义了一个请求日志的转换，然后定义一个dummy组件。由于循环只能是最少3个组件间循环，所以需要一个dummy组件来填补。</p>
+<p>请求日志转换任务：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202858.png" alt="20221020202858"></p>
+<ol>
+<li><p>拖一个生成记录<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202923.png" alt="20221020202923"></p>
+</li>
+<li><p>拼接js脚本，形成请求的记录<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203006.png" alt="20221020203006"></p>
+</li>
+<li><p>restful接口请求<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203101.png" alt="20221020203101"></p>
+</li>
+<li><p>解析json结果，一层层的解析结果，并拆出多条记录<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203144.png" alt="20221020203144"></p>
+</li>
+<li><p>拉一个表输出，输出到数据库<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203233.png" alt="20221020203233"></p>
+</li>
+</ol>
+<p>kettle接口完成，然后部署到服务器上，最后设一个定时任务，完成。</p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP NOTE安装过程</title>
+    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
+<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
+<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
+<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
+<p><strong>2.更改系统选项</strong></p>
+<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
+<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
+<p><strong>3.导入note</strong></p>
+<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
+<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
+<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
+<p> <strong>4.新建传输号</strong></p>
+<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
+<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -136,49 +174,6 @@
 <li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
 </ul>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kettle实战学习</title>
-    <url>/2022/10/20/Kettle%E5%AE%9E%E6%88%98%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h3 id="实现目标"><a href="#实现目标" class="headerlink" title="实现目标"></a>实现目标</h3><p>实现的目标是获取钉钉系统里所有日志信息，并写入数据库</p>
-<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>使用kettle请求钉钉日志接口，解析获取到的json结构，然后写入数据库。由于钉钉日志接口最大每次获取20个人记录，所以还需要根据关键字段判断是否需要继续执行，直到执行完毕。<br>这里要注意的是kettle里只有作业才可以执行循环，转换不能执行循环作业。</p>
-<h3 id="具体思路"><a href="#具体思路" class="headerlink" title="具体思路"></a>具体思路</h3><p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201351.png" alt="20221020201351"></p>
-<p>先拖一个start，默认的组件，然后设置变量，这里的变量是has_more 和 zcursor，主要的作用是has_more查询是否还有下一条记录。zcursor是下一条记录的游标字段。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201623.png" alt="20221020201623"></p>
-<p>其次，获取token，获取token写了一个转换任务。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201747.png" alt="20221020201747"></p>
-<ol>
-<li><p>先构造参数，将获取token中的url、body、method等关键字段先进行定义。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201841.png" alt="20221020201841"></p>
-</li>
-<li><p>直接用rest组件根据构造参数里变量进行定义<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020201923.png" alt="20221020201923"></p>
-</li>
-<li><p>直接用json组件，根据路径获取返回的token结果<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202000.png" alt="20221020202000"></p>
-</li>
-<li><p>把拿到的token放到全局变量中，方便后面的job作业使用<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202030.png" alt="20221020202030"></p>
-</li>
-</ol>
-<p>token获取完毕后进入脚本验证，这里的脚本验证是判断has_more的变量是否发生了改变，然后根据判断条件是否进入循环和结束。在这个节点后面红色线条指向结束，即当判断条件为false的情况下结束，绿色线条指向循环，意思是当判断条件为true时进入循环。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202320.png" alt="20221020202320"></p>
-<p>如果判断条件为false直接进入结束组件。</p>
-<p>如果判断条件为true进入循环组件。循环组件中定义了一个请求日志的转换，然后定义一个dummy组件。由于循环只能是最少3个组件间循环，所以需要一个dummy组件来填补。</p>
-<p>请求日志转换任务：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202858.png" alt="20221020202858"></p>
-<ol>
-<li><p>拖一个生成记录<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020202923.png" alt="20221020202923"></p>
-</li>
-<li><p>拼接js脚本，形成请求的记录<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203006.png" alt="20221020203006"></p>
-</li>
-<li><p>restful接口请求<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203101.png" alt="20221020203101"></p>
-</li>
-<li><p>解析json结果，一层层的解析结果，并拆出多条记录<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203144.png" alt="20221020203144"></p>
-</li>
-<li><p>拉一个表输出，输出到数据库<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221020203233.png" alt="20221020203233"></p>
-</li>
-</ol>
-<p>kettle接口完成，然后部署到服务器上，最后设一个定时任务，完成。</p>
 ]]></content>
       <categories>
         <category>数据</category>
@@ -247,89 +242,6 @@
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
 <p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP变式配置BOM实现</title>
-    <url>/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
-<p>下面举个例子说明如何实现可配置 BOM.要实现可配置 BOM,首先需要一个可配置物料,什么叫可配置物料,可以理解为最终成品的父亲,关系图如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/mcn2u927lr.png" alt="img"></p>
-<p>从上图可看出,可配置物料里含有该产品系列中覆盖到的所有组成的材料,正常的成品物料与可配置物料存在依赖关系,通过设定好的相关性来生成最终的 BOM 结构.可配置物料的 BOM 在 SAP 中称为超级 BOM.下面按照以下步骤实现这个过程:</p>
-<p><strong>配置实现:</strong></p>
-<p>\1. 建立特性(事务码 CT04)所谓的特性,就是描述该成品的特性.在上图中是建立相关性要用到这个特性,我们通过产品的不同特性来决定最终BOM 的构成. </p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ctsfbj4e4y.jpeg" alt="img"></p>
-<p>我们建立一个关于颜色的特性，类型：字符格式，值分配：单一性项目，意思是只能单选。特性值我们设置2个，分别为红色和黄色。</p>
-<p>按照上述，我们依次建立2个特性，分别是Z101(颜色） 特性值Z1:红，Z2:黄；Z103(性别）特性值Z1:男，Z2：女。</p>
-<p>2.建立分类（CL02）</p>
-<p>在特性界面分配上述特性，即把我们上述建立的特性打包起来，再赋予给可配置物料物料。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3jkof4dptn.jpeg" alt="img"></p>
-<p>3.创建可配置物料（MM01）</p>
-<p>物料类型选KMAT可配置物料：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/li2zt5wnrs.jpeg" alt="img"></p>
-<p>项目类别组0002，策略组25</p>
-<p>4.创建超级BOM中的其他物料（MM01）</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/rbjbqjt8ic.jpeg" alt="img"></p>
-<p>由于原材料需要在半成品中配置出来，所以需要勾选物料时可配置的</p>
-<p>5.把分类分配给物料（CL20N）</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zzaye6aepy.jpeg" alt="img"></p>
-<p>6.创建相关性（CU01）</p>
-<p>相关性就是建立一个逻辑，让系统自动判断，当用户选择特性或填写特性值，自动匹配出我们所需的物料或物料的用量。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zucy1yh8qn.jpeg" alt="img"></p>
-<p>相关性类型选择(选择条件），点击编辑器，写入代码：Z101&#x3D;’Z1’，意思是当用户选择Z101颜色特性为红色的时候，我们的原材料1被选中，回到前面的前面，记得把状态更改为1下达。</p>
-<p>同样的道理，设置其余物料的相关性。</p>
-<p>7.创建超级BOM(CS01)</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/wv0wrvr4cv.jpeg" alt="img"></p>
-<p>点绿色的箭头，把相关性维护到物料上</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/r7jyp0nfgi.png" alt="img"></p>
-<p>建立完毕后，可以看到OD标志（含相关性）被打上勾</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0qcko7q8l7.jpeg" alt="img"></p>
-<p>同样的方式，我们在半成品1中也进行设置</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8nihjt65jh.jpeg" alt="img"></p>
-<p>创建完成后，用CS12展开整个可配置BOM的结构：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ziitg7bcq0.jpeg" alt="img"></p>
-<p>8.创建物料的可配置参数文件（CU41）</p>
-<p>主要是设定可配置物料在执行配置时候的界面参数</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hdxde7yffa.jpeg" alt="img"></p>
-<p>9.检查和测试可配置物料（CU50）</p>
-<p>用于测试特性是否生效，成本核算是否正确，成本核算是否出来，前提还需要为相应的成品和半成品建立工艺路线。</p>
-<p>点右上角的配置按钮，输入特性值：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8kpyvwgcip.jpeg" alt="img"></p>
-<p>输入特性值后，点结果按钮显示配置出来的BOM结构：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/jyld9q8hhp.jpeg" alt="img"></p>
-<p>如上图所示，当我们输入颜色特性是Z1红色，性别特性是Z1女，显示的BOM结构是把超级BOM中的原材料2和原材料4，符合我们的相关性设置。</p>
-<p>再切换到特性界面，点成本核算按钮，成本核算变式选PPC4销售订单成本核算，传递控制选择PC01带工厂的传输，回车，可以看到产品成本：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/7jv67r939i.jpeg" alt="img"></p>
-<p>10.创建正常的成品物料（MM01）</p>
-<p>已有可配置物料，为什么不直接用可配置物料下达销售订单？由于可配置物料的物料类型是KMAT,默认不参与数量价值的更新，不能实现库存管理，所以，需要用一个正常的成品把可配置物料关联起来，MRP3视图中，需要制定关联到哪个可配置物料：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/sm6t8xnqn3.jpeg" alt="img"></p>
-<p>11.执行正常物料与可配置物料的连接（CS40）</p>
-<p>指定新建的成品与可配置物料的BOM建立连接</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/y5gohmx6q2.jpeg" alt="img"></p>
-<p>勾选保存即可。建立连接后的成品BOM查看只能用CS12查看，不能用CS03</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4kvhylxsc7.jpeg" alt="img"></p>
-<p>我们可以看到CS12展开的BOM,只显示了一个半成品1，那是因为创建该成品的时候，分类特性1个都没有填写。</p>
-<p>至此，我们所有基础数据已经准备完成，看看具体的销售订单和MRP的执行。</p>
-<p><strong>业务实现：</strong></p>
-<ol>
-<li>创建销售订单（VA01） 输入正常成品，会提示选择特性：</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4dw4n53jf4.png" alt="img"></p>
-<ol>
-<li>执行MRP运算（MD41） 会产生相应的计划订单，产生的计划订单类型是KD个别客户订单</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/tup614zo32.jpeg" alt="img"></p>
-<ol>
-<li><p>展开订单树 可以看到与特性值对应的物料的计划订单&#x2F;采购申请按需求产生</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hy0acr1100.jpeg" alt="img"></p>
-</li>
-</ol>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -451,6 +363,125 @@
       </tags>
   </entry>
   <entry>
+    <title>ABAP发票预制</title>
+    <url>/2022/11/24/ABAP%E5%8F%91%E7%A5%A8%E9%A2%84%E5%88%B6/</url>
+    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>MIR7的发票预制，不需要过账</p>
+<p>1、BAPI_INCOMINGINVOICE_PARK<br>2、BAPI_INCOMINGINVOICE_CREATE<br>3、BAPI_INCOMINGINVOICE_CREATE1</p>
+<p>1和2的价格可以输负数<br>2创建的发票直接过账</p>
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>BAPI_INCOMINGINVOICE_PARK例子</p>
+<p>需要注意：发票有四种事务类型，可以通过BAPI参数进行设置</p>
+<p>“发票:       headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; space<br>“贷项凭证:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; space<br>“后续借记:   headerdata-invoice_ind &#x3D; ‘X’    itemdata-de_cre_ind &#x3D; ‘X’<br>“后续贷记:   headerdata-invoice_ind &#x3D; space  itemdata-de_cre_ind &#x3D; ‘X’</p>
+<p>如果设置税率自动计算，则不需要传taxitem</p>
+<p>发票和后续借记金额传正数，贷项凭证和后续贷记金额传负数</p>
+<p>参照凭证必须传输，否则报错，默认借方凭证找101，贷方找161退货凭证，EKBE表找</p>
+<ol>
+<li>新增</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CREATE .</span><br><span class="line"> </span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_CREATE_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_CREATE_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_MESSAGE             TYPE STRING,</span><br><span class="line">        LV_POST_MSG            TYPE CHAR300,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_STATUS              TYPE CHAR01.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS NOT INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY LIFNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING LIFNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS,LS_HEADERDATA,LT_ITEMDATA[],LT_TAXDATA[].</span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND TYPE NE LS_ONLY-TYPE.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;同一个供应商下，事务类型不同；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      EXIT.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line">    LS_HEADERDATA-DOC_TYPE = &#x27;RE&#x27;. &quot;凭证类型</span><br><span class="line">    LS_HEADERDATA-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA-COMP_CODE = LS_ONLY-BUKRS. &quot;公司代码</span><br><span class="line">    LS_HEADERDATA-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA-CURRENCY = LS_ONLY-WAERS. &quot; 货币</span><br><span class="line">    LS_HEADERDATA-DELIV_POSTING = &#x27;S&#x27;.</span><br><span class="line">    LS_HEADERDATA-RETURN_POSTING = &#x27;H&#x27;.</span><br><span class="line">    LS_HEADERDATA-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    IF LS_ONLY-CAL_IND IS NOT INITIAL.</span><br><span class="line">      LS_HEADERDATA-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR.</span><br><span class="line">      CLEAR:LT_ITEMDATA.</span><br><span class="line">      LV_ITEM = LV_ITEM + 10.</span><br><span class="line">      LT_ITEMDATA-INVOICE_DOC_ITEM = LV_ITEM.</span><br><span class="line">      LT_ITEMDATA-PO_NUMBER = GS_RBKP_DATA-EBELN. &quot; 采购订单号</span><br><span class="line">      LT_ITEMDATA-PO_ITEM = GS_RBKP_DATA-EBELP. &quot; 采购订单行号</span><br><span class="line">      LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ. &quot; 税码</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 价格</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE. &quot; 开票数</span><br><span class="line">      LT_ITEMDATA-PO_UNIT = GS_RBKP_DATA-MEINS. &quot; 单位</span><br><span class="line">      LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line"> </span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line"> </span><br><span class="line">      SELECT</span><br><span class="line">        *</span><br><span class="line">        INTO TABLE @DATA(LT_REF)</span><br><span class="line">        FROM EKBE</span><br><span class="line">        WHERE EBELN = @GS_RBKP_DATA-EBELN AND</span><br><span class="line">              EBELP = @GS_RBKP_DATA-EBELP AND</span><br><span class="line">              BEWTP = &#x27;E&#x27; AND</span><br><span class="line">              BWART IN ( &#x27;101&#x27;, &#x27;105&#x27; , &#x27;161&#x27; ).</span><br><span class="line">      SORT LT_REF BY EBELN EBELP GJAHR DESCENDING BELNR DESCENDING.</span><br><span class="line"> </span><br><span class="line">      &quot; 非退货找101</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND IS INITIAL.</span><br><span class="line">          READ TABLE LT_REF INTO DATA(LS_REF) WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">      ELSE.</span><br><span class="line">        &quot; 退货找161</span><br><span class="line">        READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;161&#x27;.</span><br><span class="line">        IF SY-SUBRC NE 0.</span><br><span class="line">          READ TABLE LT_REF INTO LS_REF WITH KEY EBELN = GS_RBKP_DATA-EBELN EBELP = GS_RBKP_DATA-EBELP BWART = &#x27;101&#x27;.</span><br><span class="line">        ENDIF.</span><br><span class="line">      ENDIF.</span><br><span class="line"> </span><br><span class="line">      LT_ITEMDATA-REF_DOC = LS_REF-LFBNR. &quot;参考物料凭证</span><br><span class="line">      LT_ITEMDATA-REF_DOC_YEAR = LS_REF-LFGJA.  &quot;参考年份</span><br><span class="line">      LT_ITEMDATA-REF_DOC_IT = LS_REF-LFPOS.  &quot;参考凭证行</span><br><span class="line">      APPEND LT_ITEMDATA.</span><br><span class="line"> </span><br><span class="line">      CLEAR:LT_FTAXP.</span><br><span class="line">      CALL FUNCTION &#x27;GET_TAX_PERCENTAGE&#x27;</span><br><span class="line">        EXPORTING</span><br><span class="line">          ALAND   = &#x27;CN&#x27;</span><br><span class="line">          DATAB   = SY-DATUM</span><br><span class="line">          MWSKZ   = GS_RBKP_DATA-MWSKZ</span><br><span class="line">          TXJCD   = &#x27;&#x27;</span><br><span class="line">        TABLES</span><br><span class="line">          T_FTAXP = LT_FTAXP.</span><br><span class="line">      READ TABLE LT_FTAXP INTO DATA(LS_FTAXP) INDEX 1.</span><br><span class="line"> </span><br><span class="line">      LT_TAXDATA-ITEMNO_TAX = &#x27;0010&#x27;.</span><br><span class="line">      LT_TAXDATA-TAX_AMOUNT = LT_TAXDATA-TAX_AMOUNT + GS_RBKP_DATA-WRBTR * ( LS_FTAXP-KBETR / 1000 ). &quot; 税额</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_PARK&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONIN      =</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TM_ITEMDATA      =</span><br><span class="line">      .</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      LV_MESSAGE = |创建成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND LIFNR = LS_ONLY-LIFNR AND BELNR IS INITIAL.</span><br><span class="line">      CLEAR:GS_RBKP_DATA-CELLTAB.</span><br><span class="line">      PERFORM FRM_SET_EDIT USING GS_RBKP_DATA.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      GS_RBKP_DATA-BELNR = LV_INVOICEDOCNUMBER.</span><br><span class="line">      GS_RBKP_DATA-GJAHR = LV_FISCALYEAR.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><p>修改：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_SAVE_FOR_CHANGE .</span><br><span class="line">  DATA: LS_HEADERDATA          TYPE BAPI_INCINV_DETAIL_HEADER,</span><br><span class="line">        LS_ADDRESSDATA         TYPE BAPI_INCINV_DETAIL_ADDRESSDATA,</span><br><span class="line">        LV_INVOICEDOCNUMBER    TYPE BAPI_INCINV_FLD-INV_DOC_NO,</span><br><span class="line">        LV_FISCALYEAR          TYPE BAPI_INCINV_FLD-FISC_YEAR,</span><br><span class="line">        LT_ITEMDATA            TYPE TABLE OF BAPI_INCINV_DETAIL_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ITEMDATA_CHANGE     TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_ACCOUNTINGDATA      TYPE TABLE OF BAPI_INCINV_CREATE_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_GLACCOUNTDATA       TYPE TABLE OF BAPI_INCINV_CREATE_GL_ACCOUNT WITH HEADER LINE,</span><br><span class="line">        LT_MATERIALDATA        TYPE TABLE OF BAPI_INCINV_CREATE_MATERIAL WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA             TYPE TABLE OF BAPI_INCINV_DETAIL_TAX WITH HEADER LINE,</span><br><span class="line">        LT_TAXDATA_CHANGE      TYPE TABLE OF BAPI_INCINV_CREATE_TAX WITH HEADER LINE,</span><br><span class="line">        LT_WITHTAXDATA         TYPE TABLE OF BAPI_INCINV_CREATE_VENDORSPLIT WITH HEADER LINE,</span><br><span class="line">        LT_VENDORITEMSPLITDATA TYPE TABLE OF BAPI_INCINV_CREATE_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_RETURN              TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LT_EXTENSIONIN         TYPE TABLE OF BAPI_INCINV_CREATE_TM_ITEM WITH HEADER LINE,</span><br><span class="line">        LT_TM_ITEMDATA         TYPE TABLE OF /NFM/BAPIDOCITM WITH HEADER LINE,</span><br><span class="line">        LV_WRBTR               TYPE BAPIWRBTR,</span><br><span class="line">        LT_FTAXP               TYPE TABLE OF FTAXP,</span><br><span class="line">        LV_ITEM                TYPE  RBLGP,</span><br><span class="line">        LV_STATUS              TYPE CHAR01,</span><br><span class="line">        LV_ICON                TYPE CHAR04,</span><br><span class="line">        LV_MESSAGE             TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA: LS_TABLE_CHANGE       TYPE BAPI_INCINV_CHNG_TABLES,</span><br><span class="line">        LS_HEADERDATA_CHANGE  TYPE  BAPI_INCINV_CHNG_HEADER,</span><br><span class="line">        LS_HEADERDATA_CHANGEX TYPE  BAPI_INCINV_CHNG_HEADERX.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  &quot; 数据校验</span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CLEAR:LV_STATUS.</span><br><span class="line">    IF LS_ONLY-RBSTAT = &#x27;5&#x27;.</span><br><span class="line">      LV_STATUS = &#x27;E&#x27;.</span><br><span class="line">      GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">      GS_RBKP_DATA-MSG = &#x27;凭证已过账，无法修改；&#x27;.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA TRANSPORTING ICON MSG WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_GETDETAIL&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      IMPORTING</span><br><span class="line">        HEADERDATA       = LS_HEADERDATA</span><br><span class="line">*       ADDRESSDATA      =</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA         = LT_ITEMDATA</span><br><span class="line">*       ACCOUNTINGDATA   =</span><br><span class="line">*       GLACCOUNTDATA    =</span><br><span class="line">*       MATERIALDATA     =</span><br><span class="line">        TAXDATA          = LT_TAXDATA</span><br><span class="line">*       WITHTAXDATA      =</span><br><span class="line">*       VENDORITEMSPLITDATA       =</span><br><span class="line">        RETURN           = LT_RETURN</span><br><span class="line">*       EXTENSIONOUT     =</span><br><span class="line">*       TMDATA           =</span><br><span class="line">*       NFMETALLITMS     =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">      WHEN &#x27;1&#x27; OR &#x27;3&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = &#x27;X&#x27;.</span><br><span class="line">      WHEN &#x27;2&#x27; OR &#x27;4&#x27;.</span><br><span class="line">        LS_HEADERDATA-INVOICE_IND = SPACE.</span><br><span class="line">      WHEN OTHERS.</span><br><span class="line">    ENDCASE.</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGE-DOC_DATE = LS_ONLY-BLDAT. &quot;凭证日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-PSTNG_DATE = LS_ONLY-BUDAT. &quot;过账日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-BLINE_DATE = LS_ONLY-ZFBDT.  &quot;基准日期</span><br><span class="line">    LS_HEADERDATA_CHANGE-DIFF_INV = LS_ONLY-LIFNR.  &quot;供应商</span><br><span class="line">    LS_HEADERDATA_CHANGE-REF_DOC_NO = LS_ONLY-XBLNR. &quot; 参考</span><br><span class="line">    LS_HEADERDATA_CHANGE-HEADER_TXT = LS_ONLY-BKTXT. &quot; 抬头文本</span><br><span class="line">    LS_HEADERDATA_CHANGE-GROSS_AMOUNT = LS_ONLY-RMWWR. &quot; 总金额</span><br><span class="line">    LS_HEADERDATA_CHANGE-CALC_TAX_IND = LS_ONLY-CAL_IND. &quot; 自动计算税额</span><br><span class="line"> </span><br><span class="line">    LS_HEADERDATA_CHANGEX-DOC_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-PSTNG_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-BLINE_DATE = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-DIFF_INV = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-REF_DOC_NO = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-HEADER_TXT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-GROSS_AMOUNT = &#x27;X&#x27;.</span><br><span class="line">    LS_HEADERDATA_CHANGEX-CALC_TAX_IND = &#x27;X&#x27;.</span><br><span class="line">    LOOP AT LT_ITEMDATA.</span><br><span class="line">      READ TABLE GT_RBKP_DATA INTO GS_RBKP_DATA WITH KEY BOX = &#x27;X&#x27; EBELN = LT_ITEMDATA-PO_NUMBER EBELP = LT_ITEMDATA-PO_ITEM.</span><br><span class="line">      IF SY-SUBRC = 0.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = GS_RBKP_DATA-WRBTR. &quot; 金额</span><br><span class="line">        LT_ITEMDATA-QUANTITY = GS_RBKP_DATA-MENGE.</span><br><span class="line">        LT_ITEMDATA-TAX_CODE = GS_RBKP_DATA-MWSKZ.</span><br><span class="line">        LT_ITEMDATA-ITEM_TEXT = GS_RBKP_DATA-SGTXT. &quot; 文本</span><br><span class="line">      ENDIF.</span><br><span class="line">      LT_ITEMDATA-ITEM_AMOUNT = ABS( LT_ITEMDATA-ITEM_AMOUNT ).</span><br><span class="line">      IF LS_HEADERDATA-INVOICE_IND NE &#x27;X&#x27;.</span><br><span class="line">        LT_ITEMDATA-ITEM_AMOUNT = LT_ITEMDATA-ITEM_AMOUNT * -1.</span><br><span class="line">      ENDIF.</span><br><span class="line">      CASE LS_ONLY-TYPE+0(1).</span><br><span class="line">        WHEN &#x27;1&#x27; OR &#x27;2&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND  = SPACE.</span><br><span class="line">        WHEN &#x27;3&#x27; OR &#x27;4&#x27;.</span><br><span class="line">          LT_ITEMDATA-DE_CRE_IND = &#x27;X&#x27;.</span><br><span class="line">        WHEN OTHERS.</span><br><span class="line">      ENDCASE.</span><br><span class="line">      CLEAR:LT_ITEMDATA_CHANGE.</span><br><span class="line">      MOVE-CORRESPONDING LT_ITEMDATA TO LT_ITEMDATA_CHANGE.</span><br><span class="line">      APPEND LT_ITEMDATA_CHANGE.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_CODE = LS_ONLY-MWSKZ.</span><br><span class="line">    LT_TAXDATA_CHANGE-TAX_AMOUNT = LS_ONLY-WMWST1.</span><br><span class="line">    IF LS_ONLY-CAL_IND IS INITIAL.</span><br><span class="line">      APPEND LT_TAXDATA_CHANGE.</span><br><span class="line">      LS_TABLE_CHANGE-TAXDATA = &#x27;X&#x27;.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LS_TABLE_CHANGE-ITEMDATA = &#x27;X&#x27;.</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_CHANGE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER     = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR           = LS_ONLY-GJAHR</span><br><span class="line">        INVOICE_DOC_STATUS   = &#x27;A&#x27;</span><br><span class="line">        TABLE_CHANGE         = LS_TABLE_CHANGE</span><br><span class="line">        HEADERDATA_CHANGE    = LS_HEADERDATA_CHANGE</span><br><span class="line">        HEADERDATA_CHANGEX   = LS_HEADERDATA_CHANGEX</span><br><span class="line">*       ADRESSDATA_CHANGE    =</span><br><span class="line">*       ADRESSDATA_CHANGEX   =</span><br><span class="line">      IMPORTING</span><br><span class="line">        INVOICEDOCNUMBER_NEW = LV_INVOICEDOCNUMBER</span><br><span class="line">        FISCALYEAR_NEW       = LV_FISCALYEAR</span><br><span class="line">      TABLES</span><br><span class="line">        ITEMDATA             = LT_ITEMDATA_CHANGE</span><br><span class="line">*       ACCOUNTINGDATA       =</span><br><span class="line">*       GLACCOUNTDATA        =</span><br><span class="line">*       MATERIALDATA         =</span><br><span class="line">        TAXDATA              = LT_TAXDATA_CHANGE</span><br><span class="line">*       WITHTAXDATA          =</span><br><span class="line">*       VENDORITEMSPLITDATA  =</span><br><span class="line">        RETURN               = LT_RETURN</span><br><span class="line">*       EXTENSIONIN          =</span><br><span class="line">*       TM_ITEMDATA          =</span><br><span class="line">      .</span><br><span class="line"> </span><br><span class="line">    CLEAR:LV_MESSAGE.</span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line"> </span><br><span class="line">      LV_MESSAGE = |修改成功；|.</span><br><span class="line">      LV_ICON = ICON_LED_GREEN.</span><br><span class="line">    ELSE.</span><br><span class="line">      ROLLBACK WORK.</span><br><span class="line">      LV_ICON = ICON_LED_RED.</span><br><span class="line">    ENDIF.</span><br><span class="line"> </span><br><span class="line">    LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">      GS_RBKP_DATA-ICON = LV_ICON.</span><br><span class="line">      GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">      MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">    ENDLOOP.</span><br><span class="line">  ENDLOOP.</span><br><span class="line"> </span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_DELETE&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      DELETE GT_RBKP_DATA WHERE GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">    ELSE.</span><br><span class="line">      LOOP AT GT_RBKP_DATA INTO GS_RBKP_DATA WHERE BOX = &#x27;X&#x27; AND GJAHR = LS_ONLY-GJAHR AND BELNR = LS_ONLY-BELNR.</span><br><span class="line">        GS_RBKP_DATA-ICON = ICON_LED_RED.</span><br><span class="line">        GS_RBKP_DATA-MSG = LV_MESSAGE.</span><br><span class="line">        MODIFY GT_RBKP_DATA FROM GS_RBKP_DATA.</span><br><span class="line">      ENDLOOP.</span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>过账</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FORM FRM_DELETE_ROW .</span><br><span class="line"> </span><br><span class="line">  DATA: LT_RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE,</span><br><span class="line">        LV_MESSAGE TYPE STRING.</span><br><span class="line"> </span><br><span class="line">  DATA(LT_ONLY) = GT_RBKP_DATA.</span><br><span class="line"> </span><br><span class="line">  DELETE LT_ONLY WHERE BOX IS INITIAL OR BELNR IS INITIAL.</span><br><span class="line"> </span><br><span class="line">  SORT LT_ONLY BY GJAHR BELNR.</span><br><span class="line">  DELETE ADJACENT DUPLICATES FROM LT_ONLY COMPARING GJAHR BELNR.</span><br><span class="line"> </span><br><span class="line">  LOOP AT LT_ONLY INTO DATA(LS_ONLY).</span><br><span class="line">    CALL FUNCTION &#x27;BAPI_INCOMINGINVOICE_POST&#x27;</span><br><span class="line">      EXPORTING</span><br><span class="line">        INVOICEDOCNUMBER = LS_ONLY-BELNR</span><br><span class="line">        FISCALYEAR       = LS_ONLY-GJAHR</span><br><span class="line">      TABLES</span><br><span class="line">        RETURN           = LT_RETURN.</span><br><span class="line"> </span><br><span class="line">    LOOP AT LT_RETURN WHERE TYPE CA &#x27;EAX&#x27;.</span><br><span class="line">      LV_MESSAGE = LV_MESSAGE &amp;&amp; LT_RETURN-MESSAGE &amp;&amp; &#x27;；&#x27;.</span><br><span class="line">    ENDLOOP.</span><br><span class="line"> </span><br><span class="line">    IF SY-SUBRC NE 0.</span><br><span class="line">      COMMIT WORK AND WAIT.</span><br><span class="line">      </span><br><span class="line">    ELSE.</span><br><span class="line"> </span><br><span class="line">    ENDIF.</span><br><span class="line">  ENDLOOP.</span><br><span class="line">ENDFORM.</span><br></pre></td></tr></table></figure>
+<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>&#x2F;</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP变式配置BOM实现</title>
+    <url>/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
+<p>下面举个例子说明如何实现可配置 BOM.要实现可配置 BOM,首先需要一个可配置物料,什么叫可配置物料,可以理解为最终成品的父亲,关系图如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/mcn2u927lr.png" alt="img"></p>
+<p>从上图可看出,可配置物料里含有该产品系列中覆盖到的所有组成的材料,正常的成品物料与可配置物料存在依赖关系,通过设定好的相关性来生成最终的 BOM 结构.可配置物料的 BOM 在 SAP 中称为超级 BOM.下面按照以下步骤实现这个过程:</p>
+<p><strong>配置实现:</strong></p>
+<p>\1. 建立特性(事务码 CT04)所谓的特性,就是描述该成品的特性.在上图中是建立相关性要用到这个特性,我们通过产品的不同特性来决定最终BOM 的构成. </p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ctsfbj4e4y.jpeg" alt="img"></p>
+<p>我们建立一个关于颜色的特性，类型：字符格式，值分配：单一性项目，意思是只能单选。特性值我们设置2个，分别为红色和黄色。</p>
+<p>按照上述，我们依次建立2个特性，分别是Z101(颜色） 特性值Z1:红，Z2:黄；Z103(性别）特性值Z1:男，Z2：女。</p>
+<p>2.建立分类（CL02）</p>
+<p>在特性界面分配上述特性，即把我们上述建立的特性打包起来，再赋予给可配置物料物料。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3jkof4dptn.jpeg" alt="img"></p>
+<p>3.创建可配置物料（MM01）</p>
+<p>物料类型选KMAT可配置物料：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/li2zt5wnrs.jpeg" alt="img"></p>
+<p>项目类别组0002，策略组25</p>
+<p>4.创建超级BOM中的其他物料（MM01）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/rbjbqjt8ic.jpeg" alt="img"></p>
+<p>由于原材料需要在半成品中配置出来，所以需要勾选物料时可配置的</p>
+<p>5.把分类分配给物料（CL20N）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zzaye6aepy.jpeg" alt="img"></p>
+<p>6.创建相关性（CU01）</p>
+<p>相关性就是建立一个逻辑，让系统自动判断，当用户选择特性或填写特性值，自动匹配出我们所需的物料或物料的用量。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/zucy1yh8qn.jpeg" alt="img"></p>
+<p>相关性类型选择(选择条件），点击编辑器，写入代码：Z101&#x3D;’Z1’，意思是当用户选择Z101颜色特性为红色的时候，我们的原材料1被选中，回到前面的前面，记得把状态更改为1下达。</p>
+<p>同样的道理，设置其余物料的相关性。</p>
+<p>7.创建超级BOM(CS01)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/wv0wrvr4cv.jpeg" alt="img"></p>
+<p>点绿色的箭头，把相关性维护到物料上</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/r7jyp0nfgi.png" alt="img"></p>
+<p>建立完毕后，可以看到OD标志（含相关性）被打上勾</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0qcko7q8l7.jpeg" alt="img"></p>
+<p>同样的方式，我们在半成品1中也进行设置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8nihjt65jh.jpeg" alt="img"></p>
+<p>创建完成后，用CS12展开整个可配置BOM的结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ziitg7bcq0.jpeg" alt="img"></p>
+<p>8.创建物料的可配置参数文件（CU41）</p>
+<p>主要是设定可配置物料在执行配置时候的界面参数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hdxde7yffa.jpeg" alt="img"></p>
+<p>9.检查和测试可配置物料（CU50）</p>
+<p>用于测试特性是否生效，成本核算是否正确，成本核算是否出来，前提还需要为相应的成品和半成品建立工艺路线。</p>
+<p>点右上角的配置按钮，输入特性值：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/8kpyvwgcip.jpeg" alt="img"></p>
+<p>输入特性值后，点结果按钮显示配置出来的BOM结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/jyld9q8hhp.jpeg" alt="img"></p>
+<p>如上图所示，当我们输入颜色特性是Z1红色，性别特性是Z1女，显示的BOM结构是把超级BOM中的原材料2和原材料4，符合我们的相关性设置。</p>
+<p>再切换到特性界面，点成本核算按钮，成本核算变式选PPC4销售订单成本核算，传递控制选择PC01带工厂的传输，回车，可以看到产品成本：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/7jv67r939i.jpeg" alt="img"></p>
+<p>10.创建正常的成品物料（MM01）</p>
+<p>已有可配置物料，为什么不直接用可配置物料下达销售订单？由于可配置物料的物料类型是KMAT,默认不参与数量价值的更新，不能实现库存管理，所以，需要用一个正常的成品把可配置物料关联起来，MRP3视图中，需要制定关联到哪个可配置物料：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/sm6t8xnqn3.jpeg" alt="img"></p>
+<p>11.执行正常物料与可配置物料的连接（CS40）</p>
+<p>指定新建的成品与可配置物料的BOM建立连接</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/y5gohmx6q2.jpeg" alt="img"></p>
+<p>勾选保存即可。建立连接后的成品BOM查看只能用CS12查看，不能用CS03</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4kvhylxsc7.jpeg" alt="img"></p>
+<p>我们可以看到CS12展开的BOM,只显示了一个半成品1，那是因为创建该成品的时候，分类特性1个都没有填写。</p>
+<p>至此，我们所有基础数据已经准备完成，看看具体的销售订单和MRP的执行。</p>
+<p><strong>业务实现：</strong></p>
+<ol>
+<li>创建销售订单（VA01） 输入正常成品，会提示选择特性：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4dw4n53jf4.png" alt="img"></p>
+<ol>
+<li>执行MRP运算（MD41） 会产生相应的计划订单，产生的计划订单类型是KD个别客户订单</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/tup614zo32.jpeg" alt="img"></p>
+<ol>
+<li><p>展开订单树 可以看到与特性值对应的物料的计划订单&#x2F;采购申请按需求产生</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hy0acr1100.jpeg" alt="img"></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP工单创建自动释放</title>
     <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
@@ -477,28 +508,19 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP NOTE安装过程</title>
-    <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
-<p>登录sap系统，事务代码scc4.选中client点击左上角的change图标，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hosvmz36zi.png" alt="img"></p>
-<p>将changes and transports for Client-Specific Objects一项由No changes allowed更改到changes without automatic recording.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fgugtuc9oa.png" alt="img"></p>
-<p>将Cross-Client Object Changes 一项由No changes to Repository and cross-client Customizing objs更改到Changes to Repository and cross-client Customizing allowed.</p>
-<p><strong>2.更改系统选项</strong></p>
-<p>  事务代码：se06，点击左上角“系统更改选项”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fpq67mi55q.png" alt="img"></p>
-<p>将EA-APPL，EA-FINSERV，EA-GLTRADE对应的更改项由Not Modifiable更改为Restricted Modifiable.将ABAP&amp;GUI Tools 更改项由Not Modifiable 更改为Modifiable.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/447b8vq321.jpeg" alt="img"></p>
-<p><strong>3.导入note</strong></p>
-<p>  事务代码：snote  点击“Download SAP Note”图标。在弹出的对话框中填写需要安装的note号。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/syyvfuuai6.png" alt="img"></p>
-<p>  填完后点击Execute执行，此时系统会将该note导入到系统中，前提是这个note号存在，可导入状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hr74jdkckz.png" alt="img"></p>
-<p>​    此时在New中就有了该note信息，双机note号，执行就可以了。</p>
-<p> <strong>4.新建传输号</strong></p>
-<p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
-<p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
+    <title>SAP常用表</title>
+    <url>/2022/07/27/SAP%E5%B8%B8%E7%94%A8%E8%A1%A8/</url>
+    <content><![CDATA[<p><strong>一、MM常用表</strong><br>1、MARA: 常规物料数据<br>2、MARC: 物料的工厂数据<br>3、MAKT: 物料描述<br>4、MARD: 物料的工厂&#x2F;库存地点数据<br>5、MBEW: 物料评估（财务数据），其中MBEW-WERKS指工厂<br>6、MVKE: 物料销售数据<br>7、MLGN: 每一个仓库号物料数据（仓库）<br>8、MLGT: 每一个存储类型的物料数据（仓库&#x2F;存储类型）<br>8.1、MSTA：物料主记录状态<br>9、LFA1: 供应商主数据（一般数据）<br>10、LFB1: 供应商主数据（公司代码）<br>11、LFM1: 供应商采购组织数据<br>12、EINA: 采购信息记录（一般数据）<br>13、EINE: 采购信息记录（采购组织数据）<br>14、EKKO: 采购订单抬头<br>15、EKPO: 采购订单行项目<br>16、EKET: 计划协议计划行<br>17、EKKN: 采购凭证中的帐户设置<br>18、EKBE: 采购凭证历史<br>19、MKPF: 物料凭证抬头<br>20、MSEG: 物料凭证行项目<br>21、RBKP: 凭证抬头供应商发票数据<br>22、RSEG: 凭证项目供应商发票数据<br>EKKO&#x2F;EKPO–&gt;MKPF&#x2F;MSEG–&gt;RBKP&#x2F;RSEG–&gt;BKPF-BSEG<br>23、KNA1: 客户主数据（一般数据）<br>24、KNB1: 客户主数据（公司代码）<br>25、KNVV: 客户主记录销售数据<br>26、ADRC: 地址<br>27、EBAN: 采购申请</p>
+<p><strong>二、SD常用表</strong><br>1、VBAK: 销售凭证：抬头数据<br>2、VBAP: 销售凭证：项目数据<br>3、VBEP: 销售凭证：计划行数据<br>4、VBKD: 销售凭证：业务数据<br>5、VBPA: 销售凭证：合作伙伴<br>6、LIKP: SD凭证：交货抬头数据<br>7、LIPS: SD凭证：交货项目数据<br>8、VBRK: 出具发票：抬头数据<br>9、VBRP: 出具发票：项目数据<br>10、VBFA: 销售凭证流<br>11、VBUK: 销售凭证：抬头状态和管理数据<br>12、VBUP: 销售凭证 ： 项目状态<br>13、T682I: 条件：存取顺序( 产生格式 )<br>14、T681: 条件：结构<br>15、T682Z: 条件：存取顺序( 字段 )<br>16、T685: 条件:类型</p>
+<p><strong>三、FICO常用表</strong><br>1、SKA1: 总帐科目主记录 (科目表)<br>2、SKB1: 总帐科目主记录 (公司代码)<br>3、SKAT: 总帐科目主记录（描述）<br>4、CSKB: 成本要素<br>5、BKPF: 会计凭证抬头<br>6、BSEG: 会计核算凭证项目数据，BSID客户未清会计核算凭证&#x2F;BSAD客户已清会计核算凭证&#x2F;BSIK供应商未清会计核算凭证&#x2F;BSAK供应商已清会计核算凭证&#x2F;BSIS总帐未清会计核算凭证&#x2F;BSAS总帐已清会计核算凭证<br>7、FAGLFLEXA: 总账实际行项目<br>8、FAGLFLEXT: 总账汇总<br>9、ANLA: 资产主记录段<br>10、ANLC: 资产值字段<br>11、CSKS: 成本中心主数据<br>12、COEP: 成本控制对象：与期间相关的各行项目<br>13、COSS: CO 对象:内部过帐成本总计<br>14、COSP: CO 对象：外部记帐的成本总计<br>15、 CKMLPRKEKO: 物料分类帐; 价格的成本组件分割 (标题)<br>16、CKMLPRKEPH: 物料分类帐: 价格的成本组件分割 (要素0</p>
+<p><strong>四、PP常用表</strong><br>1、MAST：BOM链接物料<br>2、STKO：BOM表头<br>3、STAS：BOMs - 项选择<br>4、STPO：BOM项目<br>STKO~ STLAN &#x3D; STAS-STLAN AND STKO~ STLAL &#x3D; STAS-STLAL<br>STAS~ STLNR &#x3D; STPO-STLNR AND STAS~ STLKN &#x3D; STAS-STLKN<br>BOM类别包括：D-凭证结构、E-设备BOM、K-订单BOM、M-物料BOM、S-标准BOM、T-功能位置BOM、P-工作分解结构BOM<br>5、PLAF: 计划订单<br>6、RKPF: 预定&#x2F;相关需求抬头<br>7、RESB: 预定&#x2F;相关需求行项目<br>8、AUFK: 订单主数据<br>9、AFKO: 订单表头数据，PP订单<br>10、AFPO: 订单项<br>11、AFVC: 订单的工序<br>12、AFVV: 工序中数量&#x2F;日期&#x2F;值的DB结构<br>13、JEST: 订单状态，通过AUFK-OBJNR&#x3D;JEST-OBJNR关联<br>14、AFRU: 订单确认<br>15、AUFM: 针对订单的货物移动</p>
+<p><strong>五、PM常用表</strong><br>1、IFLOT: 功能位置(表)<br>2、ILOA: PM 对象位置和帐户分配</p>
+<p><strong>六、PS常用表</strong><br>1、PROJ: 项目定义<br>2、PRPS: WBS(工作中断结构) 元素主数据</p>
+<p><strong>七、QM常用表</strong><br>1、QPAM 检验目录选择集<br>2、QPMK 主检验特征<br>3、QPMT  主检验特征文本<br>4、QPMZ  分配检验方法&#x2F;主检验特征<br>5、QMAT  材料参数检验类型<br>6、QMHU 在检验批和处理单位项目中显示QM链接<br>7、QMTB 检验方法主记录<br>8、QMTT 检验方法文本<br>9、QPAC 检验目录代码<br>10、PLKO 检验计划标题<br>11、MAPL 材料分配<br>12、PLMK 检验计划特点<br>13、PLMW  MAPL相关特征规范</p>
+<p><strong>八、库存数据</strong><br>1、MBEW: 物料评估<br>2、MARD: 物料的工厂&#x2F;库存地点数据<br>3、MSLB: 供应商特殊库存（O）<br>4、MKOL: 供应商特殊库存（K）<br>5、MSKA: 销售订单库存<br>6、MCH1&#x2F; MCHB: 批次库存</p>
+<p><strong>九、货物移动数据</strong><br>1、MKPF: 物料凭证抬头<br>2、MSEG: 物料凭证行项目<br>不是所有的物料移动数据都需要从这物料移动表中进行读取，生产订单相关AUFM，采购订单相关EKBE，销售相关VBFA。</p>
+<p><strong>十、WM常用表</strong><br>1、LTBK: 转储请求抬头<br>2、LTBP: 转储请求项目<br>3、LTAK: WM转储单抬头<br>4、LTAP: WM转储单项目</p>
+<p><strong>十一、销售价格、采购价格</strong><br>KONV: 价格数据<br>销售价格：通过条件记录号KONV-KNUMV&#x3D;VBAK-KNUMV关联<br>采购价格:：通过条件记录号KONV-KNUMV&#x3D;EKKO-KNUMV关联</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -600,28 +622,6 @@
 <p><strong>2、move-corresponding 的新语法特性</strong><br>MOVE-CORRESPONDING ITAB_A TO ITAB_B.<br>隐式操作会把B清空，然后按字段名依次复制。</p>
 <p>新语法：<br>1、MOVE-CORRESPONDING ITAB_A TO ITAB_B KEEPING TARGET LINES.</p>
 <p>2、ITAB_B &#x3D; CORRESPONDING #( BASE ( ITAB_B ) ITAB_A ).<br>保留原数据，在此基础上根据对应字段添加。<br>PS:如果结构相同不如直接APPEND，但是APPEND只能根据顺序来，可能不会自动的根据字段来对应。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP常用表</title>
-    <url>/2022/07/27/SAP%E5%B8%B8%E7%94%A8%E8%A1%A8/</url>
-    <content><![CDATA[<p><strong>一、MM常用表</strong><br>1、MARA: 常规物料数据<br>2、MARC: 物料的工厂数据<br>3、MAKT: 物料描述<br>4、MARD: 物料的工厂&#x2F;库存地点数据<br>5、MBEW: 物料评估（财务数据），其中MBEW-WERKS指工厂<br>6、MVKE: 物料销售数据<br>7、MLGN: 每一个仓库号物料数据（仓库）<br>8、MLGT: 每一个存储类型的物料数据（仓库&#x2F;存储类型）<br>8.1、MSTA：物料主记录状态<br>9、LFA1: 供应商主数据（一般数据）<br>10、LFB1: 供应商主数据（公司代码）<br>11、LFM1: 供应商采购组织数据<br>12、EINA: 采购信息记录（一般数据）<br>13、EINE: 采购信息记录（采购组织数据）<br>14、EKKO: 采购订单抬头<br>15、EKPO: 采购订单行项目<br>16、EKET: 计划协议计划行<br>17、EKKN: 采购凭证中的帐户设置<br>18、EKBE: 采购凭证历史<br>19、MKPF: 物料凭证抬头<br>20、MSEG: 物料凭证行项目<br>21、RBKP: 凭证抬头供应商发票数据<br>22、RSEG: 凭证项目供应商发票数据<br>EKKO&#x2F;EKPO–&gt;MKPF&#x2F;MSEG–&gt;RBKP&#x2F;RSEG–&gt;BKPF-BSEG<br>23、KNA1: 客户主数据（一般数据）<br>24、KNB1: 客户主数据（公司代码）<br>25、KNVV: 客户主记录销售数据<br>26、ADRC: 地址<br>27、EBAN: 采购申请</p>
-<p><strong>二、SD常用表</strong><br>1、VBAK: 销售凭证：抬头数据<br>2、VBAP: 销售凭证：项目数据<br>3、VBEP: 销售凭证：计划行数据<br>4、VBKD: 销售凭证：业务数据<br>5、VBPA: 销售凭证：合作伙伴<br>6、LIKP: SD凭证：交货抬头数据<br>7、LIPS: SD凭证：交货项目数据<br>8、VBRK: 出具发票：抬头数据<br>9、VBRP: 出具发票：项目数据<br>10、VBFA: 销售凭证流<br>11、VBUK: 销售凭证：抬头状态和管理数据<br>12、VBUP: 销售凭证 ： 项目状态<br>13、T682I: 条件：存取顺序( 产生格式 )<br>14、T681: 条件：结构<br>15、T682Z: 条件：存取顺序( 字段 )<br>16、T685: 条件:类型</p>
-<p><strong>三、FICO常用表</strong><br>1、SKA1: 总帐科目主记录 (科目表)<br>2、SKB1: 总帐科目主记录 (公司代码)<br>3、SKAT: 总帐科目主记录（描述）<br>4、CSKB: 成本要素<br>5、BKPF: 会计凭证抬头<br>6、BSEG: 会计核算凭证项目数据，BSID客户未清会计核算凭证&#x2F;BSAD客户已清会计核算凭证&#x2F;BSIK供应商未清会计核算凭证&#x2F;BSAK供应商已清会计核算凭证&#x2F;BSIS总帐未清会计核算凭证&#x2F;BSAS总帐已清会计核算凭证<br>7、FAGLFLEXA: 总账实际行项目<br>8、FAGLFLEXT: 总账汇总<br>9、ANLA: 资产主记录段<br>10、ANLC: 资产值字段<br>11、CSKS: 成本中心主数据<br>12、COEP: 成本控制对象：与期间相关的各行项目<br>13、COSS: CO 对象:内部过帐成本总计<br>14、COSP: CO 对象：外部记帐的成本总计<br>15、 CKMLPRKEKO: 物料分类帐; 价格的成本组件分割 (标题)<br>16、CKMLPRKEPH: 物料分类帐: 价格的成本组件分割 (要素0</p>
-<p><strong>四、PP常用表</strong><br>1、MAST：BOM链接物料<br>2、STKO：BOM表头<br>3、STAS：BOMs - 项选择<br>4、STPO：BOM项目<br>STKO~ STLAN &#x3D; STAS-STLAN AND STKO~ STLAL &#x3D; STAS-STLAL<br>STAS~ STLNR &#x3D; STPO-STLNR AND STAS~ STLKN &#x3D; STAS-STLKN<br>BOM类别包括：D-凭证结构、E-设备BOM、K-订单BOM、M-物料BOM、S-标准BOM、T-功能位置BOM、P-工作分解结构BOM<br>5、PLAF: 计划订单<br>6、RKPF: 预定&#x2F;相关需求抬头<br>7、RESB: 预定&#x2F;相关需求行项目<br>8、AUFK: 订单主数据<br>9、AFKO: 订单表头数据，PP订单<br>10、AFPO: 订单项<br>11、AFVC: 订单的工序<br>12、AFVV: 工序中数量&#x2F;日期&#x2F;值的DB结构<br>13、JEST: 订单状态，通过AUFK-OBJNR&#x3D;JEST-OBJNR关联<br>14、AFRU: 订单确认<br>15、AUFM: 针对订单的货物移动</p>
-<p><strong>五、PM常用表</strong><br>1、IFLOT: 功能位置(表)<br>2、ILOA: PM 对象位置和帐户分配</p>
-<p><strong>六、PS常用表</strong><br>1、PROJ: 项目定义<br>2、PRPS: WBS(工作中断结构) 元素主数据</p>
-<p><strong>七、QM常用表</strong><br>1、QPAM 检验目录选择集<br>2、QPMK 主检验特征<br>3、QPMT  主检验特征文本<br>4、QPMZ  分配检验方法&#x2F;主检验特征<br>5、QMAT  材料参数检验类型<br>6、QMHU 在检验批和处理单位项目中显示QM链接<br>7、QMTB 检验方法主记录<br>8、QMTT 检验方法文本<br>9、QPAC 检验目录代码<br>10、PLKO 检验计划标题<br>11、MAPL 材料分配<br>12、PLMK 检验计划特点<br>13、PLMW  MAPL相关特征规范</p>
-<p><strong>八、库存数据</strong><br>1、MBEW: 物料评估<br>2、MARD: 物料的工厂&#x2F;库存地点数据<br>3、MSLB: 供应商特殊库存（O）<br>4、MKOL: 供应商特殊库存（K）<br>5、MSKA: 销售订单库存<br>6、MCH1&#x2F; MCHB: 批次库存</p>
-<p><strong>九、货物移动数据</strong><br>1、MKPF: 物料凭证抬头<br>2、MSEG: 物料凭证行项目<br>不是所有的物料移动数据都需要从这物料移动表中进行读取，生产订单相关AUFM，采购订单相关EKBE，销售相关VBFA。</p>
-<p><strong>十、WM常用表</strong><br>1、LTBK: 转储请求抬头<br>2、LTBP: 转储请求项目<br>3、LTAK: WM转储单抬头<br>4、LTAP: WM转储单项目</p>
-<p><strong>十一、销售价格、采购价格</strong><br>KONV: 价格数据<br>销售价格：通过条件记录号KONV-KNUMV&#x3D;VBAK-KNUMV关联<br>采购价格:：通过条件记录号KONV-KNUMV&#x3D;EKKO-KNUMV关联</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -3063,48 +3063,6 @@
       </tags>
   </entry>
   <entry>
-    <title>如何搭建一套完整的数据指标体系概述</title>
-    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/</url>
-    <content><![CDATA[<p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
-<p>而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。</p>
-<p><strong>而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用</strong><br><strong>一套逻辑连接起来(见下图)。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg" alt="img"></p>
-<p>在这套逻辑里，你能从局部看到整体，能从整体划分到局部。<br>例如你头疼(整体)， 医生能够按照人的生命体系一-检查, 直到发现你上呼吸道不正常，发生了感染(局部) ;也能从你手扎破了(局部) ，如果不及时处理伤口，可能由于感染丢失了性命(整体)。<br>企业也一样,通过企业的指标体系,也能看到企业利润没有达成，是哪个部门(个人)出现了问题，也可从一个销售员的业绩推断出公司的整体情况。</p>
-<p><strong>由此可以看出，指标体系最重要的是”指标”和“逻辑”。</strong></p>
-<hr>
-<h2 id="解决问题：指标体系到底如何搭建？"><a href="#解决问题：指标体系到底如何搭建？" class="headerlink" title="解决问题：指标体系到底如何搭建？"></a><strong>解决问题：指标体系到底如何搭建？</strong></h2><p>那么，如果我们想要搭建一完整指标体系,就得有一大堆衡量企业健康状况的指标，还得有一整套逻辑将企业的各个指标有机连接起来。</p>
-<p>“指标”和“逻辑”虽然是指标体系的两个组成部分,但是构造”指标”和“逻辑”的过程却是同一个过程，那就是“自上而下，从大到小”，层层拆解，步步细分(业绩目标的设定过程可能相反)。</p>
-<p><strong>1、首先，每个企业都有自己每年的整体目标，这个目标-般是营收、利润、或销量。</strong><br>这个大指标的问题在于，它无法把责任落在某-个具体的人或部门(CEO不算， 因为整个指标体系就是为了他达成大指标使用的管理工具，他又不能一个人把公司所有活干了)，所以就需要把这个大指标进行拆解，直到拆解到责任可以落实到每一个部门(个人)头上。</p>
-<p><strong>2、其次，就是如何拆解企业目标，这一步至关重要。一般来说， 指标体系是按照本企业的业务流程进行拆解。</strong><br>那什么是业务流程呢?它指的就是你要将从消费者(或者客户)那里收到钱所经历的所有的步骤进行拆解(也有人说按照消费者消费路径来拆解的,个人认为主要是业务流程，因为一般公司的部门是按照业务流程设置的)。</p>
-<p>例如一家汽车制造公司,要想从客户手里收到购车款，大体来说需要经历造车一-&gt;营销一-&gt; 物<br>流一一&gt;销售的环节。那如何将企业一年的收入在这些环节进行分解，这时可以就需要“将业务流<br>程抽象为数学公式”，因为指标本质上还是数据，所以指标的拆解当然离不开数学。<br>以上汽车销售的业务流程用数学公式表达出来如下:<br>汽车的销售收入&#x3D;Max{出厂车辆数，营销产生的销售线索数X销镌转化率x门店数量} X单车利润</p>
-<p>因此，要达成营业利润那么子指标就是销售车辆数，而销售车辆数的子指标就是出厂车辆数、销售线索数、销售转化率。<br>这是大指标的一级拆解，一级拆解，一 般建议子指标可以找到一 一个具体负责的部门。因为说一千道一万，企业是由各部门门组成的，不论是传统企业是互联网公司，当然集团除外，我们这里主要说的是某一板块业务。</p>
-<p>这样拆解的好处就是，虽然这个部门无法完全控制整个公司大指标，但是总可以控制部门的子指标。</p>
-<p>例如，营销部可能无法对整个公司的销售收入负责，毕竟如果你车造的很烂，或者销售人员不努力，即使我把产品吹天，消费者实际到店一试驾，还是不会买不是吗。但是，有多少人看广告,有多人看了广告愿意试驾(销售线索)你总不能甩锅吧。</p>
-<p><strong>3、就是将每个业务流程的目标再次在本流程的子流程层面进行二_级拆解 (见下图)。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg" alt="img"></p>
-<p>例如，营销部负责销售线索数，但是你可能在很多媒介上做广告,例如电视、门户网站、移动端APP等等，那么每一个媒介上有多少销售线索数，你总得有一个统计指标吧，或者每一个媒介都有一个具体的人员在负责，那么将“销售线索数”这个子指标再细分，就是“XX媒介产生的销售线索数”。</p>
-<p>这样，我们就可以看出这个媒介在整年的表现，如果责任到人的话，可以直接去看负责这个媒介投放的人员的业绩表现，进而通过这个子指标看其对整个营业收入(公司大指标)的影响。</p>
-<p>其实这方面没有很好的方法，网上很多人都在鼓吹”OSM模型” ，O就是Objective, S是Strategy, M是Measurement,其实它更多指的是一个概念框架， 而且是高度抽象、大道至简的那种，而在真实的应用上能够参考的意义是有限的(就像SWOT分析一样)。</p>
-<p>因此，最好的方法，就是你对这个业务流程相当了解，这也是现实中为什么HR部门门]无法设置好的指标体系了，因为他们对业务流程的了解一般少之又少。所以，指标的拆解(指标体系的搭建)，其实是非常内行的一件事情。</p>
-<p><strong>4、是将一些职能部门的指标以及业务部门的保障性指标加入进去。</strong></p>
-<p>如果按照上述方法拆解KPI,那么基本上只有销售部、营销部、生产部等主要业务部门]的指标，但是问题是整个公司的运行不是只有业务部门，还有很多职能部门，这些职能部]的工作也很重要，因为他们是保障整个公司的健康运行，也就是以上业务部[ ]的指标能够达成的基础环境(参见波特价值链)。</p>
-<p>举个例子，如果财务部门不好好工作，导致出现-个财务漏洞，那整个公司好几年的营收估计都搭进去了，又何谈一年的目标实现呢?</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg" alt="img"></p>
-<h4 id="那职能部门的指标如何拆解呢？"><a href="#那职能部门的指标如何拆解呢？" class="headerlink" title="那职能部门的指标如何拆解呢？"></a><strong>那职能部门的指标如何拆解呢？</strong></h4><p>首先，你必须得了解它们的主要工作内容、工作目标、工作流程。例如财务部门，主要指标可能是财务报告的及时性和准确性，以及预算管理的好与坏，这些都是可以量化的。</p>
-<p>还有数据分析部门可能主要是一个支撑部门， 那目标就是、及时准确地支撑业务部门数据需求、报表开发、给管理层的深度分析报告等，这些服务可以由各业务部门来打分，这样你就可以设置数据分析部门的指标诸如“数据提供满意度”、“数据分析报告满意度” 等。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg" alt="img"></p>
-<p>此外，业务部门]也有保障性指标。例如生产部的指标肯定不光是生产合格的产品数量，你还得在一定时间、按照一定成本、按照一定良品率把合格的产品生产出来，那这个部门(业务)的指标就不光是生产合格的产品数量，还有以上提到的保障性指标。通过之前搭建的业务指标体系(总指标–&gt; 细分一&gt;细分….)加上诸如风险管理、财务、人事等职能(支撑)部门的保障性指标以及业务部门门的业务保障性指标，覆盖整个公司的指标体系就搭建起来了。</p>
-<p>这个体系整体像一颗巨大的树，但是在内在结构_上又是枝与枝相关联，例如各部]的预算控制好了，整个财务的预算才能控制好;或者说数据部门门要提供好用的报表，也得开发部门]开发出好用的报表套件才行。毕竟，各部门相互连接，整个公司才是一个”有机的”整体(下图)。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg" alt="img"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何定义需求的优先级</title>
     <url>/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/</url>
     <content><![CDATA[<p>如何定义需求的优先级&#x3D;考验你决策取舍的能力</p>
@@ -3138,6 +3096,48 @@
 <h3 id="2、better-worse系数"><a href="#2、better-worse系数" class="headerlink" title="2、better-worse系数"></a>2、better-worse系数</h3><p>Better系数&#x3D;（期望数+魅力数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
 <p>Worse系数&#x3D; -1*（期望数+必备数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
 <p>Better系数越接近1，表示该具备度越高该需求对用户满意度提升的影响效果越大。Worse系数越接近-1，表示具备度越低该需求对用户满意度造成的负面影响越大。</p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何搭建一套完整的数据指标体系概述</title>
+    <url>/2022/07/08/%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E5%AE%8C%E6%95%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<p>所谓的数据指标就是对所观察事物的一种量化统计。大到企业的收入利润，小到每个一线销售人员每天的客户拜访量、成单量等。</p>
+<p>而体系，就是用一套逻辑把-大堆东西连接起来。比如，人的生命体系包括大脑、心脏、血液、各种器官等等，每一个组成部分都在这个体系中有自己独特的功能，都是这个体系不可或缺的一部分。</p>
+<p><strong>而企业的指标体系，就是能够将大到企业的总收入、利润，小到每个销售员的成交量等单个指标用</strong><br><strong>一套逻辑连接起来(见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-1d9967d4d14ab29a65774c9f86e9f99b_720w.jpg" alt="img"></p>
+<p>在这套逻辑里，你能从局部看到整体，能从整体划分到局部。<br>例如你头疼(整体)， 医生能够按照人的生命体系一-检查, 直到发现你上呼吸道不正常，发生了感染(局部) ;也能从你手扎破了(局部) ，如果不及时处理伤口，可能由于感染丢失了性命(整体)。<br>企业也一样,通过企业的指标体系,也能看到企业利润没有达成，是哪个部门(个人)出现了问题，也可从一个销售员的业绩推断出公司的整体情况。</p>
+<p><strong>由此可以看出，指标体系最重要的是”指标”和“逻辑”。</strong></p>
+<hr>
+<h2 id="解决问题：指标体系到底如何搭建？"><a href="#解决问题：指标体系到底如何搭建？" class="headerlink" title="解决问题：指标体系到底如何搭建？"></a><strong>解决问题：指标体系到底如何搭建？</strong></h2><p>那么，如果我们想要搭建一完整指标体系,就得有一大堆衡量企业健康状况的指标，还得有一整套逻辑将企业的各个指标有机连接起来。</p>
+<p>“指标”和“逻辑”虽然是指标体系的两个组成部分,但是构造”指标”和“逻辑”的过程却是同一个过程，那就是“自上而下，从大到小”，层层拆解，步步细分(业绩目标的设定过程可能相反)。</p>
+<p><strong>1、首先，每个企业都有自己每年的整体目标，这个目标-般是营收、利润、或销量。</strong><br>这个大指标的问题在于，它无法把责任落在某-个具体的人或部门(CEO不算， 因为整个指标体系就是为了他达成大指标使用的管理工具，他又不能一个人把公司所有活干了)，所以就需要把这个大指标进行拆解，直到拆解到责任可以落实到每一个部门(个人)头上。</p>
+<p><strong>2、其次，就是如何拆解企业目标，这一步至关重要。一般来说， 指标体系是按照本企业的业务流程进行拆解。</strong><br>那什么是业务流程呢?它指的就是你要将从消费者(或者客户)那里收到钱所经历的所有的步骤进行拆解(也有人说按照消费者消费路径来拆解的,个人认为主要是业务流程，因为一般公司的部门是按照业务流程设置的)。</p>
+<p>例如一家汽车制造公司,要想从客户手里收到购车款，大体来说需要经历造车一-&gt;营销一-&gt; 物<br>流一一&gt;销售的环节。那如何将企业一年的收入在这些环节进行分解，这时可以就需要“将业务流<br>程抽象为数学公式”，因为指标本质上还是数据，所以指标的拆解当然离不开数学。<br>以上汽车销售的业务流程用数学公式表达出来如下:<br>汽车的销售收入&#x3D;Max{出厂车辆数，营销产生的销售线索数X销镌转化率x门店数量} X单车利润</p>
+<p>因此，要达成营业利润那么子指标就是销售车辆数，而销售车辆数的子指标就是出厂车辆数、销售线索数、销售转化率。<br>这是大指标的一级拆解，一级拆解，一 般建议子指标可以找到一 一个具体负责的部门。因为说一千道一万，企业是由各部门门组成的，不论是传统企业是互联网公司，当然集团除外，我们这里主要说的是某一板块业务。</p>
+<p>这样拆解的好处就是，虽然这个部门无法完全控制整个公司大指标，但是总可以控制部门的子指标。</p>
+<p>例如，营销部可能无法对整个公司的销售收入负责，毕竟如果你车造的很烂，或者销售人员不努力，即使我把产品吹天，消费者实际到店一试驾，还是不会买不是吗。但是，有多少人看广告,有多人看了广告愿意试驾(销售线索)你总不能甩锅吧。</p>
+<p><strong>3、就是将每个业务流程的目标再次在本流程的子流程层面进行二_级拆解 (见下图)。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-4b127ae5ce8465d94c26f2ca2347ad43_720w.jpg" alt="img"></p>
+<p>例如，营销部负责销售线索数，但是你可能在很多媒介上做广告,例如电视、门户网站、移动端APP等等，那么每一个媒介上有多少销售线索数，你总得有一个统计指标吧，或者每一个媒介都有一个具体的人员在负责，那么将“销售线索数”这个子指标再细分，就是“XX媒介产生的销售线索数”。</p>
+<p>这样，我们就可以看出这个媒介在整年的表现，如果责任到人的话，可以直接去看负责这个媒介投放的人员的业绩表现，进而通过这个子指标看其对整个营业收入(公司大指标)的影响。</p>
+<p>其实这方面没有很好的方法，网上很多人都在鼓吹”OSM模型” ，O就是Objective, S是Strategy, M是Measurement,其实它更多指的是一个概念框架， 而且是高度抽象、大道至简的那种，而在真实的应用上能够参考的意义是有限的(就像SWOT分析一样)。</p>
+<p>因此，最好的方法，就是你对这个业务流程相当了解，这也是现实中为什么HR部门门]无法设置好的指标体系了，因为他们对业务流程的了解一般少之又少。所以，指标的拆解(指标体系的搭建)，其实是非常内行的一件事情。</p>
+<p><strong>4、是将一些职能部门的指标以及业务部门的保障性指标加入进去。</strong></p>
+<p>如果按照上述方法拆解KPI,那么基本上只有销售部、营销部、生产部等主要业务部门]的指标，但是问题是整个公司的运行不是只有业务部门，还有很多职能部门，这些职能部]的工作也很重要，因为他们是保障整个公司的健康运行，也就是以上业务部[ ]的指标能够达成的基础环境(参见波特价值链)。</p>
+<p>举个例子，如果财务部门不好好工作，导致出现-个财务漏洞，那整个公司好几年的营收估计都搭进去了，又何谈一年的目标实现呢?</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-77018d8dc36a8e6a39769e8a8d88b178_720w.jpg" alt="img"></p>
+<h4 id="那职能部门的指标如何拆解呢？"><a href="#那职能部门的指标如何拆解呢？" class="headerlink" title="那职能部门的指标如何拆解呢？"></a><strong>那职能部门的指标如何拆解呢？</strong></h4><p>首先，你必须得了解它们的主要工作内容、工作目标、工作流程。例如财务部门，主要指标可能是财务报告的及时性和准确性，以及预算管理的好与坏，这些都是可以量化的。</p>
+<p>还有数据分析部门可能主要是一个支撑部门， 那目标就是、及时准确地支撑业务部门数据需求、报表开发、给管理层的深度分析报告等，这些服务可以由各业务部门来打分，这样你就可以设置数据分析部门的指标诸如“数据提供满意度”、“数据分析报告满意度” 等。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-430f3c891aba195a2ed05bc595d76b18_720w.jpg" alt="img"></p>
+<p>此外，业务部门]也有保障性指标。例如生产部的指标肯定不光是生产合格的产品数量，你还得在一定时间、按照一定成本、按照一定良品率把合格的产品生产出来，那这个部门(业务)的指标就不光是生产合格的产品数量，还有以上提到的保障性指标。通过之前搭建的业务指标体系(总指标–&gt; 细分一&gt;细分….)加上诸如风险管理、财务、人事等职能(支撑)部门的保障性指标以及业务部门门的业务保障性指标，覆盖整个公司的指标体系就搭建起来了。</p>
+<p>这个体系整体像一颗巨大的树，但是在内在结构_上又是枝与枝相关联，例如各部]的预算控制好了，整个财务的预算才能控制好;或者说数据部门门要提供好用的报表，也得开发部门]开发出好用的报表套件才行。毕竟，各部门相互连接，整个公司才是一个”有机的”整体(下图)。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-34c4801c1c494014b0eebc756786024a_720w.jpg" alt="img"></p>
 ]]></content>
       <categories>
         <category>数据</category>
@@ -3375,31 +3375,6 @@
       </tags>
   </entry>
   <entry>
-    <title>期货业务学习</title>
-    <url>/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h3 id="1-什么是头寸？"><a href="#1-什么是头寸？" class="headerlink" title="1. 什么是头寸？"></a>1. 什么是头寸？</h3><p>在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货合约数量。对做多者，称处于多头头寸；对做空者，称处于空头头寸。多单与空单的差值，称为“净头寸”。</p>
-<h3 id="2-什么是点价？"><a href="#2-什么是点价？" class="headerlink" title="2. 什么是点价？"></a>2. 什么是点价？</h3><p>点价我知道原来在大豆进出口贸易有这个概念。美国是最大的大豆出口国，我国是最大的大豆进口国。大豆价格波动很大，这个交易涉及到三方，美国农民、美国贸易商、中国油厂。美国农民通过点价卖货的方式把大豆卖给贸易商，即卖出后并不确定卖出价，而是相对某月期货确定一个升贴水，农民可自行选择一定期限内约定期货的价格，再计算上升贴水就是农民获得的售货款。中国油厂点价买货则是接受贸易商的升贴水报价，签订进口合同时，并不直接确定大豆的价格，在合同中约定以CBOT某月大豆合约作为标的合约，在一定期限内 以期货价格均价加升贴水作为最终的进口价格。而贸易商在中间则是利用期货套期保值的功能，达到低风险交易的目的。<br>具体分三步：<br>第一步：贸易商向农民收购大豆，同时在期货市场卖出相应期货保值，手中持有大豆现货多头和相应期货空头；<br>第二步：向中国油厂报升贴水价格，并与之签订合同，中国油厂接受升贴水报价，并在一定期限内购买相应数量的期货（即中国油厂点价）<br>第三步：中国油厂将期货多单转给贸易商，贸易商平提手中的期货空头，同时中国油厂从贸易商手中购买相应数量的大豆现货，过程完成后，贸易商手中的大豆现货多头和期货空头同时平仓。<br>最初大豆交易并非用的点价方式，但有几年大豆价格跌的厉害，大豆在运送过程中，比如40天，价格大跌，船到港后，大豆购买方宁愿不要保证金也要违约，贸易商损失惨重，而在大豆价格大幅上涨时，这一情形又反过来。反正渐渐的，大豆就使用点价交易了。另外，感觉中国大豆的进口史也是有挺多值得细细说一说的。</p>
-<h3 id="3-什么是正套、反套？"><a href="#3-什么是正套、反套？" class="headerlink" title="3. 什么是正套、反套？"></a>3. 什么是正套、反套？</h3><p>近有很多交易者问我关于套利的事情，我发现很多交易者甚至连正套和反套都不是很理解，也有的人是死记硬背、生搬硬套，所以今天我们来一起了解一下正套和反套。<br>我从以下三个角度来帮助你理解正反套：</p>
-<ol>
-<li>时间维度——跨期套利</li>
-<li>产业链维度——产业套利</li>
-<li>贸易流维度——跨市套利<br>首先，从跨期套利角度来讲。通常情况下，只有先拥有商品，才有对商品的卖出处置权。人们可以通过生产、采购甚至借贷现货来实现最终的卖出交割，这种符合商品正常流向的近期买入、远期卖出的套利方式，我们称之为正向套利。同样，由于时间的不可逆性，我们无法让未来的拥有来满足现在的需要，所以期货市场中近期卖出、远期买入的套利方式，我们称之为反向套利。</li>
-</ol>
-<p>其次，从产业套利角度来讲。在产业套利当中，整个产业链分为原材料、产成品。产成品是由原材料生产和加工而来的，所以做多原料做空成品属于正向套利，反之，做空原料做多成品属于反向套利。我们以最常见的大豆产业链来说，做多大豆做空豆油豆粕属于正向套利，而做空大豆做多豆油豆粕就属于反向套利。</p>
-<p>最后，从跨市套利角度来讲。在跨市场套利中，正向套利的意思是做多国外，做空国内。之所以称之为正向套利，原因在于中国是净进口国，净贸易流方向为国外到国内。正向套利的实物逻辑在于进口贸易流，做多国外同时做空国内，意味着从国外买入，再卖到国内，与贸易流方向一致。以棉花为例，国内棉花价格一直高于美棉的原因有两个：一是国内棉花种植的机械化程度不强，种植成本远超美国；二是中国和美国对棉花种植的扶持政策存在差异，美国直接补贴棉农，而国内则是通过发改委国储局的棉花收抛储政策来影响市场供给，进而维持价格稳定，达到保障棉农利益、调控国内棉价的双重目的。所以，每年我们国家都会从美国进口一部分棉花，贸易流是从美国流向中国，所以做多美棉，做空郑棉，这就属于跨市套利中的正向套利。当然，棉花和白糖这两个品种都是配额制的，在一定程度上会受政策的干预和影响。</p>
-<h3 id="4-杨老师普及期货知识"><a href="#4-杨老师普及期货知识" class="headerlink" title="4. 杨老师普及期货知识"></a>4. 杨老师普及期货知识</h3><p>对于期货的开仓，就是开多和开空，然后平仓的时候就是平多和平空。<br>对于这个ZLYD&#x2F;XMD公司来说，有套期保值和套利2种方式。具体如下：<br>在梳理套期保值和套利之前首先要明确几个名词：<br>1、持仓：也可以叫头寸，就是你现在手头上的合约，比如持有202210的豆粕空单10手。<br>2、基差：现货和期货的价差，比如现货市场价5000，期货市场价5500，基差就是现货-期货 &#x3D; -500。<br>3、正套：买现货，卖期货，适用预期后面要涨的市场。<br>4、反套：卖现货，买期货，使用预期后面要降的市场。<br>5、套期保值：买现货的同时卖期货。</p>
-<p><strong>正套</strong>：正套可以做套期保值也可以做套利。<br>正套主要的操作是买现货的时候开一个期货的空单，比如现货的价格是4000，期货的价格是4500，基差是-500。<br>那么当这笔货交货的时候现货的价格是4100，期货价格是4550，当前基差是-450。<br>这个时候我们可以平掉这个空单，那么基差就是-450 - （-500） &#x3D; 50。<br>我们在这笔交易中盈利50。</p>
-<p><strong>反套</strong>：完全参考正套的方式，所有买卖操作全部相反。</p>
-<p><strong>套期保值</strong>：套期保值主要用在采购中。<br>套期保值完全是作为采购保值的操作来做的，比如我们采购1000吨的卷，价格为4000，但是交期为3个月，那么我们就会担心3个月后价格跌了就会造成损失，那么我们就可以在期货市场中做一笔空单，卖出1000吨的货（100手，一般10吨为1手，豆粕、热卷、螺纹钢都是）价格为4100。<br>那么当我们1000吨的现货在3个月后入库后（比如3个月后直接全部入库，举例子，实际陆续入库的话对应期货操作是一样的），当前价格是3900，我们每吨赔了100，那么我们对应期货的价格可能跌倒了3990。那么我们就平掉期货的仓位，这个时候我们在现货中赔了100块，但是在期货市场中赚了110块，总体每吨赚10块。如果期货价格为4010，那么我们在现货中赔了100，但是在期货市场赚了90，总体每吨赔了10块钱。<br>所以套期保值可以锁定大部分的利润，明细的降低了价格的波动风险。</p>
-]]></content>
-      <categories>
-        <category>业务学习</category>
-      </categories>
-      <tags>
-        <tag>业务学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数据分析项目实施实战思路</title>
     <url>/2022/07/20/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%9A%84%E5%AE%9E%E6%96%BD%E6%80%9D%E8%B7%AF%E5%AE%9E%E6%88%98/</url>
     <content><![CDATA[<h3 id="实施思路"><a href="#实施思路" class="headerlink" title="实施思路"></a>实施思路</h3><p>1、背景：作为一名开发顾问进入数据分析项目，主要负责数仓的搭建，接口的数据抽取，报表的制作（部分），但是还是要不断的熟悉业务和熟知业务上的痛点来出发，做真正能够帮助业务提升的项目。</p>
@@ -3441,6 +3416,31 @@
       </categories>
       <tags>
         <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>期货业务学习</title>
+    <url>/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h3 id="1-什么是头寸？"><a href="#1-什么是头寸？" class="headerlink" title="1. 什么是头寸？"></a>1. 什么是头寸？</h3><p>在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货合约数量。对做多者，称处于多头头寸；对做空者，称处于空头头寸。多单与空单的差值，称为“净头寸”。</p>
+<h3 id="2-什么是点价？"><a href="#2-什么是点价？" class="headerlink" title="2. 什么是点价？"></a>2. 什么是点价？</h3><p>点价我知道原来在大豆进出口贸易有这个概念。美国是最大的大豆出口国，我国是最大的大豆进口国。大豆价格波动很大，这个交易涉及到三方，美国农民、美国贸易商、中国油厂。美国农民通过点价卖货的方式把大豆卖给贸易商，即卖出后并不确定卖出价，而是相对某月期货确定一个升贴水，农民可自行选择一定期限内约定期货的价格，再计算上升贴水就是农民获得的售货款。中国油厂点价买货则是接受贸易商的升贴水报价，签订进口合同时，并不直接确定大豆的价格，在合同中约定以CBOT某月大豆合约作为标的合约，在一定期限内 以期货价格均价加升贴水作为最终的进口价格。而贸易商在中间则是利用期货套期保值的功能，达到低风险交易的目的。<br>具体分三步：<br>第一步：贸易商向农民收购大豆，同时在期货市场卖出相应期货保值，手中持有大豆现货多头和相应期货空头；<br>第二步：向中国油厂报升贴水价格，并与之签订合同，中国油厂接受升贴水报价，并在一定期限内购买相应数量的期货（即中国油厂点价）<br>第三步：中国油厂将期货多单转给贸易商，贸易商平提手中的期货空头，同时中国油厂从贸易商手中购买相应数量的大豆现货，过程完成后，贸易商手中的大豆现货多头和期货空头同时平仓。<br>最初大豆交易并非用的点价方式，但有几年大豆价格跌的厉害，大豆在运送过程中，比如40天，价格大跌，船到港后，大豆购买方宁愿不要保证金也要违约，贸易商损失惨重，而在大豆价格大幅上涨时，这一情形又反过来。反正渐渐的，大豆就使用点价交易了。另外，感觉中国大豆的进口史也是有挺多值得细细说一说的。</p>
+<h3 id="3-什么是正套、反套？"><a href="#3-什么是正套、反套？" class="headerlink" title="3. 什么是正套、反套？"></a>3. 什么是正套、反套？</h3><p>近有很多交易者问我关于套利的事情，我发现很多交易者甚至连正套和反套都不是很理解，也有的人是死记硬背、生搬硬套，所以今天我们来一起了解一下正套和反套。<br>我从以下三个角度来帮助你理解正反套：</p>
+<ol>
+<li>时间维度——跨期套利</li>
+<li>产业链维度——产业套利</li>
+<li>贸易流维度——跨市套利<br>首先，从跨期套利角度来讲。通常情况下，只有先拥有商品，才有对商品的卖出处置权。人们可以通过生产、采购甚至借贷现货来实现最终的卖出交割，这种符合商品正常流向的近期买入、远期卖出的套利方式，我们称之为正向套利。同样，由于时间的不可逆性，我们无法让未来的拥有来满足现在的需要，所以期货市场中近期卖出、远期买入的套利方式，我们称之为反向套利。</li>
+</ol>
+<p>其次，从产业套利角度来讲。在产业套利当中，整个产业链分为原材料、产成品。产成品是由原材料生产和加工而来的，所以做多原料做空成品属于正向套利，反之，做空原料做多成品属于反向套利。我们以最常见的大豆产业链来说，做多大豆做空豆油豆粕属于正向套利，而做空大豆做多豆油豆粕就属于反向套利。</p>
+<p>最后，从跨市套利角度来讲。在跨市场套利中，正向套利的意思是做多国外，做空国内。之所以称之为正向套利，原因在于中国是净进口国，净贸易流方向为国外到国内。正向套利的实物逻辑在于进口贸易流，做多国外同时做空国内，意味着从国外买入，再卖到国内，与贸易流方向一致。以棉花为例，国内棉花价格一直高于美棉的原因有两个：一是国内棉花种植的机械化程度不强，种植成本远超美国；二是中国和美国对棉花种植的扶持政策存在差异，美国直接补贴棉农，而国内则是通过发改委国储局的棉花收抛储政策来影响市场供给，进而维持价格稳定，达到保障棉农利益、调控国内棉价的双重目的。所以，每年我们国家都会从美国进口一部分棉花，贸易流是从美国流向中国，所以做多美棉，做空郑棉，这就属于跨市套利中的正向套利。当然，棉花和白糖这两个品种都是配额制的，在一定程度上会受政策的干预和影响。</p>
+<h3 id="4-杨老师普及期货知识"><a href="#4-杨老师普及期货知识" class="headerlink" title="4. 杨老师普及期货知识"></a>4. 杨老师普及期货知识</h3><p>对于期货的开仓，就是开多和开空，然后平仓的时候就是平多和平空。<br>对于这个ZLYD&#x2F;XMD公司来说，有套期保值和套利2种方式。具体如下：<br>在梳理套期保值和套利之前首先要明确几个名词：<br>1、持仓：也可以叫头寸，就是你现在手头上的合约，比如持有202210的豆粕空单10手。<br>2、基差：现货和期货的价差，比如现货市场价5000，期货市场价5500，基差就是现货-期货 &#x3D; -500。<br>3、正套：买现货，卖期货，适用预期后面要涨的市场。<br>4、反套：卖现货，买期货，使用预期后面要降的市场。<br>5、套期保值：买现货的同时卖期货。</p>
+<p><strong>正套</strong>：正套可以做套期保值也可以做套利。<br>正套主要的操作是买现货的时候开一个期货的空单，比如现货的价格是4000，期货的价格是4500，基差是-500。<br>那么当这笔货交货的时候现货的价格是4100，期货价格是4550，当前基差是-450。<br>这个时候我们可以平掉这个空单，那么基差就是-450 - （-500） &#x3D; 50。<br>我们在这笔交易中盈利50。</p>
+<p><strong>反套</strong>：完全参考正套的方式，所有买卖操作全部相反。</p>
+<p><strong>套期保值</strong>：套期保值主要用在采购中。<br>套期保值完全是作为采购保值的操作来做的，比如我们采购1000吨的卷，价格为4000，但是交期为3个月，那么我们就会担心3个月后价格跌了就会造成损失，那么我们就可以在期货市场中做一笔空单，卖出1000吨的货（100手，一般10吨为1手，豆粕、热卷、螺纹钢都是）价格为4100。<br>那么当我们1000吨的现货在3个月后入库后（比如3个月后直接全部入库，举例子，实际陆续入库的话对应期货操作是一样的），当前价格是3900，我们每吨赔了100，那么我们对应期货的价格可能跌倒了3990。那么我们就平掉期货的仓位，这个时候我们在现货中赔了100块，但是在期货市场中赚了110块，总体每吨赚10块。如果期货价格为4010，那么我们在现货中赔了100，但是在期货市场赚了90，总体每吨赔了10块钱。<br>所以套期保值可以锁定大部分的利润，明细的降低了价格的波动风险。</p>
+]]></content>
+      <categories>
+        <category>业务学习</category>
+      </categories>
+      <tags>
+        <tag>业务学习</tag>
       </tags>
   </entry>
   <entry>
@@ -3775,115 +3775,6 @@
       </tags>
   </entry>
   <entry>
-    <title>致远Dee接口堵塞弹窗记录</title>
-    <url>/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>在致远OA传输到SAP接口时，需要校验下接口能否调用成功，比如OA询比价写入SAP的时候没有维护供应商，如果不加校验这一步的话会导致SAP返回错误，OA流程结束，这样只能去SAP调整问题，然后手工调用接口，很麻烦。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>利用Dee的高级功能，堵塞即可解决以上的需求，当传输接口有问题的时候，直接弹出报错弹窗，待处理人解决问题后提交SAP，也就是说只要是能提交到SAP的数据都是正确的。</p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>SAP接口要求：要求SAP的接口返回值包含TYPE&#x2F;FLAG的标识和MESSAGE的返回错误消息，不要在外面包一层，不然解析很麻烦。</li>
-<li>SAP接口配置完成以后，再写一个转换元数据的脚本，这个的意思就是把返回的数据解析为Dee能够解析的元数据，这个元数据就是来拼接XML，具体代码如下：</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String MESSAGE=getParaByName(document,&quot;MESSAGE&quot;);  &quot;解析SAP返回的错误消息</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);  &quot;解析SAP返回标识</span><br><span class="line"></span><br><span class="line">String xml=&quot;&lt;root&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;area count=\&quot;1\&quot; totalCount=\&quot;1\&quot;&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;MESSAGE&gt;&quot;+MESSAGE+&quot;&lt;/MESSAGE&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;FLAG&gt;&quot;+FLAG+&quot;&lt;/FLAG&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/area&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/root&gt;&quot;;</span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>根据解析的元数据进行堵塞处理，具体代码如下：</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sta = &quot;&quot;;</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);</span><br><span class="line">String MSG = getParaByName(document,&quot;MESSAGE&quot;);</span><br><span class="line">if(FLAG.equals(&quot;Y&quot;))&#123;</span><br><span class="line">  sta = &quot;T&quot;;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">  sta = &quot;F&quot;;</span><br><span class="line">&#125;;</span><br><span class="line">setHighSetStr(document,sta,&quot;Y&quot;,MSG,&quot;&quot;);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>致远OA与北森组织架构同步</title>
-    <url>/2022/11/15/%E8%87%B4%E8%BF%9COA%E4%B8%8E%E5%8C%97%E6%A3%AE%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/</url>
-    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>需求是致远OA完成与北森HR的数据组织架构同步，包括集团、单位、部门、职务、岗位、人员信息。北森本身有以上信息的接口，然后致远OA中组织架构同步的方式分别有CTP开发平台进行而开，CIP平台进行应用集成。</p>
-<p>目前我们使用的是CIP应用集成的方式进行。CIP集成的方式又分为中间表、视图、接口方式，当前我们使用中间表方式。利用此方式的原因是刚完成北森HR与BI系统的同步，可以直接使用kettle的任务来进行数据的抽取，加工后直接进中间表后即可。</p>
-<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><h3 id="1-北森HR接口"><a href="#1-北森HR接口" class="headerlink" title="1. 北森HR接口"></a>1. 北森HR接口</h3><p>北森HR中接口主要包含以下几个（在北森开放平台中都能查到）：<br>0. 拿token接口<br><a href="https://openapi.italent.cn/token">https://openapi.italent.cn/token</a></p>
-<ol>
-<li><p>读取组织接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow</a></p>
-</li>
-<li><p>读取部门接口（和组织相同）：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow</a></p>
-</li>
-<li><p>读取职务接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/JobPost/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/JobPost/GetByTimeWindow</a></p>
-</li>
-<li><p>读取职位接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Position/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/Position/GetByTimeWindow</a> </p>
-</li>
-<li><p>读取人员接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Employee/GetEmployeeOfOrganization">https://openapi.italent.cn/TenantBaseExternal/api/v5/Employee/GetEmployeeOfOrganization</a></p>
-</li>
-</ol>
-<h3 id="2-致远OA平台（版本V8-1SP2集团版）"><a href="#2-致远OA平台（版本V8-1SP2集团版）" class="headerlink" title="2.致远OA平台（版本V8.1SP2集团版）"></a>2.致远OA平台（版本V8.1SP2集团版）</h3><ol>
-<li>首先登录系统管理员，并切换集团管理员账号，只有集团管理员才有权限操作CIP集成。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115192357.png" alt="20221115192357"></li>
-</ol>
-<p>进入组织同步菜单。</p>
-<p>进入后需要进行组织同步的方案设置，在设置之前需要先注册第三方应用（在主数据同步的上面菜单），进行产品登记和产品注册。产品登记和产品注册没什么好说的，只是根据第三方系统的信息提交下，全部是手工填报。</p>
-<p>组织同步步骤：</p>
-<ol>
-<li><p>同步方案设置<br>第一次首先进行同步的方案创建，这里我们主要是选中间表，配置好数据库连接地址，基本是在OA库里就可以。然后如果没有中间表可以点击创建中间库，这样系统会自动创建mid开头的中间表。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115192810.png" alt="20221115192810"><br>如图所示，点击确定。</p>
-</li>
-<li><p>同步初始化<br>新建同步的详细设置，主要就是是集团匹配还是单位匹配，我们这里直接就选择集团匹配。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115192956.png" alt="20221115192956"><br>把所有的勾都打上。</p>
-</li>
-<li><p>同步操作<br>这里就是可以手工执行同步的方案，直接跑数据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115193101.png" alt="20221115193101"><br>也可以定时同步数据，考虑服务器压力和HR中人员岗位调整后对表单的影响，不建议设置定时自动跑数据。</p>
-</li>
-<li><p>同步日志<br>第3步执行结束后会弹窗跳转日志页面，也可以手工点日志页面，主要展现同步的情况。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115193234.png" alt="20221115193234"></p>
-</li>
-</ol>
-<p>至此OA层面上的操作完成，同步的逻辑是如果系统中已经存在人员，第一次同步会把所有人员信息失效，然后需要再跑一次然后就可以同步正确的组织架构信息了。这里能够同步组织架构的前提是中间表里已经有了正确的数据，所以我们需要第三步，定时从kettle中取数。</p>
-<p>** 这里还需要注意致远里的中间表的取值问题 **<br>这里中间表的取值需要参考致远开放平台的组织架构中间表取值逻辑。具体连接如下。<br><a href="http://open.seeyon.com/book/ji-cheng-zu-jian/zhu-shu-ju-tong-bu/tong-bu-she-zhi.html?h=%E7%BB%84%E7%BB%87%E5%90%8C%E6%AD%A5">http://open.seeyon.com/book/ji-cheng-zu-jian/zhu-shu-ju-tong-bu/tong-bu-she-zhi.html?h=%E7%BB%84%E7%BB%87%E5%90%8C%E6%AD%A5</a> </p>
-<h3 id="3-KETTLE取值到中间表"><a href="#3-KETTLE取值到中间表" class="headerlink" title="3.KETTLE取值到中间表"></a>3.KETTLE取值到中间表</h3><ol>
-<li>KETTLE任务整体概览：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115193844.png" alt="20221115193844"><br>这里是做了一个job，然后进行token获取、读取组织、部门等等一系列的操作，而且当前面任务失败时不进行后面的流转。同时做了定时设置，固定时间内进行数据抽取。</li>
-<li>具体job操作<br>2.1 获取TOKEN<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194134.png" alt="20221115194134"><br>2.2 读取组织<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194158.png" alt="20221115194158"><br>这里的读取组织是读取GP控股下所有的子公司和部门，保持和北森HR中的一致性。同时这里也用了一个循环，确保在组织读取完成以后正常结束任务。<br>2.2.3 写入组织<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194353.png" alt="20221115194353"><br>这里是读取组织中的转换任务，进入后可以读取我们想要的组织并进行过滤和写入中间表。<br>2.3 读取人员，KETTLE任务中其余的和读取组织都大同小异，区别就是URL的不同，但是在人员中需要关联部门表并进行group_id的写死，如下：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194648.png" alt="20221115194648"></li>
-</ol>
-<p>整体KETTLE任务的目的就是参照致远开放平台对中间表各个字段的定义和要求，通过北森HR的接口利用各种手段拼接起来并插入中间库的过程。</p>
-<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>这个需求本来没打算接，但是没谈拢所以又落在我手里，实现需求的方式有2个，二开和CIP，二开的成本和时间要求太高，供应商也没有使用CIP平台做过这种集成，而且时间要求比较紧张，所以仓促上来导致开始没想好对接的方案，也是逐渐在做的过程中理清了思路。目前通过这种方式能够很好的实现组织架构的同步。<br>在这个过程中最难不是技术的实现，而是方案的确定，尤其是这种闭源系统，只有开放平台和后台的知识文档，这样的话就只能去扒开放平台的知识和尽量的咨询外部实现过类似方案的顾问。在实施公司明确说没有做过类似需求的情况下，咨询外部顾问聊确定能够集成，这也给了我坚持往下做的信心。</p>
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>致远OA查询请求REST</title>
-    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>请求rest</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
-<ol start="2">
-<li>获取token</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
-<ol start="3">
-<li>根据rest请求</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
-<ol start="4">
-<li>塞data</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>拼接count和totalcount</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>物料编码的经验浅谈</title>
     <url>/2022/06/20/%E7%89%A9%E6%96%99%E7%BC%96%E7%A0%81%E7%9A%84%E7%BB%8F%E9%AA%8C%E6%B5%85%E8%B0%88/</url>
     <content><![CDATA[<p>物料的名称、规格等都不能作为区别物料的标示，同名同规格的物料总是存在的。要实现物料的科学管理，物料编码是基础。</p>
@@ -3996,70 +3887,56 @@
       </tags>
   </entry>
   <entry>
-    <title>评估类别、评估类和评估类型</title>
-    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
-    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
-<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
-<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
-<p>  1）个别计价法一般用X按批次进行评估；</p>
-<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
-<ul>
-<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
-<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
-<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
-</ul>
-<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
-<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
-<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
-<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
-<p>  The valuation category defines the valuation types allowed for a material.</p>
-<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
-<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
-<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
-<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
-<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
-<hr>
-<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
-<p><strong>评估类的进一步解释：</strong></p>
-<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
-<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
-<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
+    <title>致远Dee接口堵塞弹窗记录</title>
+    <url>/2022/05/23/%E8%87%B4%E8%BF%9CDee%E6%8E%A5%E5%8F%A3%E5%A0%B5%E5%A1%9E%E5%BC%B9%E7%AA%97%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>在致远OA传输到SAP接口时，需要校验下接口能否调用成功，比如OA询比价写入SAP的时候没有维护供应商，如果不加校验这一步的话会导致SAP返回错误，OA流程结束，这样只能去SAP调整问题，然后手工调用接口，很麻烦。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>利用Dee的高级功能，堵塞即可解决以上的需求，当传输接口有问题的时候，直接弹出报错弹窗，待处理人解决问题后提交SAP，也就是说只要是能提交到SAP的数据都是正确的。</p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>SAP接口要求：要求SAP的接口返回值包含TYPE&#x2F;FLAG的标识和MESSAGE的返回错误消息，不要在外面包一层，不然解析很麻烦。</li>
+<li>SAP接口配置完成以后，再写一个转换元数据的脚本，这个的意思就是把返回的数据解析为Dee能够解析的元数据，这个元数据就是来拼接XML，具体代码如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String MESSAGE=getParaByName(document,&quot;MESSAGE&quot;);  &quot;解析SAP返回的错误消息</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);  &quot;解析SAP返回标识</span><br><span class="line"></span><br><span class="line">String xml=&quot;&lt;root&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;area count=\&quot;1\&quot; totalCount=\&quot;1\&quot;&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;MESSAGE&gt;&quot;+MESSAGE+&quot;&lt;/MESSAGE&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;FLAG&gt;&quot;+FLAG+&quot;&lt;/FLAG&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/row&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/area&gt;&quot;;</span><br><span class="line">xml+=&quot;&lt;/root&gt;&quot;;</span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>根据解析的元数据进行堵塞处理，具体代码如下：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">String sta = &quot;&quot;;</span><br><span class="line">String FLAG=getParaByName(document,&quot;FLAG&quot;);</span><br><span class="line">String MSG = getParaByName(document,&quot;MESSAGE&quot;);</span><br><span class="line">if(FLAG.equals(&quot;Y&quot;))&#123;</span><br><span class="line">  sta = &quot;T&quot;;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">  sta = &quot;F&quot;;</span><br><span class="line">&#125;;</span><br><span class="line">setHighSetStr(document,sta,&quot;Y&quot;,MSG,&quot;&quot;);</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
-        <category>SAP</category>
+        <category>致远OA</category>
       </categories>
       <tags>
-        <tag>SAP</tag>
+        <tag>致远OA</tag>
       </tags>
   </entry>
   <entry>
-    <title>记致远OA线程堵塞遇坑</title>
-    <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
-    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
-<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、在6月15号下午，以为是数据库内存占用过大的问题，通过查询发现数据库内存占用超过90%，在重启数据库并新增内存资源后，数据库使用占比降低。但是在重启后问题依然存在。这个时候只能手工推送SAP单据</p>
-<p>2、6月16号上午，反馈致远研发，研发在看log日志后判断是迈锐思插件（费控）问题，然后找迈锐思客服打上了补丁，但是打完补丁重启OA服务器以后，该问题依然存在。</p>
-<p>3、继续反馈致远研发查找问题，发现是在节点跳转的时候有问题，导致所有合并节点的操作都挂掉了，导致了无法接受待办问题。</p>
-<p>4、然后继续查，发现其实是环境问题，由于线程堵塞导致所有的操作均会卡掉，具体的原因如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191133868.png" alt="image-20220616191133868"></p>
-<p>通过这个界面，可以看出来，由于这个插件导致一直未响应堵塞，导致堆栈无法释放。</p>
-<p>5、找到真正原因后，把这个自开发插件停用掉，重启服务，恢复。</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、以后再遇到这种问题，首先要先去system中查看系统监控</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191402865.png" alt="image-20220616191402865"></p>
-<p>2、如果监控有问题，具体的排错是在</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
-<p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
+    <title>致远OA查询请求REST</title>
+    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>请求rest</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
+<ol start="2">
+<li>获取token</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
+<ol start="3">
+<li>根据rest请求</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
+<ol start="4">
+<li>塞data</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>拼接count和totalcount</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>致远OA</category>
@@ -4119,6 +3996,129 @@
       </tags>
   </entry>
   <entry>
+    <title>记致远OA线程堵塞遇坑</title>
+    <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
+    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
+<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、在6月15号下午，以为是数据库内存占用过大的问题，通过查询发现数据库内存占用超过90%，在重启数据库并新增内存资源后，数据库使用占比降低。但是在重启后问题依然存在。这个时候只能手工推送SAP单据</p>
+<p>2、6月16号上午，反馈致远研发，研发在看log日志后判断是迈锐思插件（费控）问题，然后找迈锐思客服打上了补丁，但是打完补丁重启OA服务器以后，该问题依然存在。</p>
+<p>3、继续反馈致远研发查找问题，发现是在节点跳转的时候有问题，导致所有合并节点的操作都挂掉了，导致了无法接受待办问题。</p>
+<p>4、然后继续查，发现其实是环境问题，由于线程堵塞导致所有的操作均会卡掉，具体的原因如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191133868.png" alt="image-20220616191133868"></p>
+<p>通过这个界面，可以看出来，由于这个插件导致一直未响应堵塞，导致堆栈无法释放。</p>
+<p>5、找到真正原因后，把这个自开发插件停用掉，重启服务，恢复。</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、以后再遇到这种问题，首先要先去system中查看系统监控</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191402865.png" alt="image-20220616191402865"></p>
+<p>2、如果监控有问题，具体的排错是在</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
+<p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>致远OA与北森组织架构同步</title>
+    <url>/2022/11/15/%E8%87%B4%E8%BF%9COA%E4%B8%8E%E5%8C%97%E6%A3%AE%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/</url>
+    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>需求是致远OA完成与北森HR的数据组织架构同步，包括集团、单位、部门、职务、岗位、人员信息。北森本身有以上信息的接口，然后致远OA中组织架构同步的方式分别有CTP开发平台进行而开，CIP平台进行应用集成。</p>
+<p>目前我们使用的是CIP应用集成的方式进行。CIP集成的方式又分为中间表、视图、接口方式，当前我们使用中间表方式。利用此方式的原因是刚完成北森HR与BI系统的同步，可以直接使用kettle的任务来进行数据的抽取，加工后直接进中间表后即可。</p>
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><h3 id="1-北森HR接口"><a href="#1-北森HR接口" class="headerlink" title="1. 北森HR接口"></a>1. 北森HR接口</h3><p>北森HR中接口主要包含以下几个（在北森开放平台中都能查到）：<br>0. 拿token接口<br><a href="https://openapi.italent.cn/token">https://openapi.italent.cn/token</a></p>
+<ol>
+<li><p>读取组织接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow</a></p>
+</li>
+<li><p>读取部门接口（和组织相同）：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/Organization/GetByTimeWindow</a></p>
+</li>
+<li><p>读取职务接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/JobPost/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/JobPost/GetByTimeWindow</a></p>
+</li>
+<li><p>读取职位接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Position/GetByTimeWindow">https://openapi.italent.cn/TenantBaseExternal/api/v5/Position/GetByTimeWindow</a> </p>
+</li>
+<li><p>读取人员接口：<br><a href="https://openapi.italent.cn/TenantBaseExternal/api/v5/Employee/GetEmployeeOfOrganization">https://openapi.italent.cn/TenantBaseExternal/api/v5/Employee/GetEmployeeOfOrganization</a></p>
+</li>
+</ol>
+<h3 id="2-致远OA平台（版本V8-1SP2集团版）"><a href="#2-致远OA平台（版本V8-1SP2集团版）" class="headerlink" title="2.致远OA平台（版本V8.1SP2集团版）"></a>2.致远OA平台（版本V8.1SP2集团版）</h3><ol>
+<li>首先登录系统管理员，并切换集团管理员账号，只有集团管理员才有权限操作CIP集成。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115192357.png" alt="20221115192357"></li>
+</ol>
+<p>进入组织同步菜单。</p>
+<p>进入后需要进行组织同步的方案设置，在设置之前需要先注册第三方应用（在主数据同步的上面菜单），进行产品登记和产品注册。产品登记和产品注册没什么好说的，只是根据第三方系统的信息提交下，全部是手工填报。</p>
+<p>组织同步步骤：</p>
+<ol>
+<li><p>同步方案设置<br>第一次首先进行同步的方案创建，这里我们主要是选中间表，配置好数据库连接地址，基本是在OA库里就可以。然后如果没有中间表可以点击创建中间库，这样系统会自动创建mid开头的中间表。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115192810.png" alt="20221115192810"><br>如图所示，点击确定。</p>
+</li>
+<li><p>同步初始化<br>新建同步的详细设置，主要就是是集团匹配还是单位匹配，我们这里直接就选择集团匹配。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115192956.png" alt="20221115192956"><br>把所有的勾都打上。</p>
+</li>
+<li><p>同步操作<br>这里就是可以手工执行同步的方案，直接跑数据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115193101.png" alt="20221115193101"><br>也可以定时同步数据，考虑服务器压力和HR中人员岗位调整后对表单的影响，不建议设置定时自动跑数据。</p>
+</li>
+<li><p>同步日志<br>第3步执行结束后会弹窗跳转日志页面，也可以手工点日志页面，主要展现同步的情况。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115193234.png" alt="20221115193234"></p>
+</li>
+</ol>
+<p>至此OA层面上的操作完成，同步的逻辑是如果系统中已经存在人员，第一次同步会把所有人员信息失效，然后需要再跑一次然后就可以同步正确的组织架构信息了。这里能够同步组织架构的前提是中间表里已经有了正确的数据，所以我们需要第三步，定时从kettle中取数。</p>
+<p>** 这里还需要注意致远里的中间表的取值问题 **<br>这里中间表的取值需要参考致远开放平台的组织架构中间表取值逻辑。具体连接如下。<br><a href="http://open.seeyon.com/book/ji-cheng-zu-jian/zhu-shu-ju-tong-bu/tong-bu-she-zhi.html?h=%E7%BB%84%E7%BB%87%E5%90%8C%E6%AD%A5">http://open.seeyon.com/book/ji-cheng-zu-jian/zhu-shu-ju-tong-bu/tong-bu-she-zhi.html?h=%E7%BB%84%E7%BB%87%E5%90%8C%E6%AD%A5</a> </p>
+<h3 id="3-KETTLE取值到中间表"><a href="#3-KETTLE取值到中间表" class="headerlink" title="3.KETTLE取值到中间表"></a>3.KETTLE取值到中间表</h3><ol>
+<li>KETTLE任务整体概览：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115193844.png" alt="20221115193844"><br>这里是做了一个job，然后进行token获取、读取组织、部门等等一系列的操作，而且当前面任务失败时不进行后面的流转。同时做了定时设置，固定时间内进行数据抽取。</li>
+<li>具体job操作<br>2.1 获取TOKEN<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194134.png" alt="20221115194134"><br>2.2 读取组织<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194158.png" alt="20221115194158"><br>这里的读取组织是读取GP控股下所有的子公司和部门，保持和北森HR中的一致性。同时这里也用了一个循环，确保在组织读取完成以后正常结束任务。<br>2.2.3 写入组织<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194353.png" alt="20221115194353"><br>这里是读取组织中的转换任务，进入后可以读取我们想要的组织并进行过滤和写入中间表。<br>2.3 读取人员，KETTLE任务中其余的和读取组织都大同小异，区别就是URL的不同，但是在人员中需要关联部门表并进行group_id的写死，如下：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20221115194648.png" alt="20221115194648"></li>
+</ol>
+<p>整体KETTLE任务的目的就是参照致远开放平台对中间表各个字段的定义和要求，通过北森HR的接口利用各种手段拼接起来并插入中间库的过程。</p>
+<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>这个需求本来没打算接，但是没谈拢所以又落在我手里，实现需求的方式有2个，二开和CIP，二开的成本和时间要求太高，供应商也没有使用CIP平台做过这种集成，而且时间要求比较紧张，所以仓促上来导致开始没想好对接的方案，也是逐渐在做的过程中理清了思路。目前通过这种方式能够很好的实现组织架构的同步。<br>在这个过程中最难不是技术的实现，而是方案的确定，尤其是这种闭源系统，只有开放平台和后台的知识文档，这样的话就只能去扒开放平台的知识和尽量的咨询外部实现过类似方案的顾问。在实施公司明确说没有做过类似需求的情况下，咨询外部顾问聊确定能够集成，这也给了我坚持往下做的信心。</p>
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>评估类别、评估类和评估类型</title>
+    <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
+    <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
+<p>  In the case of split valuation, this indicator also determines which valuation types are allowed, that is, the criteria by which stocks can be valuated.</p>
+<p><strong>评估类别，决定物料评估要评估到多细，例如：</strong></p>
+<p>  1）个别计价法一般用X按批次进行评估；</p>
+<p>  2）同时有自制和外购的可以用B单独创建自制和外购的评估类型作为评估的最低维度区分自制和外购的成本；</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-52.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-53.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类（Valuation-Class）"><a href="#评估类（Valuation-Class）" class="headerlink" title="评估类（Valuation Class）"></a>评估类（Valuation Class）</h2><p>  The valuation class has the following functions:</p>
+<ul>
+<li>Allows the stock values of materials of the same material type to be posted to different G&#x2F;L accounts.</li>
+<li>Allows the stock values of materials of different material types to be posted to the same G&#x2F;L account.</li>
+<li>Determines together with other factors the G&#x2F;L accounts updated for a valuation-relevant transaction (such as a goods movement).</li>
+</ul>
+<p><strong>评估类，对物料记账按会计科目进行大的分类，例如材料、半成品、成品、商品、周转材料、低值易耗品，评估类在OBYC中结合评估更改和具体的MM业务就能确定对应物料对应业务的<a href="https://www.gavindong.com/special/sap-fico">SAP FICO</a>唯一记账科目。</strong></p>
+<p><strong>评估更改和评估类的分配关系见OMWC配置，相当于给评估类再做了一个归类，这样OBYC配置的时候同一个评估类和不同评估更改的组合、对于同一种业务就能记账到不同的科目，一般可以用工厂代码作为评估更改（例如：不同工厂下相同属性的材料相同的业务想记账到不同的会计科目，业务不复杂的公司一般用默认交付的0001再组合评估类就够用了，这里如果分的很细，OBYC的配置就几何级增加）。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-54.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-55.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-56.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-57.png" alt="评估类别、评估类和评估类型"></p>
+<h2 id="评估类型（Valuation-Type）"><a href="#评估类型（Valuation-Type）" class="headerlink" title="评估类型（Valuation Type）"></a>评估类型（Valuation Type）</h2><p>  Uniquely identifies stocks of a material that are subject to split valuation.</p>
+<p>  If a material is valuated by origin (for example, valuation category H), you can define the possible countries of origin as valuation types.</p>
+<p>  The valuation category defines the valuation types allowed for a material.</p>
+<p><strong>评估类型，被评估的具体对象，例如自定义类型（自制、外购、捐赠获得等）、批次号等，其值的范围由评估类别的配置决定。</strong></p>
+<p><strong>如果评估类别维护的是X，则评估类型就是批次号，即个别计价法，每个批次的价格都可以不同，CKM3N分析的时候也能到批次。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-58.png" alt="评估类别、评估类和评估类型"></p>
+<p>当然，如果同一物料既有自制又有外购，可以用评估类别B并在中维护好固定的评估类型，然后物料主数据分别创建对应的评估类型，采购入库和工单入库时就会更新不同的视图，有利于区分自制和外购的成本。</p>
+<p>  在SPRO中创建的Valuation Type称为Global Types。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-59.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-60.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-61.png" alt="评估类别、评估类和评估类型"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/word-image-62.png" alt="评估类别、评估类和评估类型"></p>
+<p>SAP系统中的物料异动记账规则是可以根据需要进行很灵活的配置的，具体要看企业的实际业务，太细了势必会造成管理成本的上升，太粗了又无法提升管理质量。采取什么样的管理方式，要综合考虑企业的管理水平、风控要求、后续扩展性要求。</p>
+<hr>
+<p><strong>综上所述：评估类别和评估类型决定了物料的批次分割。评估类只是确定物料进财务的那个科目。</strong></p>
+<p><strong>评估类的进一步解释：</strong></p>
+<p>评估类是用来确定物料各种不同交易时记入哪个科目的，评估类和物料的移动类型中的科目修改一起确定会计科目，说白了，评估类是物料的科目确定标志码，评估类+科目修改得到会计科目。</p>
+<p>想设置多少个评估类最好先看看企业的报表，比如，将劳保和办公用品物料都对应到备品备件3007，物料消耗时和一般的备品备件都对应到物料消耗-备品备件科目，结果企业需要统计劳保和办工用品，系统虽然还提供了物料组区分劳保和办公用品，也即使说物料消耗-备品备件科目+物料组依旧可区分出当期的劳保消耗和办公用品消耗，但是用户认为没有直接走科目直观，并且物料消耗-备品备件是需要考核的，所以最好还是新增劳保和办公用品两个评估类，直接对应到劳保费和办公费科目。</p>
+<p>财务人员当然更喜欢直接从科目上直接进行报表分析.</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>记致远OA系统DEE挂掉遇坑</title>
     <url>/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/</url>
     <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png" alt="20220808155648"></p>
@@ -4163,33 +4163,67 @@
       </tags>
   </entry>
   <entry>
-    <title>销售业务学习</title>
-    <url>/2022/08/13/%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="销售业务流程"><a href="#销售业务流程" class="headerlink" title="销售业务流程"></a>销售业务流程</h3><p>1、客户主数据维护</p>
-<p>由客服专员利用OCR工具将开票信息或者营业执照转换成文本进行整理核对后导入SAP系统，若客户为一般纳税人，则在SAP系统中经过天眼查验证，再完成SAP系统内创建过程，最后将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；若客户非一般纳税人，将客户身份证号作为税号录入到SAP中，经SAP系统税号唯一性验证后，将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；当客户信息变更时，客服专员在SAP系统内完成客户信息修改，并将客户全部基础信息下发至MDM系统的过程。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172416.png" alt="20220813172416"></p>
-<p>2、价格主数据维护</p>
-<p>实现本月结算合同的结算以及下月结算合同指导价在SAP系统中的应用，需要销售专员在每月25日与原料采购专员确定本月邯邢价格及优惠政策后，按照SAP价格表模板在线下完成《LY结算价格表》与《SX结算价格表》的制作，经过销售经理、销售总监线下审核后，由销售专员将结算价格表录入到SAP中，首次导入后，销售专员后期的维护只需要将需要修改的引用到OA系统中完成修改后发起审批流程，审批通过后SAP价格生效的流程。</p>
-<p>使用VK11或者ZSD020A进行批导<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172753.png" alt="20220813172753"></p>
-<p>3、原料备货申请<br>每月末根据当前运营库存和销售订单量，制定出下月的原料总需求，由销售专员在OA发起原料备货申请，经销售经理审批、原料采购专员确认后，自动将表单内容同步到SAP原料备货申请模块的过程；每月中随时产生原料变更与新需求时，销售专员在OA发起原料备货申请，对原先原料备货申请进行变更以及对新增原料需求申请的流程。</p>
-<p>OA发起备货申请-&gt; MM采购计划。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173049.png" alt="20220813173049"></p>
-<p>4、销售合同制作&#x2F;修改<br>由客服专员在SAP中创建（或修改）并打印销售合同，并与客户完成销售合同签字盖章确认后，客服专员在SAP内提交销售合同，系统自动生成OA销售合同审批流程，经销售经理、销售总监、结算管理会计在OA系统审批完成后，销售合同在SAP内开始生效，客服专员将纸质合同进行存档的流程。<br>ZSD001<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173339.png" alt="20220813173339"></p>
-<p>OA销售合同<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173534.png" alt="20220813173534"></p>
-<p>5、欠款质押发货额度申请<br>客户提出需要使用欠款&#x2F;质押手续进行发货时，销售专员与客户对接，客户来我司签订欠款证明，销售专员将纸质欠款证明提交至各级审批人的同时，在SAP中进行欠款额度的维护，线上线下同步催办审批，经过销售总监、经营副总、总经理、董事长、结算管理会计审批完成在OA中同步通知财务总监后，欠款额度在SAP中生效的流程。<br>ZSD003<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175110.png" alt="20220813175110"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175136.png" alt="20220813175136"></p>
-<p>6、分货流程<br>客服专员通过SAP对已产出成品不能按照正常订单进行分货，或者是无订单排产导致的合同号不存在的库存进行分货的业务，需要客服专员在SAP系统中将合同号匹配标注进行分货，合同号标注完成后通过客户微信提货群将每个客户的分货明细发至客户的流程。<br>ZSD002&#x2F;ZSD002A 创建发货单<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175351.png" alt="20220813175351"></p>
-<p>7、发货<br>客服专员通过微信接收客户的提货需求时，客户进行货款打款后将电子回单发至客服专员，客服专员在SAP系统中进行货款确认后制作发货订单，将客户需提的货物引入进发货订单并进行保存的同时，SAP系统对货款进行检查，若发生使用定金、质押、欠款进行发货时，发货订单需结算管理会计进行审核。发货订单保存并审核通过后，客服专员在发货订单中填入运输车辆车号进行发货的流程。<br>ZSD005，根据ZSD002中创建的发货单，推送OA审批<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180254.png" alt="20220813180254"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180358.png" alt="20220813180358"></p>
-<p>8、出库<br>客服专员在发货订单中填入车号后，司机入厂后由装车组进行货物的称重与装车，称重过程中若重量与标签重量不符，则由保管在SAP系统中进行重量的修改，轧机生产人员打印标签后替换原标签；若标签规格与PDA货物规格不符，则由品管员打印标签并替换原标签。更改重量后由客服专员在原发货订单中重新引入货物信息，装车完成后司机出厂过磅，若磅差超出合理范围则司机需返回车间再次复称后进行出厂过磅，过磅完成后由门岗使用PDA进行扫码对货物进行核验，核验信息无误后司机完成发货出厂的流程。<br>主要是在ECP系统中跑流程，主要流程：<br>扫码登记进厂过磅-&gt;ECP记录空车毛重-&gt;PDA接受销售发货单-&gt;货物复称-&gt;核对信息-&gt;装车，PDA扫码提交-&gt;出厂过磅-&gt;核对磅差-&gt;PDA扫码并打印出门证-&gt;（协议车辆）收货工厂保管在出门证签字确认，司机拍照上传小程序-&gt;自动确认收入-&gt;结束。</p>
-<p>9、销售补差<br>销售部某合同执行完成后，在发票开具前因在业务执行中产生的小卷优惠、购货优惠、质量异议、酸洗加工补料、酸洗运费结算、返利、降级品优惠、结算指导价调整、特殊优惠等需要对客户账户返款或扣款时，销售专员或客服专员需要在SAP系统中创建借贷项订单，经过销售经理、销售总监、经营副总、总经理、结算管理会计审核后，在系统内实现对客户账户余额在系统账中进行调整的流程。<br>ZSD009:政策补差&#x2F;ZSD010:其他补差<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181217.png" alt="20220813181217"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181311.png" alt="20220813181311"></p>
-<p>10、发票开具<br>营销中心销售部销售合同执行结束后客服专员及销售专员在发起开票申请前先将开票资料：销售合同复印件、销售对账单、收货确认函、业务委托书准备完成，并完成结算对账单、收货确认函中客户的签字盖章。开票资料准备完成后交至税务会计进行审核，审核通过后客服或销售专员在SAP系统中发起开票申请的流程。<br>ZSD013:开票申请<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181624.png" alt="20220813181624"><br>ZSD032:开票申请<br>红票会推送OA系统，非红票直接审批，推送金税系统。</p>
-<h3 id="销售业务其他流程"><a href="#销售业务其他流程" class="headerlink" title="销售业务其他流程"></a>销售业务其他流程</h3><p>1、冷硬客诉处理<br>2、红字发票开具<br>3、套筒押金退回<br>4、销售退货<br>5、虚拟退货<br>6、XX来料加工交货差异量付款<br>7、标签更改<br>8、销售部另用料销售<br>9、废料销售<br>10、外储调拨<br>11、销售运费付款<br>12、协议车辆保证金利息付款<br>13、运输事故处理<br>14、运输管理费收入<br>15、余款退回</p>
-<h3 id="销售业务报表"><a href="#销售业务报表" class="headerlink" title="销售业务报表"></a>销售业务报表</h3><p>1、ZSD019:发货清单报表<br>2、ZSD023:信贷报表<br>3、ZSD027:销售补差报表<br>4、ZSD028:开票报表<br>5、ZSD030:合同报表<br>6、ZSD039:自行优惠报表，这个报表的主要作用是客户在本月已经提货，但是没有出结算价，并且没有进行补差的，应收会计根据这个表里的差值（已出的当月结算价）手工制作凭证冲减当月的销售收入，并在次月对该凭证进行冲销，走完补差流程，自动生成准确的收入凭证。<br>7、ZSD021:XMD销售定金报表<br>8、ZSD038:ZLYD销售定金管理报表<br>9、ZSD022:ZLYD利用XMD的地方进行的仓储操作，提供仓储服务，卷是别人家的卷，只提供场地进行存储；因为仓储业务采用了511移动类型的免费收货，所以在收货时并没有生成有效的入库凭证，所以需要创建借贷项订单，并根据借贷项订单开票。</p>
-<p>ZSD022A:仓储入库，采用批导的方式进入，同时能查询到所有入库卷的信息（有无库存）。<br>ZSD022B:仓储货转，卷的所有人发生变化，操作卷的转入客户及转出客户。<br>ZSD022C:仓储提货，创建卷的提货单，并查看卷的费用情况，包括基本费用、超期费用、其他费用。<br>ZSD022D:仓储借贷项订单，付款后创建借贷项订单<br>ZSD022E:仓储开票，根据借贷项订单进行开票，并发送OA申请。</p>
-<p>10、ZSD037:仓储库存表，查询XMD仓库里热卷的实时库存及仓储费用情况。<br>11、ZSD040:ZLYD销售补差报表，查询ZLYD补差明细。</p>
+    <title>git的博客配置图床</title>
+    <url>/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/</url>
+    <content><![CDATA[<h2 id="1、配置git上传仓库"><a href="#1、配置git上传仓库" class="headerlink" title="1、配置git上传仓库"></a>1、配置git上传仓库</h2><p>省略</p>
+<h2 id="2、使用-jsDelivr-进行-CDN-加速"><a href="#2、使用-jsDelivr-进行-CDN-加速" class="headerlink" title="2、使用 jsDelivr 进行 CDN 加速"></a>2、使用 jsDelivr 进行 CDN 加速</h2><p>前面已经利用 GitHub 仓库实现了图床功能，但是大家都知道，GitHub 在国内访问很慢，甚至经常打不开，那么我们的图片就存在加载速度慢的问题，怎么办呢？<strong>jsDelivr</strong> 可以解决此问题，显著提高图片访问的响应速度，并且开源免费！其官网为：jsDelivr - A free, fast, and reliable CDN for open source。</p>
+<p>使用方法也非常的简单，直接在浏览器通过地址<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名@发布的版本号/文件路径</code>就可以访问 GitHub 上的图片，并且响应速度非常快！其中@发布的版本号可以直接省略，默认加载最新版本，即直接可以简写为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名/文件路径</code></p>
+<p>比如：<a href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures/avatar.jpg">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures/avatar.jpg</a></p>
+<h2 id="3、使用PicGo上传图片"><a href="#3、使用PicGo上传图片" class="headerlink" title="3、使用PicGo上传图片"></a>3、使用PicGo上传图片</h2><p>前面实现了 GitHub 仓库作为图床，jsDelivr 对图片进行加速。但是每次我们都需要使用 Git 工具或者在 GitHub 仓库中进行上传图片，并且要自己拼接图片地址，非常麻烦，有没有更快速更简洁的方式呢？此时神器 <strong>PicGo</strong> 就派上了用场，同样开源免费！</p>
+<p>PicGo 是一个用于快速上传图片并获取图片 URL 链接的工具，支持多个图床进行使用，其中当然包括我们现在使用的 GitHub 图床了，它同时支持 Windows、macOS、Linux平台，详情可见：Molunerfinn&#x2F;PicGo: A simple &amp; beautiful tool for pictures uploading built by vue-cli-electron-builder (github.com)</p>
+<p>这里以 Windows 为例，说明 PicGo 的使用方法。</p>
+<ul>
+<li>下载并安装 PicGo，<a href="https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe">https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe</a></li>
+<li>打开 PicGo 软件，找到<code>图床设置</code>中的<code>GitHub图床</code>，填写相关信息。</li>
+<li><ul>
+<li><strong>设定仓库名【必填】</strong>：填写<code>你的用户名/你的仓库名</code>，比如我的 yifeng-talking&#x2F;pictures</li>
+<li><strong>设定分支名【必填】</strong>：填写<code>main</code></li>
+<li><strong>设定Token【必填】</strong>：在Github主页点击自己头像后，依次选择【Settings】-&gt;【Developer settings】-&gt;【Personal access tokens】-&gt;【Generate new token】，填写Note描述（随便），设置过期时间Expiration为永不过期No expiration，设定勾选【repo】，然后点击下方的【Generate token】生成一个Token，这个Token只会显示一次，自行保存，然后复制到 PicGo 中。</li>
+<li>指定存储路径【选填】：填写图片要存储的路径，比如填【images&#x2F;】，这样就会在仓库下创建一个名为 images 的文件夹，图片将会储存在此文件夹中，这里不填。</li>
+<li><strong>设定自定义域名【选填】</strong>：图片上传后，PicGo 会按照【自定义域名+上传的图片名】的方式生成访问链接，放到剪贴板上，因为我们要使用 jsDeliver 进行加速，因而这里设置为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名</code>，比如我设置为<strong><a href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures</a></strong></li>
+</ul>
+</li>
+<li><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png" alt="img"></li>
+<li>接着就可以在<code>上传区</code>，将自己的图片上传，甚至可以直接将剪切板的截图上传，上传成功后会直接将相应链接复制到剪切板中，我们就可以直接复制到博客（MarkDown 编辑器）中。</li>
+<li>在<code>PicGo设置中</code>，可以自定义一些设置，比如上传前重命名、时间戳重命名等，自行设置。</li>
+</ul>
+<h2 id="4、typora配置PicGo上传"><a href="#4、typora配置PicGo上传" class="headerlink" title="4、typora配置PicGo上传"></a>4、typora配置PicGo上传</h2><p>前面使用了 PicGo 工具快速上传图片并获取图片 URL 链接，方便了很多，但是每次都要先在 PicGo 中进行上传，然后将剪切板中链接复制到 MarkDown 编辑器中，有没有更优雅简便的方式，可以将两步合二为一呢？答案是<strong>Typera+PicGo</strong>。</p>
+<p>Typera 是一款轻便简洁的 Markdown 编辑器，可以即时渲染，并且完全免费，推荐大家用此软件进行写作，其官网为：Typora — a markdown editor, markdown reader.</p>
+<p>下面介绍 Typora 结合 PicGo 实现上传功能。</p>
+<ul>
+<li>下载 Typora，网址Typora — a markdown editor, markdown reader.</li>
+<li>打开 PicGo，在<code>PicGo设置</code>中，点击【设置 Server 】，将监听端口修改为：36677</li>
+<li>打开 Typera，点击【文件】 -&gt; 【偏好设置】-&gt; 【图像】，然后进行如下配置，其中 PicGo 路径是你的 PicGo 的安装路径。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4034970a304e251fdd70f5ea9ebedb1e7e3e53d9.png" alt="img"></p>
+<ul>
+<li>在 Typera 中书写文章，插入图片（也可以直接将截图复制）时会自动将图片进行上传，并显示在文章中，非常的方便。当然插入图片时也可以不选择上传图片，也就是不自动上传图片，可以手动在图片上右击上传图片。</li>
+</ul>
+<hr>
+<p>新增next样式的搜索：</p>
+<p>已经集成在Next主题中，只需要简单的配置即可使用，而且体验非常好。<a href="https://links.jianshu.com/go?to=http://theme-next.iissnan.com/third-party-services.html%23local-search">官方文档中</a>也有详细的安装说明，如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/11018813-eb5a93591305d185.png" alt="img"></p>
+<p>第一步，安装 <code>hexo-generator-searchdb</code>，在站点的根目录下执行以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
+
+<p>第二步，编辑【站点配置文件】，新增以下内容到任意位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Local Search搜索功能</span><br><span class="line">search:</span><br><span class="line">  path: search.xml</span><br><span class="line">  field: post</span><br><span class="line">  format: html</span><br><span class="line">  limit: 10000</span><br></pre></td></tr></table></figure>
+
+<p>第三步，编辑【主题配置文件】，启用本地搜索功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Local search</span><br><span class="line">local_search:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
+
+<p>成功</p>
+<hr>
+<p>如果用vscode来编辑md的话，使用markdown editor插件，图片上传使用picgo插件，但是需要重新配置图床。</p>
+<p>配置图床<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716084457.png" alt="20220716084457"></p>
+<p>测试插入图片</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716083954.png" alt="20220716083954"></p>
 ]]></content>
       <categories>
-        <category>业务学习</category>
+        <category>git</category>
       </categories>
       <tags>
-        <tag>业务学习</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -4475,67 +4509,33 @@
       </tags>
   </entry>
   <entry>
-    <title>git的博客配置图床</title>
-    <url>/2022/06/06/%E9%85%8D%E7%BD%AEgit%E7%9A%84%E5%9B%BE%E5%BA%8A/</url>
-    <content><![CDATA[<h2 id="1、配置git上传仓库"><a href="#1、配置git上传仓库" class="headerlink" title="1、配置git上传仓库"></a>1、配置git上传仓库</h2><p>省略</p>
-<h2 id="2、使用-jsDelivr-进行-CDN-加速"><a href="#2、使用-jsDelivr-进行-CDN-加速" class="headerlink" title="2、使用 jsDelivr 进行 CDN 加速"></a>2、使用 jsDelivr 进行 CDN 加速</h2><p>前面已经利用 GitHub 仓库实现了图床功能，但是大家都知道，GitHub 在国内访问很慢，甚至经常打不开，那么我们的图片就存在加载速度慢的问题，怎么办呢？<strong>jsDelivr</strong> 可以解决此问题，显著提高图片访问的响应速度，并且开源免费！其官网为：jsDelivr - A free, fast, and reliable CDN for open source。</p>
-<p>使用方法也非常的简单，直接在浏览器通过地址<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名@发布的版本号/文件路径</code>就可以访问 GitHub 上的图片，并且响应速度非常快！其中@发布的版本号可以直接省略，默认加载最新版本，即直接可以简写为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名/文件路径</code></p>
-<p>比如：<a href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures/avatar.jpg">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures/avatar.jpg</a></p>
-<h2 id="3、使用PicGo上传图片"><a href="#3、使用PicGo上传图片" class="headerlink" title="3、使用PicGo上传图片"></a>3、使用PicGo上传图片</h2><p>前面实现了 GitHub 仓库作为图床，jsDelivr 对图片进行加速。但是每次我们都需要使用 Git 工具或者在 GitHub 仓库中进行上传图片，并且要自己拼接图片地址，非常麻烦，有没有更快速更简洁的方式呢？此时神器 <strong>PicGo</strong> 就派上了用场，同样开源免费！</p>
-<p>PicGo 是一个用于快速上传图片并获取图片 URL 链接的工具，支持多个图床进行使用，其中当然包括我们现在使用的 GitHub 图床了，它同时支持 Windows、macOS、Linux平台，详情可见：Molunerfinn&#x2F;PicGo: A simple &amp; beautiful tool for pictures uploading built by vue-cli-electron-builder (github.com)</p>
-<p>这里以 Windows 为例，说明 PicGo 的使用方法。</p>
-<ul>
-<li>下载并安装 PicGo，<a href="https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe">https://github.com/Molunerfinn/PicGo/releases/download/v2.2.2/PicGo-Setup-2.2.2.exe</a></li>
-<li>打开 PicGo 软件，找到<code>图床设置</code>中的<code>GitHub图床</code>，填写相关信息。</li>
-<li><ul>
-<li><strong>设定仓库名【必填】</strong>：填写<code>你的用户名/你的仓库名</code>，比如我的 yifeng-talking&#x2F;pictures</li>
-<li><strong>设定分支名【必填】</strong>：填写<code>main</code></li>
-<li><strong>设定Token【必填】</strong>：在Github主页点击自己头像后，依次选择【Settings】-&gt;【Developer settings】-&gt;【Personal access tokens】-&gt;【Generate new token】，填写Note描述（随便），设置过期时间Expiration为永不过期No expiration，设定勾选【repo】，然后点击下方的【Generate token】生成一个Token，这个Token只会显示一次，自行保存，然后复制到 PicGo 中。</li>
-<li>指定存储路径【选填】：填写图片要存储的路径，比如填【images&#x2F;】，这样就会在仓库下创建一个名为 images 的文件夹，图片将会储存在此文件夹中，这里不填。</li>
-<li><strong>设定自定义域名【选填】</strong>：图片上传后，PicGo 会按照【自定义域名+上传的图片名】的方式生成访问链接，放到剪贴板上，因为我们要使用 jsDeliver 进行加速，因而这里设置为<code>https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名</code>，比如我设置为<strong><a href="https://cdn.jsdelivr.net/gh/yifeng-talking/pictures">https://cdn.jsdelivr.net/gh/yifeng-talking/pictures</a></strong></li>
-</ul>
-</li>
-<li><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b219ebc4b74543a9be32bf495e2f988bb80114ce.png" alt="img"></li>
-<li>接着就可以在<code>上传区</code>，将自己的图片上传，甚至可以直接将剪切板的截图上传，上传成功后会直接将相应链接复制到剪切板中，我们就可以直接复制到博客（MarkDown 编辑器）中。</li>
-<li>在<code>PicGo设置中</code>，可以自定义一些设置，比如上传前重命名、时间戳重命名等，自行设置。</li>
-</ul>
-<h2 id="4、typora配置PicGo上传"><a href="#4、typora配置PicGo上传" class="headerlink" title="4、typora配置PicGo上传"></a>4、typora配置PicGo上传</h2><p>前面使用了 PicGo 工具快速上传图片并获取图片 URL 链接，方便了很多，但是每次都要先在 PicGo 中进行上传，然后将剪切板中链接复制到 MarkDown 编辑器中，有没有更优雅简便的方式，可以将两步合二为一呢？答案是<strong>Typera+PicGo</strong>。</p>
-<p>Typera 是一款轻便简洁的 Markdown 编辑器，可以即时渲染，并且完全免费，推荐大家用此软件进行写作，其官网为：Typora — a markdown editor, markdown reader.</p>
-<p>下面介绍 Typora 结合 PicGo 实现上传功能。</p>
-<ul>
-<li>下载 Typora，网址Typora — a markdown editor, markdown reader.</li>
-<li>打开 PicGo，在<code>PicGo设置</code>中，点击【设置 Server 】，将监听端口修改为：36677</li>
-<li>打开 Typera，点击【文件】 -&gt; 【偏好设置】-&gt; 【图像】，然后进行如下配置，其中 PicGo 路径是你的 PicGo 的安装路径。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4034970a304e251fdd70f5ea9ebedb1e7e3e53d9.png" alt="img"></p>
-<ul>
-<li>在 Typera 中书写文章，插入图片（也可以直接将截图复制）时会自动将图片进行上传，并显示在文章中，非常的方便。当然插入图片时也可以不选择上传图片，也就是不自动上传图片，可以手动在图片上右击上传图片。</li>
-</ul>
-<hr>
-<p>新增next样式的搜索：</p>
-<p>已经集成在Next主题中，只需要简单的配置即可使用，而且体验非常好。<a href="https://links.jianshu.com/go?to=http://theme-next.iissnan.com/third-party-services.html%23local-search">官方文档中</a>也有详细的安装说明，如下图</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/11018813-eb5a93591305d185.png" alt="img"></p>
-<p>第一步，安装 <code>hexo-generator-searchdb</code>，在站点的根目录下执行以下命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
-
-<p>第二步，编辑【站点配置文件】，新增以下内容到任意位置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Local Search搜索功能</span><br><span class="line">search:</span><br><span class="line">  path: search.xml</span><br><span class="line">  field: post</span><br><span class="line">  format: html</span><br><span class="line">  limit: 10000</span><br></pre></td></tr></table></figure>
-
-<p>第三步，编辑【主题配置文件】，启用本地搜索功能：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Local search</span><br><span class="line">local_search:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
-
-<p>成功</p>
-<hr>
-<p>如果用vscode来编辑md的话，使用markdown editor插件，图片上传使用picgo插件，但是需要重新配置图床。</p>
-<p>配置图床<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716084457.png" alt="20220716084457"></p>
-<p>测试插入图片</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220716083954.png" alt="20220716083954"></p>
+    <title>销售业务学习</title>
+    <url>/2022/08/13/%E9%94%80%E5%94%AE%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="销售业务流程"><a href="#销售业务流程" class="headerlink" title="销售业务流程"></a>销售业务流程</h3><p>1、客户主数据维护</p>
+<p>由客服专员利用OCR工具将开票信息或者营业执照转换成文本进行整理核对后导入SAP系统，若客户为一般纳税人，则在SAP系统中经过天眼查验证，再完成SAP系统内创建过程，最后将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；若客户非一般纳税人，将客户身份证号作为税号录入到SAP中，经SAP系统税号唯一性验证后，将客户基础信息下发至MDM系统，并存储MDM系统返回的BP编码；当客户信息变更时，客服专员在SAP系统内完成客户信息修改，并将客户全部基础信息下发至MDM系统的过程。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172416.png" alt="20220813172416"></p>
+<p>2、价格主数据维护</p>
+<p>实现本月结算合同的结算以及下月结算合同指导价在SAP系统中的应用，需要销售专员在每月25日与原料采购专员确定本月邯邢价格及优惠政策后，按照SAP价格表模板在线下完成《LY结算价格表》与《SX结算价格表》的制作，经过销售经理、销售总监线下审核后，由销售专员将结算价格表录入到SAP中，首次导入后，销售专员后期的维护只需要将需要修改的引用到OA系统中完成修改后发起审批流程，审批通过后SAP价格生效的流程。</p>
+<p>使用VK11或者ZSD020A进行批导<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813172753.png" alt="20220813172753"></p>
+<p>3、原料备货申请<br>每月末根据当前运营库存和销售订单量，制定出下月的原料总需求，由销售专员在OA发起原料备货申请，经销售经理审批、原料采购专员确认后，自动将表单内容同步到SAP原料备货申请模块的过程；每月中随时产生原料变更与新需求时，销售专员在OA发起原料备货申请，对原先原料备货申请进行变更以及对新增原料需求申请的流程。</p>
+<p>OA发起备货申请-&gt; MM采购计划。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173049.png" alt="20220813173049"></p>
+<p>4、销售合同制作&#x2F;修改<br>由客服专员在SAP中创建（或修改）并打印销售合同，并与客户完成销售合同签字盖章确认后，客服专员在SAP内提交销售合同，系统自动生成OA销售合同审批流程，经销售经理、销售总监、结算管理会计在OA系统审批完成后，销售合同在SAP内开始生效，客服专员将纸质合同进行存档的流程。<br>ZSD001<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173339.png" alt="20220813173339"></p>
+<p>OA销售合同<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813173534.png" alt="20220813173534"></p>
+<p>5、欠款质押发货额度申请<br>客户提出需要使用欠款&#x2F;质押手续进行发货时，销售专员与客户对接，客户来我司签订欠款证明，销售专员将纸质欠款证明提交至各级审批人的同时，在SAP中进行欠款额度的维护，线上线下同步催办审批，经过销售总监、经营副总、总经理、董事长、结算管理会计审批完成在OA中同步通知财务总监后，欠款额度在SAP中生效的流程。<br>ZSD003<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175110.png" alt="20220813175110"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175136.png" alt="20220813175136"></p>
+<p>6、分货流程<br>客服专员通过SAP对已产出成品不能按照正常订单进行分货，或者是无订单排产导致的合同号不存在的库存进行分货的业务，需要客服专员在SAP系统中将合同号匹配标注进行分货，合同号标注完成后通过客户微信提货群将每个客户的分货明细发至客户的流程。<br>ZSD002&#x2F;ZSD002A 创建发货单<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813175351.png" alt="20220813175351"></p>
+<p>7、发货<br>客服专员通过微信接收客户的提货需求时，客户进行货款打款后将电子回单发至客服专员，客服专员在SAP系统中进行货款确认后制作发货订单，将客户需提的货物引入进发货订单并进行保存的同时，SAP系统对货款进行检查，若发生使用定金、质押、欠款进行发货时，发货订单需结算管理会计进行审核。发货订单保存并审核通过后，客服专员在发货订单中填入运输车辆车号进行发货的流程。<br>ZSD005，根据ZSD002中创建的发货单，推送OA审批<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180254.png" alt="20220813180254"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813180358.png" alt="20220813180358"></p>
+<p>8、出库<br>客服专员在发货订单中填入车号后，司机入厂后由装车组进行货物的称重与装车，称重过程中若重量与标签重量不符，则由保管在SAP系统中进行重量的修改，轧机生产人员打印标签后替换原标签；若标签规格与PDA货物规格不符，则由品管员打印标签并替换原标签。更改重量后由客服专员在原发货订单中重新引入货物信息，装车完成后司机出厂过磅，若磅差超出合理范围则司机需返回车间再次复称后进行出厂过磅，过磅完成后由门岗使用PDA进行扫码对货物进行核验，核验信息无误后司机完成发货出厂的流程。<br>主要是在ECP系统中跑流程，主要流程：<br>扫码登记进厂过磅-&gt;ECP记录空车毛重-&gt;PDA接受销售发货单-&gt;货物复称-&gt;核对信息-&gt;装车，PDA扫码提交-&gt;出厂过磅-&gt;核对磅差-&gt;PDA扫码并打印出门证-&gt;（协议车辆）收货工厂保管在出门证签字确认，司机拍照上传小程序-&gt;自动确认收入-&gt;结束。</p>
+<p>9、销售补差<br>销售部某合同执行完成后，在发票开具前因在业务执行中产生的小卷优惠、购货优惠、质量异议、酸洗加工补料、酸洗运费结算、返利、降级品优惠、结算指导价调整、特殊优惠等需要对客户账户返款或扣款时，销售专员或客服专员需要在SAP系统中创建借贷项订单，经过销售经理、销售总监、经营副总、总经理、结算管理会计审核后，在系统内实现对客户账户余额在系统账中进行调整的流程。<br>ZSD009:政策补差&#x2F;ZSD010:其他补差<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181217.png" alt="20220813181217"><br>OA单据<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181311.png" alt="20220813181311"></p>
+<p>10、发票开具<br>营销中心销售部销售合同执行结束后客服专员及销售专员在发起开票申请前先将开票资料：销售合同复印件、销售对账单、收货确认函、业务委托书准备完成，并完成结算对账单、收货确认函中客户的签字盖章。开票资料准备完成后交至税务会计进行审核，审核通过后客服或销售专员在SAP系统中发起开票申请的流程。<br>ZSD013:开票申请<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220813181624.png" alt="20220813181624"><br>ZSD032:开票申请<br>红票会推送OA系统，非红票直接审批，推送金税系统。</p>
+<h3 id="销售业务其他流程"><a href="#销售业务其他流程" class="headerlink" title="销售业务其他流程"></a>销售业务其他流程</h3><p>1、冷硬客诉处理<br>2、红字发票开具<br>3、套筒押金退回<br>4、销售退货<br>5、虚拟退货<br>6、XX来料加工交货差异量付款<br>7、标签更改<br>8、销售部另用料销售<br>9、废料销售<br>10、外储调拨<br>11、销售运费付款<br>12、协议车辆保证金利息付款<br>13、运输事故处理<br>14、运输管理费收入<br>15、余款退回</p>
+<h3 id="销售业务报表"><a href="#销售业务报表" class="headerlink" title="销售业务报表"></a>销售业务报表</h3><p>1、ZSD019:发货清单报表<br>2、ZSD023:信贷报表<br>3、ZSD027:销售补差报表<br>4、ZSD028:开票报表<br>5、ZSD030:合同报表<br>6、ZSD039:自行优惠报表，这个报表的主要作用是客户在本月已经提货，但是没有出结算价，并且没有进行补差的，应收会计根据这个表里的差值（已出的当月结算价）手工制作凭证冲减当月的销售收入，并在次月对该凭证进行冲销，走完补差流程，自动生成准确的收入凭证。<br>7、ZSD021:XMD销售定金报表<br>8、ZSD038:ZLYD销售定金管理报表<br>9、ZSD022:ZLYD利用XMD的地方进行的仓储操作，提供仓储服务，卷是别人家的卷，只提供场地进行存储；因为仓储业务采用了511移动类型的免费收货，所以在收货时并没有生成有效的入库凭证，所以需要创建借贷项订单，并根据借贷项订单开票。</p>
+<p>ZSD022A:仓储入库，采用批导的方式进入，同时能查询到所有入库卷的信息（有无库存）。<br>ZSD022B:仓储货转，卷的所有人发生变化，操作卷的转入客户及转出客户。<br>ZSD022C:仓储提货，创建卷的提货单，并查看卷的费用情况，包括基本费用、超期费用、其他费用。<br>ZSD022D:仓储借贷项订单，付款后创建借贷项订单<br>ZSD022E:仓储开票，根据借贷项订单进行开票，并发送OA申请。</p>
+<p>10、ZSD037:仓储库存表，查询XMD仓库里热卷的实时库存及仓储费用情况。<br>11、ZSD040:ZLYD销售补差报表，查询ZLYD补差明细。</p>
 ]]></content>
       <categories>
-        <category>git</category>
+        <category>业务学习</category>
       </categories>
       <tags>
-        <tag>git</tag>
+        <tag>业务学习</tag>
       </tags>
   </entry>
 </search>
