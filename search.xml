@@ -54,6 +54,59 @@
       </tags>
   </entry>
   <entry>
+    <title>SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference</title>
+    <url>/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/</url>
+    <content><![CDATA[<p>相比较于一般的数据类型（例如 I, P, F, N, C, D, T等）的变量，Field Symbol和Data Reference类型的变量是ABAP中两个相关复杂的类型。理解和使用这两种变量，对于编写高性能、高灵活性的ABAP程序是十分重要的。</p>
+<h3 id="1-含义解析"><a href="#1-含义解析" class="headerlink" title="1.含义解析"></a>1.含义解析</h3><p>Field Symbol：类似于C语言中的“指针”。初始状态为Unassigned。Field Symbol类型的变量自身并不对占用存储空间，仅“指向”被Assgined变量的地址空间。<br>Data Reference: 一种变量类型。初始状态为Initial。当被创建（实例化）成具体的类型时，系统会为其分配相应的存储空间。通过 ‘ -&gt;* ’ 的方式访问，将值从地址空间传输到变量中（显示）。若要改变Data Reference变量中的值，需要配合Field Symbol使用。即使用Field Symbol指向Data Reference变量所存储的地址空间，并用Field Symbol对其进行操作。<br>下图给出了配合Field Symbol操作Data Reference的一个例子 </p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20190308131010318.png" alt="在这里插入图片描述"></p>
+<h3 id="2-使用Field-Symbol提升访问效率"><a href="#2-使用Field-Symbol提升访问效率" class="headerlink" title="2.使用Field Symbol提升访问效率"></a>2.使用Field Symbol提升访问效率</h3><p>因为Field Symbol并不会占用内存空间，因此在操作变量时，可以使用Field Symbol来提升运行效率。常用的Field Symbol的场景有以下几种 -</p>
+<p>Read table &lt; itab &gt; assigning &lt; fs &gt;<br>Loop at &lt; itab &gt; assigning &lt; fs &gt;<br>Assign &lt; data object &gt; to &lt; fs &gt;<br>Assign component &lt;component name&#x2F;component index&gt; to &lt; fs &gt;<br>Append initial line to &lt; itab &gt; assigning &lt; fs &gt;</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* Field Symbol to prioritize the accessing of internal table</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">DATA: lt_sflight TYPE STANDARD TABLE OF sflight,</span><br><span class="line">      ls_sflight TYPE sflight.</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ls_sflight&gt; TYPE sflight.</span><br><span class="line"></span><br><span class="line">SELECT * FROM sflight INTO TABLE lt_sflight UP TO 10 ROWS.</span><br><span class="line"></span><br><span class="line">* extra effort to copy data into variable ls_sflight</span><br><span class="line">LOOP AT lt_sflight INTO ls_sflight.</span><br><span class="line">  WRITE: / ls_sflight-carrid, ls_sflight-connid, ls_sflight-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br><span class="line">* access the address directly</span><br><span class="line">LOOP AT lt_sflight ASSIGNING &lt;ls_sflight&gt;.</span><br><span class="line">  WRITE: / &lt;ls_sflight&gt;-carrid, &lt;ls_sflight&gt;-connid, &lt;ls_sflight&gt;-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-使用Data-Reference动态创建变量"><a href="#3-使用Data-Reference动态创建变量" class="headerlink" title="3.使用Data Reference动态创建变量"></a>3.使用Data Reference动态创建变量</h3><p>使用Data Reference的主要场景是针对于unknown的变量类型，用于ABAP的动态编程。创建所需要的变量时并不能确定具体的类型（但这里并不是指“漫无边际”的不确定，需要变量&#x2F;结构&#x2F;内表是确定的，而所需要的具体类型是不确定的） -</p>
+<p>创建时，并无法确定具体类型的“变量 variable”<br>创建时，并无法确定具体类型的“结构 structure”<br>创建时，并无法确定具体类型的“内表 internal table”<br>下面给出了，三个不同场景的具体例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 1. Un known data reference(creation of data variable)</span><br><span class="line">**********************************************************************</span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;I&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  &lt;fs&gt; = &#x27;100&#x27;.</span><br><span class="line">ENDIF.</span><br><span class="line"></span><br><span class="line">WRITE: &lt;fs&gt;.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 2. Un known data reference(creation of structure)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT SINGLE * FROM (p_var) INTO &lt;fs&gt;.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line">    FIELD-SYMBOLS: &lt;fs_field&gt; TYPE any.</span><br><span class="line"></span><br><span class="line">    DO .</span><br><span class="line">      ASSIGN COMPONENT sy-index OF STRUCTURE &lt;fs&gt; TO &lt;fs_field&gt;.</span><br><span class="line">      IF sy-subrc = 0.</span><br><span class="line">        WRITE: / &lt;fs_field&gt;.</span><br><span class="line">      ELSE.</span><br><span class="line">        EXIT.</span><br><span class="line">      ENDIF.</span><br><span class="line">    ENDDO.</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 3. Un known data reference(creation of table)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE TABLE OF (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ft_table&gt; TYPE ANY TABLE.</span><br><span class="line"></span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;ft_table&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT * FROM (p_var) INTO TABLE &lt;ft_table&gt; UP TO 10 ROWS.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line"></span><br><span class="line">    cl_salv_table=&gt;factory( IMPORTING r_salv_table = DATA(lr_salv)</span><br><span class="line">                            CHANGING t_table      = &lt;ft_table&gt; ).</span><br><span class="line">    lr_salv-&gt;display( ).</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Field-Symbol使用总结"><a href="#4-Field-Symbol使用总结" class="headerlink" title="4.Field Symbol使用总结"></a>4.Field Symbol使用总结</h3><p>Field <a href="https://so.csdn.net/so/search?q=Symbol&spm=1001.2101.3001.7020">Symbol</a>（以下简称FS），主要作用是程序更加灵活，有时可以实现一般做法无法实现的功能，比如动态ALV内表，LOOP时使用FS还可以提高程序效率。FS缺点是影响程序可读性，为修改和维护代码造成困难，而且有时错误是<a href="https://so.csdn.net/so/search?q=%E7%BC%96%E8%AF%91%E5%99%A8&spm=1001.2101.3001.7020">编译器</a>检查不出来的，只有运行时才会发生错误。下面是FS的一些使用总结。</p>
+<p>首先请牢记，FS必须和某个变量，结构或者内表绑定后才能使用，这点和C语言里的指针（在ABAP里最接近指针的是TYPE REF TO）是不同的，在使用FS前必须分配给某个变量，不然会发生FS未分配的运行时错误。注意如果LOOP内表时ASSIGNING到FS.，那么之后假如有REFRESH内表的操作的话，FS也会再次回到初始未被ASSIGN的状态，这时如果使用FS也会发生FS未分配的RUNTIME ERROR。</p>
+<p>ASSIGN ‘200’ TO<fs1>.意思是指向常量的<fs1>，之后不可更改值，比如执行<fs1> &#x3D; ‘300’会发生运行时错误。如果想实现改值的效果，那么需要ASSIGN一个变量给FS：</p>
+<p>DATA gv_abc(6).</p>
+<p>gv_abc &#x3D; ‘200’.</p>
+<p>ASSGIN gv_abc TO <fs1>.</p>
+<p><fs1> &#x3D; ‘300’.</p>
+<p>这时<fs1>就从200变更为300了，另外如果直接改变变量的值，那么<fs1>也会发生变化。比如上例里gv_abc &#x3D; ‘400’，那么<fs1>也随之变为400，因为<fs1>和gv_abc是绑定了的。</p>
+<p>假设定义了<fs1>和<fs2>两个FS，分别ASSGIN到两个变量，变量A和变量B。</p>
+<p>ASSIGN <fs1> TO <fs2>的意思是，让<fs2>也指向<fs1>所指向的地方，即两个FS都指向变量A；而<fs2>&#x3D; <fs1>的意思是，把<fs1>所指向的变量A的值赋给<fs2>所指向的变量B的值，<fs1>依然指向变量A，<fs2>依然指向变量B。</p>
+<p>LOOP 内表 INTO 结构（工作区）和LOOP内表ASSIGNING &lt;结构&gt;的比较。</p>
+<p>LOOP内表INTO结构时，系统会把先把当前行的数据复制到结构，如果结构的值改了，还需要使用MODIFY语句把更改后的值传回内表。也就是说，结构是内表里的数据的一个副本，操作这个副本并不会影响内表里的数据。带表头的内表也是类似，LOOP内表时，把内表数据复制到表头。</p>
+<p>为了提高效率，可以使用FS，FS直接指向内表数据，省去了复制数据到结构的过程，修改FS的值也就是相当于直接修改内表里的数据，不需要再使用MODIFY语句。</p>
+<p>这里额外提一点，有一些人喜欢在ENDLOOP前使用CLEAR清空结构，首先这是没有必要的，为了提高效率，LOOP内的语句应该越精简越好，其次如果是LOOP到FS的写法，是不能使用CLEAR清空FS的，因为刚刚说了FS是直接指向内表数据，如果清空了FS，那相当于把内表内对应的那行数据也给清空了。</p>
+<p>此外，像LOOP AT 内表 INTO &lt;结构&gt;的写法，初学者容易混淆，其实这里的&lt;结构&gt;是指向一个结构，这种写法和LOOP 内表 INTO 结构没什么区别。</p>
+<p>READ TABLE 内表 INTO 结构和READ TABLE 内表 ASSIGNING &lt;结构&gt;的比较。</p>
+<p>效率上的区别同LOOP的情况，这里说下READ TABLE和LOOP不同的地方，主要差别是，LOOP 是不会失败的，而READ TABLE是可能失败的，一旦READ失败，那么结构或&lt;结构&gt;的值依然是上次READ成功的值（而不是清空），所以READ使用完建议根据情况CLEAR结构或&lt;结构&gt;。</p>
+<p>确定结构的FS和不确定结构的FS。</p>
+<p>FIELD-SYMBOLS <gs_ab> TYPE ty_ab. “ty_ab是个结构，有一个字段为col1</p>
+<p>FIELD-SYMBOLS <gs_ab> TYPE ANY.</p>
+<p>前者是指定了结构，后者是不指定结构。</p>
+<p>之后在为<gs_ab>赋值时，</p>
+<p>ASSIGN COMPONNET ‘COL1’ OF STUCTURE <gs_ab>TO <fs1>.</p>
+<p><fs1> &#x3D; ‘AAA’.</p>
+<p>此种写法对确定结构的定义和未确定结构的定义的<gs_ab>都可行。</p>
+<p> 但是有确定结构定义的<gs_ab>可以直接使用<gs_ab>-col1 &#x3D; ‘AAA’来赋值。</p>
+<p>一般如果能事先知道结构的话，还是应该用确定结构的方式来定义FS，不确定结构的定义通常用于动态处理。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Kettle实战学习</title>
     <url>/2022/10/20/Kettle%E5%AE%9E%E6%88%98%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h3 id="实现目标"><a href="#实现目标" class="headerlink" title="实现目标"></a>实现目标</h3><p>实现的目标是获取钉钉系统里所有日志信息，并写入数据库</p>
@@ -157,100 +210,6 @@
 <p> <strong>4.新建传输号</strong></p>
 <p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
 <p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP会计凭证类型总结</title>
-    <url>/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="1、SAP凭证类型作用"><a href="#1、SAP凭证类型作用" class="headerlink" title="1、SAP凭证类型作用"></a>1、SAP凭证类型作用</h2><p>传统的财务的系统凭证类型如收付转三类凭证类型，而SAP的凭证类型是用来区分业务的。</p>
-<ul>
-<li>凭证类型决定记账编号范围，常见的Tcode中FBN1维护编号范围，OBH1+OBH2复制编号范围</li>
-<li>凭证类型决定了过账的会计科目的账户类型（S、A、D、K、M）</li>
-<li>凭证类型决定了记账的默认汇率，默认的是M类型的汇率类型。</li>
-<li>凭证类型决定了凭证抬头的参考号码+凭证抬头文本是否必输。</li>
-<li>凭证类型决定允许负数记账、贸易伙伴必输、公司间过账等参数。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204059594.png" alt="在这里插入图片描述"></p>
-<h2 id="2、SAP常见凭证类型"><a href="#2、SAP常见凭证类型" class="headerlink" title="2、SAP常见凭证类型"></a>2、SAP常见凭证类型</h2><p>如上所述，SAP的凭证类型是用来区分业务，一般项目采用SAP默认的凭证类型清单即可满足业务需求。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204149149.png" alt="在这里插入图片描述"></p>
-<h2 id="3、OBU1：FI相应事务代码默认凭证类型"><a href="#3、OBU1：FI相应事务代码默认凭证类型" class="headerlink" title="3、OBU1：FI相应事务代码默认凭证类型"></a>3、OBU1：FI相应事务代码默认凭证类型</h2><p>通过OBU1可更改大部分FI事务代码的默认凭证类型，但是FB50&#x2F;FB60&#x2F;FB70这几个事务代码的凭证类型是不能直接更改的</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204235953.png" alt="img"></p>
-<h2 id="4、OBZO：更改感兴趣业务的凭证类型"><a href="#4、OBZO：更改感兴趣业务的凭证类型" class="headerlink" title="4、OBZO：更改感兴趣业务的凭证类型"></a>4、OBZO：更改感兴趣业务的凭证类型</h2><p>通过OBZO即可实现对FB50、60、70默认凭证类型的更改</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204259797.png" alt="在这里插入图片描述"></p>
-<ul>
-<li>第一步：FB50&#x2F;FB60&#x2F;FB70这些默认的凭证不允许修改，但可通过设置OBZO就可以修改了，可能需要打NOTES-323113，也可以通过用户参数BAR默认FB50的凭证类型</li>
-<li>你第二步：实施Notes-339765<br>优先级问题</li>
-</ul>
-<p>OBZO维护的默认凭证类型<br>用户参数BAR维护的凭证类型<br>程序写死的SA、KR、DR</p>
-<h2 id="5、OMBA：后勤货物移动默认凭证类型"><a href="#5、OMBA：后勤货物移动默认凭证类型" class="headerlink" title="5、OMBA：后勤货物移动默认凭证类型"></a>5、OMBA：后勤货物移动默认凭证类型</h2><p>OMJJ对各种移动类型默认可使用的事务，然后通过OMBA对事务进行默认凭证类型。我们来举个栗子来，比如WI盘点凭证，你们看看各自的SAP系统是WI还是WA凭证类型，取决于你的盘点流程是采用标准的MI07还是借用701&#x2F;702通过MIGO_GI来处理。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204352139.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204407986.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204423577.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204437214.png" alt="在这里插入图片描述"></p>
-<h2 id="6、OMR4：发票默认的凭证类型"><a href="#6、OMR4：发票默认的凭证类型" class="headerlink" title="6、OMR4：发票默认的凭证类型"></a>6、OMR4：发票默认的凭证类型</h2><p>CKMI就是物料帐结算的事务代码，默认的是ML</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204457539.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204509783.png" alt="在这里插入图片描述"></p>
-<p>MIR7采购部预制发票</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620453342.png" alt="在这里插入图片描述"></p>
-<p>MIRO采购部直接发票过账</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204554606.png" alt="在这里插入图片描述"></p>
-<p>MR21标准价格变更</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620490257.png" alt="在这里插入图片描述"></p>
-<p>MR22移动价格变更</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205017877.png" alt="在这里插入图片描述"></p>
-<p>MR8M取消供应商发票</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205250457.png" alt="在这里插入图片描述"></p>
-<p>MRKO供应商寄售的凭证类型</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205348662.png" alt="在这里插入图片描述"></p>
-<h2 id="7、VOFA：销售开票默认凭证类型"><a href="#7、VOFA：销售开票默认凭证类型" class="headerlink" title="7、VOFA：销售开票默认凭证类型"></a>7、VOFA：销售开票默认凭证类型</h2><p>销售开票凭证类型会对应不同的会计凭证类型</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205639312.png" alt="在这里插入图片描述"></p>
-<h2 id="8、OKO7：订单结算默认凭证类型"><a href="#8、OKO7：订单结算默认凭证类型" class="headerlink" title="8、OKO7：订单结算默认凭证类型"></a>8、OKO7：订单结算默认凭证类型</h2><p>只要生产订单、销售订单、WBS结算、内部订单结算的凭证类型都在这默认。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205705570.png" alt="在这里插入图片描述"></p>
-<h2 id="9、OB59：外币评估默认凭证类型"><a href="#9、OB59：外币评估默认凭证类型" class="headerlink" title="9、OB59：外币评估默认凭证类型"></a>9、OB59：外币评估默认凭证类型</h2><p>通过外币评估方法直接定义凭证类型。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620573211.png" alt="在这里插入图片描述"></p>
-<h2 id="10、FBKP：清账程序默认凭证类型"><a href="#10、FBKP：清账程序默认凭证类型" class="headerlink" title="10、FBKP：清账程序默认凭证类型"></a>10、FBKP：清账程序默认凭证类型</h2><p>比如说你是否意识到F.13自动清账产生的会计凭证凭证类型？</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205756623.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620584369.png" alt="在这里插入图片描述"></p>
-<h2 id="11、GRIR重分类默认的凭证类型"><a href="#11、GRIR重分类默认的凭证类型" class="headerlink" title="11、GRIR重分类默认的凭证类型"></a>11、GRIR重分类默认的凭证类型</h2><p>这个SAP就没有地方来默认凭证类型了</p>
-<p>直接在源程序上写了一段话，这也算隐式增强吧！</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205945790.png" alt="在这里插入图片描述"></p>
-<h2 id="12、FAGLF101往来重分类默认凭证类型"><a href="#12、FAGLF101往来重分类默认凭证类型" class="headerlink" title="12、FAGLF101往来重分类默认凭证类型"></a>12、FAGLF101往来重分类默认凭证类型</h2><p>往来重分类必然会用到评估范围，通过新增评估方法达到新增评估范围的作用，即可实现对往来重分类默认不同的会计科目。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210011282.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
-<p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP工单创建自动释放</title>
-    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
-<p>输入相关数据后保存，</p>
-<p>系统提示：process order 900275584 created.</p>
-<p>执行事务代码COR3显示该工单</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
-<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
-<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
-<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
-<p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
-<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
-<p>或者直接用：OPKP事务码。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -372,6 +331,74 @@
       </tags>
   </entry>
   <entry>
+    <title>SAP会计凭证类型总结</title>
+    <url>/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1、SAP凭证类型作用"><a href="#1、SAP凭证类型作用" class="headerlink" title="1、SAP凭证类型作用"></a>1、SAP凭证类型作用</h2><p>传统的财务的系统凭证类型如收付转三类凭证类型，而SAP的凭证类型是用来区分业务的。</p>
+<ul>
+<li>凭证类型决定记账编号范围，常见的Tcode中FBN1维护编号范围，OBH1+OBH2复制编号范围</li>
+<li>凭证类型决定了过账的会计科目的账户类型（S、A、D、K、M）</li>
+<li>凭证类型决定了记账的默认汇率，默认的是M类型的汇率类型。</li>
+<li>凭证类型决定了凭证抬头的参考号码+凭证抬头文本是否必输。</li>
+<li>凭证类型决定允许负数记账、贸易伙伴必输、公司间过账等参数。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204059594.png" alt="在这里插入图片描述"></p>
+<h2 id="2、SAP常见凭证类型"><a href="#2、SAP常见凭证类型" class="headerlink" title="2、SAP常见凭证类型"></a>2、SAP常见凭证类型</h2><p>如上所述，SAP的凭证类型是用来区分业务，一般项目采用SAP默认的凭证类型清单即可满足业务需求。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204149149.png" alt="在这里插入图片描述"></p>
+<h2 id="3、OBU1：FI相应事务代码默认凭证类型"><a href="#3、OBU1：FI相应事务代码默认凭证类型" class="headerlink" title="3、OBU1：FI相应事务代码默认凭证类型"></a>3、OBU1：FI相应事务代码默认凭证类型</h2><p>通过OBU1可更改大部分FI事务代码的默认凭证类型，但是FB50&#x2F;FB60&#x2F;FB70这几个事务代码的凭证类型是不能直接更改的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204235953.png" alt="img"></p>
+<h2 id="4、OBZO：更改感兴趣业务的凭证类型"><a href="#4、OBZO：更改感兴趣业务的凭证类型" class="headerlink" title="4、OBZO：更改感兴趣业务的凭证类型"></a>4、OBZO：更改感兴趣业务的凭证类型</h2><p>通过OBZO即可实现对FB50、60、70默认凭证类型的更改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204259797.png" alt="在这里插入图片描述"></p>
+<ul>
+<li>第一步：FB50&#x2F;FB60&#x2F;FB70这些默认的凭证不允许修改，但可通过设置OBZO就可以修改了，可能需要打NOTES-323113，也可以通过用户参数BAR默认FB50的凭证类型</li>
+<li>你第二步：实施Notes-339765<br>优先级问题</li>
+</ul>
+<p>OBZO维护的默认凭证类型<br>用户参数BAR维护的凭证类型<br>程序写死的SA、KR、DR</p>
+<h2 id="5、OMBA：后勤货物移动默认凭证类型"><a href="#5、OMBA：后勤货物移动默认凭证类型" class="headerlink" title="5、OMBA：后勤货物移动默认凭证类型"></a>5、OMBA：后勤货物移动默认凭证类型</h2><p>OMJJ对各种移动类型默认可使用的事务，然后通过OMBA对事务进行默认凭证类型。我们来举个栗子来，比如WI盘点凭证，你们看看各自的SAP系统是WI还是WA凭证类型，取决于你的盘点流程是采用标准的MI07还是借用701&#x2F;702通过MIGO_GI来处理。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204352139.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204407986.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204423577.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204437214.png" alt="在这里插入图片描述"></p>
+<h2 id="6、OMR4：发票默认的凭证类型"><a href="#6、OMR4：发票默认的凭证类型" class="headerlink" title="6、OMR4：发票默认的凭证类型"></a>6、OMR4：发票默认的凭证类型</h2><p>CKMI就是物料帐结算的事务代码，默认的是ML</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204457539.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204509783.png" alt="在这里插入图片描述"></p>
+<p>MIR7采购部预制发票</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620453342.png" alt="在这里插入图片描述"></p>
+<p>MIRO采购部直接发票过账</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204554606.png" alt="在这里插入图片描述"></p>
+<p>MR21标准价格变更</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620490257.png" alt="在这里插入图片描述"></p>
+<p>MR22移动价格变更</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205017877.png" alt="在这里插入图片描述"></p>
+<p>MR8M取消供应商发票</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205250457.png" alt="在这里插入图片描述"></p>
+<p>MRKO供应商寄售的凭证类型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205348662.png" alt="在这里插入图片描述"></p>
+<h2 id="7、VOFA：销售开票默认凭证类型"><a href="#7、VOFA：销售开票默认凭证类型" class="headerlink" title="7、VOFA：销售开票默认凭证类型"></a>7、VOFA：销售开票默认凭证类型</h2><p>销售开票凭证类型会对应不同的会计凭证类型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205639312.png" alt="在这里插入图片描述"></p>
+<h2 id="8、OKO7：订单结算默认凭证类型"><a href="#8、OKO7：订单结算默认凭证类型" class="headerlink" title="8、OKO7：订单结算默认凭证类型"></a>8、OKO7：订单结算默认凭证类型</h2><p>只要生产订单、销售订单、WBS结算、内部订单结算的凭证类型都在这默认。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205705570.png" alt="在这里插入图片描述"></p>
+<h2 id="9、OB59：外币评估默认凭证类型"><a href="#9、OB59：外币评估默认凭证类型" class="headerlink" title="9、OB59：外币评估默认凭证类型"></a>9、OB59：外币评估默认凭证类型</h2><p>通过外币评估方法直接定义凭证类型。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620573211.png" alt="在这里插入图片描述"></p>
+<h2 id="10、FBKP：清账程序默认凭证类型"><a href="#10、FBKP：清账程序默认凭证类型" class="headerlink" title="10、FBKP：清账程序默认凭证类型"></a>10、FBKP：清账程序默认凭证类型</h2><p>比如说你是否意识到F.13自动清账产生的会计凭证凭证类型？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205756623.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620584369.png" alt="在这里插入图片描述"></p>
+<h2 id="11、GRIR重分类默认的凭证类型"><a href="#11、GRIR重分类默认的凭证类型" class="headerlink" title="11、GRIR重分类默认的凭证类型"></a>11、GRIR重分类默认的凭证类型</h2><p>这个SAP就没有地方来默认凭证类型了</p>
+<p>直接在源程序上写了一段话，这也算隐式增强吧！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205945790.png" alt="在这里插入图片描述"></p>
+<h2 id="12、FAGLF101往来重分类默认凭证类型"><a href="#12、FAGLF101往来重分类默认凭证类型" class="headerlink" title="12、FAGLF101往来重分类默认凭证类型"></a>12、FAGLF101往来重分类默认凭证类型</h2><p>往来重分类必然会用到评估范围，通过新增评估方法达到新增评估范围的作用，即可实现对往来重分类默认不同的会计科目。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210011282.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
+<p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP变式配置BOM实现</title>
     <url>/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
@@ -446,6 +473,32 @@
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/hy0acr1100.jpeg" alt="img"></p>
 </li>
 </ol>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP工单创建自动释放</title>
+    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p>输入相关数据后保存，</p>
+<p>系统提示：process order 900275584 created.</p>
+<p>执行事务代码COR3显示该工单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
+<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
+<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
+<p>去后台如下配置路径，检查该PSP的配置信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
+<p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -540,23 +593,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP新特性</title>
-    <url>/2022/09/06/SAP%E6%96%B0%E7%89%B9%E6%80%A7/</url>
-    <content><![CDATA[<p><strong>1、@的用法</strong><br>首先需要用@data(内表)定义需要输出的内表，这个内表必须是没有定义过的，其次，一定要注意在select语句中加逗号，最后在系统变量比如SY-LANGU前面也要加上@符号。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select kna1~kunnr,</span><br><span class="line">       kna1~name1,</span><br><span class="line">       KNA1~land1,</span><br><span class="line">       T005T~LANDX AS LANAM,</span><br><span class="line">       kna1~regio,</span><br><span class="line">       T005U~BEZEI AS PROVI,</span><br><span class="line">       kna1~ort01,</span><br><span class="line">       kna1~stras,</span><br><span class="line">       but000~BPEXT as bpcode,</span><br><span class="line">       &#x27;KH&#x27; AS BPLX</span><br><span class="line">  INTO TABLE @data(out_tab1)</span><br><span class="line">  FROM kna1</span><br><span class="line">  INNER JOIN T005T ON KNA1~LAND1 = T005T~LAND1 AND T005T~SPRAS = @SY-LANGU</span><br><span class="line">  INNER JOIN T005U ON KNA1~REGIO = T005U~BLAND AND KNA1~LAND1 = T005U~LAND1  AND T005U~SPRAS = @SY-LANGU</span><br><span class="line">  inner join but000 on kna1~kunnr = but000~partner</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>2、move-corresponding 的新语法特性</strong><br>MOVE-CORRESPONDING ITAB_A TO ITAB_B.<br>隐式操作会把B清空，然后按字段名依次复制。</p>
-<p>新语法：<br>1、MOVE-CORRESPONDING ITAB_A TO ITAB_B KEEPING TARGET LINES.</p>
-<p>2、ITAB_B &#x3D; CORRESPONDING #( BASE ( ITAB_B ) ITAB_A ).<br>保留原数据，在此基础上根据对应字段添加。<br>PS:如果结构相同不如直接APPEND，但是APPEND只能根据顺序来，可能不会自动的根据字段来对应。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP搭建REST接口</title>
     <url>/2022/07/18/SAP%E6%90%AD%E5%BB%BAREST%E6%8E%A5%E5%8F%A3/</url>
     <content><![CDATA[<h3 id="一、SAP配置"><a href="#一、SAP配置" class="headerlink" title="一、SAP配置"></a>一、SAP配置</h3><p>1、首先要搭建SICF服务，搭建如下：</p>
@@ -578,26 +614,14 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP生产订单BOM组件修改ABAP函数</title>
-    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
-<p>​    一般SAP有2种方式可以处理：</p>
-<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
-<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
-<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
-<p>IT_METHODS是选择调用接口的对象与方法名，</p>
-<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
-<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
-<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
-<p>应用情况如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
-<p>即完成生产订单BOM数量的修改。</p>
+    <title>SAP新特性</title>
+    <url>/2022/09/06/SAP%E6%96%B0%E7%89%B9%E6%80%A7/</url>
+    <content><![CDATA[<p><strong>1、@的用法</strong><br>首先需要用@data(内表)定义需要输出的内表，这个内表必须是没有定义过的，其次，一定要注意在select语句中加逗号，最后在系统变量比如SY-LANGU前面也要加上@符号。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select kna1~kunnr,</span><br><span class="line">       kna1~name1,</span><br><span class="line">       KNA1~land1,</span><br><span class="line">       T005T~LANDX AS LANAM,</span><br><span class="line">       kna1~regio,</span><br><span class="line">       T005U~BEZEI AS PROVI,</span><br><span class="line">       kna1~ort01,</span><br><span class="line">       kna1~stras,</span><br><span class="line">       but000~BPEXT as bpcode,</span><br><span class="line">       &#x27;KH&#x27; AS BPLX</span><br><span class="line">  INTO TABLE @data(out_tab1)</span><br><span class="line">  FROM kna1</span><br><span class="line">  INNER JOIN T005T ON KNA1~LAND1 = T005T~LAND1 AND T005T~SPRAS = @SY-LANGU</span><br><span class="line">  INNER JOIN T005U ON KNA1~REGIO = T005U~BLAND AND KNA1~LAND1 = T005U~LAND1  AND T005U~SPRAS = @SY-LANGU</span><br><span class="line">  inner join but000 on kna1~kunnr = but000~partner</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>2、move-corresponding 的新语法特性</strong><br>MOVE-CORRESPONDING ITAB_A TO ITAB_B.<br>隐式操作会把B清空，然后按字段名依次复制。</p>
+<p>新语法：<br>1、MOVE-CORRESPONDING ITAB_A TO ITAB_B KEEPING TARGET LINES.</p>
+<p>2、ITAB_B &#x3D; CORRESPONDING #( BASE ( ITAB_B ) ITAB_A ).<br>保留原数据，在此基础上根据对应字段添加。<br>PS:如果结构相同不如直接APPEND，但是APPEND只能根据顺序来，可能不会自动的根据字段来对应。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -868,50 +892,26 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP ABAP性能优化 - 使用 Field Symbol 和 Data Reference</title>
-    <url>/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/</url>
-    <content><![CDATA[<p>相比较于一般的数据类型（例如 I, P, F, N, C, D, T等）的变量，Field Symbol和Data Reference类型的变量是ABAP中两个相关复杂的类型。理解和使用这两种变量，对于编写高性能、高灵活性的ABAP程序是十分重要的。</p>
-<h3 id="1-含义解析"><a href="#1-含义解析" class="headerlink" title="1.含义解析"></a>1.含义解析</h3><p>Field Symbol：类似于C语言中的“指针”。初始状态为Unassigned。Field Symbol类型的变量自身并不对占用存储空间，仅“指向”被Assgined变量的地址空间。<br>Data Reference: 一种变量类型。初始状态为Initial。当被创建（实例化）成具体的类型时，系统会为其分配相应的存储空间。通过 ‘ -&gt;* ’ 的方式访问，将值从地址空间传输到变量中（显示）。若要改变Data Reference变量中的值，需要配合Field Symbol使用。即使用Field Symbol指向Data Reference变量所存储的地址空间，并用Field Symbol对其进行操作。<br>下图给出了配合Field Symbol操作Data Reference的一个例子 </p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20190308131010318.png" alt="在这里插入图片描述"></p>
-<h3 id="2-使用Field-Symbol提升访问效率"><a href="#2-使用Field-Symbol提升访问效率" class="headerlink" title="2.使用Field Symbol提升访问效率"></a>2.使用Field Symbol提升访问效率</h3><p>因为Field Symbol并不会占用内存空间，因此在操作变量时，可以使用Field Symbol来提升运行效率。常用的Field Symbol的场景有以下几种 -</p>
-<p>Read table &lt; itab &gt; assigning &lt; fs &gt;<br>Loop at &lt; itab &gt; assigning &lt; fs &gt;<br>Assign &lt; data object &gt; to &lt; fs &gt;<br>Assign component &lt;component name&#x2F;component index&gt; to &lt; fs &gt;<br>Append initial line to &lt; itab &gt; assigning &lt; fs &gt;</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* Field Symbol to prioritize the accessing of internal table</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">DATA: lt_sflight TYPE STANDARD TABLE OF sflight,</span><br><span class="line">      ls_sflight TYPE sflight.</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ls_sflight&gt; TYPE sflight.</span><br><span class="line"></span><br><span class="line">SELECT * FROM sflight INTO TABLE lt_sflight UP TO 10 ROWS.</span><br><span class="line"></span><br><span class="line">* extra effort to copy data into variable ls_sflight</span><br><span class="line">LOOP AT lt_sflight INTO ls_sflight.</span><br><span class="line">  WRITE: / ls_sflight-carrid, ls_sflight-connid, ls_sflight-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br><span class="line">* access the address directly</span><br><span class="line">LOOP AT lt_sflight ASSIGNING &lt;ls_sflight&gt;.</span><br><span class="line">  WRITE: / &lt;ls_sflight&gt;-carrid, &lt;ls_sflight&gt;-connid, &lt;ls_sflight&gt;-fldate.</span><br><span class="line">ENDLOOP.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-使用Data-Reference动态创建变量"><a href="#3-使用Data-Reference动态创建变量" class="headerlink" title="3.使用Data Reference动态创建变量"></a>3.使用Data Reference动态创建变量</h3><p>使用Data Reference的主要场景是针对于unknown的变量类型，用于ABAP的动态编程。创建所需要的变量时并不能确定具体的类型（但这里并不是指“漫无边际”的不确定，需要变量&#x2F;结构&#x2F;内表是确定的，而所需要的具体类型是不确定的） -</p>
-<p>创建时，并无法确定具体类型的“变量 variable”<br>创建时，并无法确定具体类型的“结构 structure”<br>创建时，并无法确定具体类型的“内表 internal table”<br>下面给出了，三个不同场景的具体例子：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 1. Un known data reference(creation of data variable)</span><br><span class="line">**********************************************************************</span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;I&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  &lt;fs&gt; = &#x27;100&#x27;.</span><br><span class="line">ENDIF.</span><br><span class="line"></span><br><span class="line">WRITE: &lt;fs&gt;.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 2. Un known data reference(creation of structure)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;fs&gt; TYPE any.</span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;fs&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT SINGLE * FROM (p_var) INTO &lt;fs&gt;.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line">    FIELD-SYMBOLS: &lt;fs_field&gt; TYPE any.</span><br><span class="line"></span><br><span class="line">    DO .</span><br><span class="line">      ASSIGN COMPONENT sy-index OF STRUCTURE &lt;fs&gt; TO &lt;fs_field&gt;.</span><br><span class="line">      IF sy-subrc = 0.</span><br><span class="line">        WRITE: / &lt;fs_field&gt;.</span><br><span class="line">      ELSE.</span><br><span class="line">        EXIT.</span><br><span class="line">      ENDIF.</span><br><span class="line">    ENDDO.</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**********************************************************************</span><br><span class="line">* 3. Un known data reference(creation of table)</span><br><span class="line">**********************************************************************</span><br><span class="line"></span><br><span class="line">PARAMETERS: p_var TYPE string DEFAULT &#x27;SFLIGHT&#x27;.</span><br><span class="line"></span><br><span class="line">DATA: lr_data TYPE REF TO data.</span><br><span class="line">CREATE DATA lr_data TYPE TABLE OF (p_var).</span><br><span class="line"></span><br><span class="line">FIELD-SYMBOLS: &lt;ft_table&gt; TYPE ANY TABLE.</span><br><span class="line"></span><br><span class="line">ASSIGN lr_data-&gt;* TO &lt;ft_table&gt;.</span><br><span class="line">IF sy-subrc = 0.</span><br><span class="line">  SELECT * FROM (p_var) INTO TABLE &lt;ft_table&gt; UP TO 10 ROWS.</span><br><span class="line">  IF sy-subrc = 0.</span><br><span class="line"></span><br><span class="line">    cl_salv_table=&gt;factory( IMPORTING r_salv_table = DATA(lr_salv)</span><br><span class="line">                            CHANGING t_table      = &lt;ft_table&gt; ).</span><br><span class="line">    lr_salv-&gt;display( ).</span><br><span class="line"></span><br><span class="line">  ENDIF.</span><br><span class="line">ENDIF.</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-Field-Symbol使用总结"><a href="#4-Field-Symbol使用总结" class="headerlink" title="4.Field Symbol使用总结"></a>4.Field Symbol使用总结</h3><p>Field <a href="https://so.csdn.net/so/search?q=Symbol&spm=1001.2101.3001.7020">Symbol</a>（以下简称FS），主要作用是程序更加灵活，有时可以实现一般做法无法实现的功能，比如动态ALV内表，LOOP时使用FS还可以提高程序效率。FS缺点是影响程序可读性，为修改和维护代码造成困难，而且有时错误是<a href="https://so.csdn.net/so/search?q=%E7%BC%96%E8%AF%91%E5%99%A8&spm=1001.2101.3001.7020">编译器</a>检查不出来的，只有运行时才会发生错误。下面是FS的一些使用总结。</p>
-<p>首先请牢记，FS必须和某个变量，结构或者内表绑定后才能使用，这点和C语言里的指针（在ABAP里最接近指针的是TYPE REF TO）是不同的，在使用FS前必须分配给某个变量，不然会发生FS未分配的运行时错误。注意如果LOOP内表时ASSIGNING到FS.，那么之后假如有REFRESH内表的操作的话，FS也会再次回到初始未被ASSIGN的状态，这时如果使用FS也会发生FS未分配的RUNTIME ERROR。</p>
-<p>ASSIGN ‘200’ TO<fs1>.意思是指向常量的<fs1>，之后不可更改值，比如执行<fs1> &#x3D; ‘300’会发生运行时错误。如果想实现改值的效果，那么需要ASSIGN一个变量给FS：</p>
-<p>DATA gv_abc(6).</p>
-<p>gv_abc &#x3D; ‘200’.</p>
-<p>ASSGIN gv_abc TO <fs1>.</p>
-<p><fs1> &#x3D; ‘300’.</p>
-<p>这时<fs1>就从200变更为300了，另外如果直接改变变量的值，那么<fs1>也会发生变化。比如上例里gv_abc &#x3D; ‘400’，那么<fs1>也随之变为400，因为<fs1>和gv_abc是绑定了的。</p>
-<p>假设定义了<fs1>和<fs2>两个FS，分别ASSGIN到两个变量，变量A和变量B。</p>
-<p>ASSIGN <fs1> TO <fs2>的意思是，让<fs2>也指向<fs1>所指向的地方，即两个FS都指向变量A；而<fs2>&#x3D; <fs1>的意思是，把<fs1>所指向的变量A的值赋给<fs2>所指向的变量B的值，<fs1>依然指向变量A，<fs2>依然指向变量B。</p>
-<p>LOOP 内表 INTO 结构（工作区）和LOOP内表ASSIGNING &lt;结构&gt;的比较。</p>
-<p>LOOP内表INTO结构时，系统会把先把当前行的数据复制到结构，如果结构的值改了，还需要使用MODIFY语句把更改后的值传回内表。也就是说，结构是内表里的数据的一个副本，操作这个副本并不会影响内表里的数据。带表头的内表也是类似，LOOP内表时，把内表数据复制到表头。</p>
-<p>为了提高效率，可以使用FS，FS直接指向内表数据，省去了复制数据到结构的过程，修改FS的值也就是相当于直接修改内表里的数据，不需要再使用MODIFY语句。</p>
-<p>这里额外提一点，有一些人喜欢在ENDLOOP前使用CLEAR清空结构，首先这是没有必要的，为了提高效率，LOOP内的语句应该越精简越好，其次如果是LOOP到FS的写法，是不能使用CLEAR清空FS的，因为刚刚说了FS是直接指向内表数据，如果清空了FS，那相当于把内表内对应的那行数据也给清空了。</p>
-<p>此外，像LOOP AT 内表 INTO &lt;结构&gt;的写法，初学者容易混淆，其实这里的&lt;结构&gt;是指向一个结构，这种写法和LOOP 内表 INTO 结构没什么区别。</p>
-<p>READ TABLE 内表 INTO 结构和READ TABLE 内表 ASSIGNING &lt;结构&gt;的比较。</p>
-<p>效率上的区别同LOOP的情况，这里说下READ TABLE和LOOP不同的地方，主要差别是，LOOP 是不会失败的，而READ TABLE是可能失败的，一旦READ失败，那么结构或&lt;结构&gt;的值依然是上次READ成功的值（而不是清空），所以READ使用完建议根据情况CLEAR结构或&lt;结构&gt;。</p>
-<p>确定结构的FS和不确定结构的FS。</p>
-<p>FIELD-SYMBOLS <gs_ab> TYPE ty_ab. “ty_ab是个结构，有一个字段为col1</p>
-<p>FIELD-SYMBOLS <gs_ab> TYPE ANY.</p>
-<p>前者是指定了结构，后者是不指定结构。</p>
-<p>之后在为<gs_ab>赋值时，</p>
-<p>ASSIGN COMPONNET ‘COL1’ OF STUCTURE <gs_ab>TO <fs1>.</p>
-<p><fs1> &#x3D; ‘AAA’.</p>
-<p>此种写法对确定结构的定义和未确定结构的定义的<gs_ab>都可行。</p>
-<p> 但是有确定结构定义的<gs_ab>可以直接使用<gs_ab>-col1 &#x3D; ‘AAA’来赋值。</p>
-<p>一般如果能事先知道结构的话，还是应该用确定结构的方式来定义FS，不确定结构的定义通常用于动态处理。</p>
+    <title>SAP生产订单BOM组件修改ABAP函数</title>
+    <url>/2022/06/20/SAP%E7%94%9F%E4%BA%A7%E8%AE%A2%E5%8D%95BOM%E7%BB%84%E4%BB%B6%E4%BF%AE%E6%94%B9ABAP%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p> 最近，在做某个项目的时候，业务部门有一个需求是需要通过接口去修改SAP生产订单BOM组件的信息，解决由于订单BOM不准反向通过实际发料来更新订单BOM组件数量，使其满足财务核算及MRP运算的要求。</p>
+<p>​    一般SAP有2种方式可以处理：</p>
+<p>​    1.使用BDC录屏的方式，但是录屏的方式因为在CO02功能里面做了大量的增强和个性化设置，只要有一个字段或界面元素没考虑周全，就会造成接口修改不成功，稳定性较差，后期的维护成本高及用户体验较差。</p>
+<p>​    2.使用BAPI_ALM_ORDER_MAINTAIN函数修改生产订单BOM组件，这个函数原本是系统用来修改PM生产订单信息的，不仅可以修改PM生产订单BOM组件信息，还可以修改PM生产订单抬头信息、PM生产订单工艺路线信息等，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/59ec1713804223c94d93fe54e0ec1465.png" alt="img"></p>
+<p>由于SAP没有提供其它可用的ABAP函数来修改一般的生产订单信息，所以需要修改此函数源代码，跳过相应的PM订单检查，把此函数改造为通用订单修改函数，具体如下：</p>
+<p>IT_METHODS是选择调用接口的对象与方法名，</p>
+<p>比如：OBJECTTYPE&#x3D;COMPONENT，METHOD&#x3D;CHANGE</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6d4750e12e4b999a044eb82a4b57f307.png" alt="img"></p>
+<p>修改订单BOM组件对应的是IT_COMPONENT、IT_COMPONENT_UP两个参数表</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e30fd86a9412aa0e7b363c840080a242.png" alt="img"></p>
+<p>   然后通过生产订单号找到RESB表中对应生产订单的预留号、预留行号信息，根据实际需求输入表里面相应的参数就可以完成对订单BOM组件的修改了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b335df332f2147ea397bb8e8225e92bf.png" alt="img"></p>
+<p>应用情况如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/e9ef6193e932aa10394e20773f4ba477.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/f66e66c04c924aa625a4e8d3c4b57f4c.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/40baf7e1c317f15567d71f741fe6d54a.png" alt="img"></p>
+<p>即完成生产订单BOM数量的修改。</p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -3375,6 +3375,31 @@
       </tags>
   </entry>
   <entry>
+    <title>期货业务学习</title>
+    <url>/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h3 id="1-什么是头寸？"><a href="#1-什么是头寸？" class="headerlink" title="1. 什么是头寸？"></a>1. 什么是头寸？</h3><p>在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货合约数量。对做多者，称处于多头头寸；对做空者，称处于空头头寸。多单与空单的差值，称为“净头寸”。</p>
+<h3 id="2-什么是点价？"><a href="#2-什么是点价？" class="headerlink" title="2. 什么是点价？"></a>2. 什么是点价？</h3><p>点价我知道原来在大豆进出口贸易有这个概念。美国是最大的大豆出口国，我国是最大的大豆进口国。大豆价格波动很大，这个交易涉及到三方，美国农民、美国贸易商、中国油厂。美国农民通过点价卖货的方式把大豆卖给贸易商，即卖出后并不确定卖出价，而是相对某月期货确定一个升贴水，农民可自行选择一定期限内约定期货的价格，再计算上升贴水就是农民获得的售货款。中国油厂点价买货则是接受贸易商的升贴水报价，签订进口合同时，并不直接确定大豆的价格，在合同中约定以CBOT某月大豆合约作为标的合约，在一定期限内 以期货价格均价加升贴水作为最终的进口价格。而贸易商在中间则是利用期货套期保值的功能，达到低风险交易的目的。<br>具体分三步：<br>第一步：贸易商向农民收购大豆，同时在期货市场卖出相应期货保值，手中持有大豆现货多头和相应期货空头；<br>第二步：向中国油厂报升贴水价格，并与之签订合同，中国油厂接受升贴水报价，并在一定期限内购买相应数量的期货（即中国油厂点价）<br>第三步：中国油厂将期货多单转给贸易商，贸易商平提手中的期货空头，同时中国油厂从贸易商手中购买相应数量的大豆现货，过程完成后，贸易商手中的大豆现货多头和期货空头同时平仓。<br>最初大豆交易并非用的点价方式，但有几年大豆价格跌的厉害，大豆在运送过程中，比如40天，价格大跌，船到港后，大豆购买方宁愿不要保证金也要违约，贸易商损失惨重，而在大豆价格大幅上涨时，这一情形又反过来。反正渐渐的，大豆就使用点价交易了。另外，感觉中国大豆的进口史也是有挺多值得细细说一说的。</p>
+<h3 id="3-什么是正套、反套？"><a href="#3-什么是正套、反套？" class="headerlink" title="3. 什么是正套、反套？"></a>3. 什么是正套、反套？</h3><p>近有很多交易者问我关于套利的事情，我发现很多交易者甚至连正套和反套都不是很理解，也有的人是死记硬背、生搬硬套，所以今天我们来一起了解一下正套和反套。<br>我从以下三个角度来帮助你理解正反套：</p>
+<ol>
+<li>时间维度——跨期套利</li>
+<li>产业链维度——产业套利</li>
+<li>贸易流维度——跨市套利<br>首先，从跨期套利角度来讲。通常情况下，只有先拥有商品，才有对商品的卖出处置权。人们可以通过生产、采购甚至借贷现货来实现最终的卖出交割，这种符合商品正常流向的近期买入、远期卖出的套利方式，我们称之为正向套利。同样，由于时间的不可逆性，我们无法让未来的拥有来满足现在的需要，所以期货市场中近期卖出、远期买入的套利方式，我们称之为反向套利。</li>
+</ol>
+<p>其次，从产业套利角度来讲。在产业套利当中，整个产业链分为原材料、产成品。产成品是由原材料生产和加工而来的，所以做多原料做空成品属于正向套利，反之，做空原料做多成品属于反向套利。我们以最常见的大豆产业链来说，做多大豆做空豆油豆粕属于正向套利，而做空大豆做多豆油豆粕就属于反向套利。</p>
+<p>最后，从跨市套利角度来讲。在跨市场套利中，正向套利的意思是做多国外，做空国内。之所以称之为正向套利，原因在于中国是净进口国，净贸易流方向为国外到国内。正向套利的实物逻辑在于进口贸易流，做多国外同时做空国内，意味着从国外买入，再卖到国内，与贸易流方向一致。以棉花为例，国内棉花价格一直高于美棉的原因有两个：一是国内棉花种植的机械化程度不强，种植成本远超美国；二是中国和美国对棉花种植的扶持政策存在差异，美国直接补贴棉农，而国内则是通过发改委国储局的棉花收抛储政策来影响市场供给，进而维持价格稳定，达到保障棉农利益、调控国内棉价的双重目的。所以，每年我们国家都会从美国进口一部分棉花，贸易流是从美国流向中国，所以做多美棉，做空郑棉，这就属于跨市套利中的正向套利。当然，棉花和白糖这两个品种都是配额制的，在一定程度上会受政策的干预和影响。</p>
+<h3 id="4-杨老师普及期货知识"><a href="#4-杨老师普及期货知识" class="headerlink" title="4. 杨老师普及期货知识"></a>4. 杨老师普及期货知识</h3><p>对于期货的开仓，就是开多和开空，然后平仓的时候就是平多和平空。<br>对于这个ZLYD&#x2F;XMD公司来说，有套期保值和套利2种方式。具体如下：<br>在梳理套期保值和套利之前首先要明确几个名词：<br>1、持仓：也可以叫头寸，就是你现在手头上的合约，比如持有202210的豆粕空单10手。<br>2、基差：现货和期货的价差，比如现货市场价5000，期货市场价5500，基差就是现货-期货 &#x3D; -500。<br>3、正套：买现货，卖期货，适用预期后面要涨的市场。<br>4、反套：卖现货，买期货，使用预期后面要降的市场。<br>5、套期保值：买现货的同时卖期货。</p>
+<p><strong>正套</strong>：正套可以做套期保值也可以做套利。<br>正套主要的操作是买现货的时候开一个期货的空单，比如现货的价格是4000，期货的价格是4500，基差是-500。<br>那么当这笔货交货的时候现货的价格是4100，期货价格是4550，当前基差是-450。<br>这个时候我们可以平掉这个空单，那么基差就是-450 - （-500） &#x3D; 50。<br>我们在这笔交易中盈利50。</p>
+<p><strong>反套</strong>：完全参考正套的方式，所有买卖操作全部相反。</p>
+<p><strong>套期保值</strong>：套期保值主要用在采购中。<br>套期保值完全是作为采购保值的操作来做的，比如我们采购1000吨的卷，价格为4000，但是交期为3个月，那么我们就会担心3个月后价格跌了就会造成损失，那么我们就可以在期货市场中做一笔空单，卖出1000吨的货（100手，一般10吨为1手，豆粕、热卷、螺纹钢都是）价格为4100。<br>那么当我们1000吨的现货在3个月后入库后（比如3个月后直接全部入库，举例子，实际陆续入库的话对应期货操作是一样的），当前价格是3900，我们每吨赔了100，那么我们对应期货的价格可能跌倒了3990。那么我们就平掉期货的仓位，这个时候我们在现货中赔了100块，但是在期货市场中赚了110块，总体每吨赚10块。如果期货价格为4010，那么我们在现货中赔了100，但是在期货市场赚了90，总体每吨赔了10块钱。<br>所以套期保值可以锁定大部分的利润，明细的降低了价格的波动风险。</p>
+]]></content>
+      <categories>
+        <category>业务学习</category>
+      </categories>
+      <tags>
+        <tag>业务学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>数据分析项目实施实战思路</title>
     <url>/2022/07/20/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%9A%84%E5%AE%9E%E6%96%BD%E6%80%9D%E8%B7%AF%E5%AE%9E%E6%88%98/</url>
     <content><![CDATA[<h3 id="实施思路"><a href="#实施思路" class="headerlink" title="实施思路"></a>实施思路</h3><p>1、背景：作为一名开发顾问进入数据分析项目，主要负责数仓的搭建，接口的数据抽取，报表的制作（部分），但是还是要不断的熟悉业务和熟知业务上的痛点来出发，做真正能够帮助业务提升的项目。</p>
@@ -3416,31 +3441,6 @@
       </categories>
       <tags>
         <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>期货业务学习</title>
-    <url>/2022/10/04/%E6%9C%9F%E8%B4%A7%E4%B8%9A%E5%8A%A1%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h3 id="1-什么是头寸？"><a href="#1-什么是头寸？" class="headerlink" title="1. 什么是头寸？"></a>1. 什么是头寸？</h3><p>在期货中，把买进期货合约做多者称为多头，卖出期货合约做空者称为空头。 多头是指投资者对期货市场看好，预计期货合约的价格将会上涨，于是趁低价买进期货合约，待价格上涨后再卖出以获得差额收益；相反，空头就是对未来期货价格看跌，而卖出期货合约，待价格下跌后再买进以获得差额收益。那期货头寸是什么呢？头寸也叫“部位”（position），是指期货投资者持有的仓位，即未进行对冲处理的买或卖期货合约数量。对做多者，称处于多头头寸；对做空者，称处于空头头寸。多单与空单的差值，称为“净头寸”。</p>
-<h3 id="2-什么是点价？"><a href="#2-什么是点价？" class="headerlink" title="2. 什么是点价？"></a>2. 什么是点价？</h3><p>点价我知道原来在大豆进出口贸易有这个概念。美国是最大的大豆出口国，我国是最大的大豆进口国。大豆价格波动很大，这个交易涉及到三方，美国农民、美国贸易商、中国油厂。美国农民通过点价卖货的方式把大豆卖给贸易商，即卖出后并不确定卖出价，而是相对某月期货确定一个升贴水，农民可自行选择一定期限内约定期货的价格，再计算上升贴水就是农民获得的售货款。中国油厂点价买货则是接受贸易商的升贴水报价，签订进口合同时，并不直接确定大豆的价格，在合同中约定以CBOT某月大豆合约作为标的合约，在一定期限内 以期货价格均价加升贴水作为最终的进口价格。而贸易商在中间则是利用期货套期保值的功能，达到低风险交易的目的。<br>具体分三步：<br>第一步：贸易商向农民收购大豆，同时在期货市场卖出相应期货保值，手中持有大豆现货多头和相应期货空头；<br>第二步：向中国油厂报升贴水价格，并与之签订合同，中国油厂接受升贴水报价，并在一定期限内购买相应数量的期货（即中国油厂点价）<br>第三步：中国油厂将期货多单转给贸易商，贸易商平提手中的期货空头，同时中国油厂从贸易商手中购买相应数量的大豆现货，过程完成后，贸易商手中的大豆现货多头和期货空头同时平仓。<br>最初大豆交易并非用的点价方式，但有几年大豆价格跌的厉害，大豆在运送过程中，比如40天，价格大跌，船到港后，大豆购买方宁愿不要保证金也要违约，贸易商损失惨重，而在大豆价格大幅上涨时，这一情形又反过来。反正渐渐的，大豆就使用点价交易了。另外，感觉中国大豆的进口史也是有挺多值得细细说一说的。</p>
-<h3 id="3-什么是正套、反套？"><a href="#3-什么是正套、反套？" class="headerlink" title="3. 什么是正套、反套？"></a>3. 什么是正套、反套？</h3><p>近有很多交易者问我关于套利的事情，我发现很多交易者甚至连正套和反套都不是很理解，也有的人是死记硬背、生搬硬套，所以今天我们来一起了解一下正套和反套。<br>我从以下三个角度来帮助你理解正反套：</p>
-<ol>
-<li>时间维度——跨期套利</li>
-<li>产业链维度——产业套利</li>
-<li>贸易流维度——跨市套利<br>首先，从跨期套利角度来讲。通常情况下，只有先拥有商品，才有对商品的卖出处置权。人们可以通过生产、采购甚至借贷现货来实现最终的卖出交割，这种符合商品正常流向的近期买入、远期卖出的套利方式，我们称之为正向套利。同样，由于时间的不可逆性，我们无法让未来的拥有来满足现在的需要，所以期货市场中近期卖出、远期买入的套利方式，我们称之为反向套利。</li>
-</ol>
-<p>其次，从产业套利角度来讲。在产业套利当中，整个产业链分为原材料、产成品。产成品是由原材料生产和加工而来的，所以做多原料做空成品属于正向套利，反之，做空原料做多成品属于反向套利。我们以最常见的大豆产业链来说，做多大豆做空豆油豆粕属于正向套利，而做空大豆做多豆油豆粕就属于反向套利。</p>
-<p>最后，从跨市套利角度来讲。在跨市场套利中，正向套利的意思是做多国外，做空国内。之所以称之为正向套利，原因在于中国是净进口国，净贸易流方向为国外到国内。正向套利的实物逻辑在于进口贸易流，做多国外同时做空国内，意味着从国外买入，再卖到国内，与贸易流方向一致。以棉花为例，国内棉花价格一直高于美棉的原因有两个：一是国内棉花种植的机械化程度不强，种植成本远超美国；二是中国和美国对棉花种植的扶持政策存在差异，美国直接补贴棉农，而国内则是通过发改委国储局的棉花收抛储政策来影响市场供给，进而维持价格稳定，达到保障棉农利益、调控国内棉价的双重目的。所以，每年我们国家都会从美国进口一部分棉花，贸易流是从美国流向中国，所以做多美棉，做空郑棉，这就属于跨市套利中的正向套利。当然，棉花和白糖这两个品种都是配额制的，在一定程度上会受政策的干预和影响。</p>
-<h3 id="4-杨老师普及期货知识"><a href="#4-杨老师普及期货知识" class="headerlink" title="4. 杨老师普及期货知识"></a>4. 杨老师普及期货知识</h3><p>对于期货的开仓，就是开多和开空，然后平仓的时候就是平多和平空。<br>对于这个ZLYD&#x2F;XMD公司来说，有套期保值和套利2种方式。具体如下：<br>在梳理套期保值和套利之前首先要明确几个名词：<br>1、持仓：也可以叫头寸，就是你现在手头上的合约，比如持有202210的豆粕空单10手。<br>2、基差：现货和期货的价差，比如现货市场价5000，期货市场价5500，基差就是现货-期货 &#x3D; -500。<br>3、正套：买现货，卖期货，适用预期后面要涨的市场。<br>4、反套：卖现货，买期货，使用预期后面要降的市场。<br>5、套期保值：买现货的同时卖期货。</p>
-<p><strong>正套</strong>：正套可以做套期保值也可以做套利。<br>正套主要的操作是买现货的时候开一个期货的空单，比如现货的价格是4000，期货的价格是4500，基差是-500。<br>那么当这笔货交货的时候现货的价格是4100，期货价格是4550，当前基差是-450。<br>这个时候我们可以平掉这个空单，那么基差就是-450 - （-500） &#x3D; 50。<br>我们在这笔交易中盈利50。</p>
-<p><strong>反套</strong>：完全参考正套的方式，所有买卖操作全部相反。</p>
-<p><strong>套期保值</strong>：套期保值主要用在采购中。<br>套期保值完全是作为采购保值的操作来做的，比如我们采购1000吨的卷，价格为4000，但是交期为3个月，那么我们就会担心3个月后价格跌了就会造成损失，那么我们就可以在期货市场中做一笔空单，卖出1000吨的货（100手，一般10吨为1手，豆粕、热卷、螺纹钢都是）价格为4100。<br>那么当我们1000吨的现货在3个月后入库后（比如3个月后直接全部入库，举例子，实际陆续入库的话对应期货操作是一样的），当前价格是3900，我们每吨赔了100，那么我们对应期货的价格可能跌倒了3990。那么我们就平掉期货的仓位，这个时候我们在现货中赔了100块，但是在期货市场中赚了110块，总体每吨赚10块。如果期货价格为4010，那么我们在现货中赔了100，但是在期货市场赚了90，总体每吨赔了10块钱。<br>所以套期保值可以锁定大部分的利润，明细的降低了价格的波动风险。</p>
-]]></content>
-      <categories>
-        <category>业务学习</category>
-      </categories>
-      <tags>
-        <tag>业务学习</tag>
       </tags>
   </entry>
   <entry>
@@ -3961,32 +3961,48 @@
       </tags>
   </entry>
   <entry>
-    <title>致远OA查询请求REST</title>
-    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>请求rest</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
-<ol start="2">
-<li>获取token</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
-<ol start="3">
-<li>根据rest请求</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
-<ol start="4">
-<li>塞data</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>拼接count和totalcount</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
-
+    <title>记致远OA线程堵塞遇坑</title>
+    <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
+    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
+<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、在6月15号下午，以为是数据库内存占用过大的问题，通过查询发现数据库内存占用超过90%，在重启数据库并新增内存资源后，数据库使用占比降低。但是在重启后问题依然存在。这个时候只能手工推送SAP单据</p>
+<p>2、6月16号上午，反馈致远研发，研发在看log日志后判断是迈锐思插件（费控）问题，然后找迈锐思客服打上了补丁，但是打完补丁重启OA服务器以后，该问题依然存在。</p>
+<p>3、继续反馈致远研发查找问题，发现是在节点跳转的时候有问题，导致所有合并节点的操作都挂掉了，导致了无法接受待办问题。</p>
+<p>4、然后继续查，发现其实是环境问题，由于线程堵塞导致所有的操作均会卡掉，具体的原因如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191133868.png" alt="image-20220616191133868"></p>
+<p>通过这个界面，可以看出来，由于这个插件导致一直未响应堵塞，导致堆栈无法释放。</p>
+<p>5、找到真正原因后，把这个自开发插件停用掉，重启服务，恢复。</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、以后再遇到这种问题，首先要先去system中查看系统监控</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191402865.png" alt="image-20220616191402865"></p>
+<p>2、如果监控有问题，具体的排错是在</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
+<p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记致远OA系统DEE挂掉遇坑</title>
+    <url>/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/</url>
+    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png" alt="20220808155648"></p>
+<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、尝试重启致远主服务、重启物理机均无效</p>
+<p>2、查看线程日志发现是所有的dee任务都在运行中，如下所示：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155803.png" alt="20220808155803"></p>
+<p>3、通过咨询致远代老师，拿到了解决方案，有3种方案：<br>方案一：<br>1、停止OA服务<br>2、将A8\base\dee\data下除了dee.mv.db或dee.h2.db外的，其他2个文件（dee.trace.db、dee.lock.db）删除<br>3、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>4、重启OA，连接上dee数据库</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>方案二：<br>如果上述操作后还是看不到dee控制台的数据，则按如下操作：<br>1、停止OA服务<br>2、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>3、新建一个名为data的空文件夹<br>4、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>5、重启OA<br>6、在A8\base\dee\drpHistory下找到日期最近的drp文件（2020-12-10.drp），在dee控制台部署一下即可</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>方案三：<br>如果上述操作后还不行，则如下操作：<br>1、如果有自己备份drp，或则有dee工具（包含所有OA的dee任务，则导出OA里的任务为drp包）<br>2、停止OA服务<br>3、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>4、新建一个名为data的空文件夹<br>5、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>6、重启OA<br>7、导入drp即可</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>4、通过测试，方案二解决问题，但是所有的任务全部失效，从dee平台中重新导出一份到OA解决问题。</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、dee插件在致远系统中的数据库是H2内存数据库，猜测由于没有正常停用服务进程导致H2数据库没有正常释放导致此问题。</p>
+<p>2、官方反馈原因<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ce47ecc297f7f5c4e035e32b08fe219.png" alt="ce47ecc297f7f5c4e035e32b08fe219"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ae78b02e0154845397879b58741ccda.png" alt="ae78b02e0154845397879b58741ccda"></p>
+<p>他的意思是， DEE数据库是H2. 是这个数据库的弊端。 如果连接比较频繁，容易造成卡死。一般重启服务是能解决的。总体来说，是DEE本身数据库的弊端</p>
+<p>7.1版本，日志是在在同一个数据库文件中dee.mv.db，高并发会出现线程中断，导致文件受损以至于dee任务无法执行；8.1新的版本，dee做了改良，把日志记录的数据给剥离出来了，放到另外的一个数据库文件中，his_mv.db中，能保证dee任务正常使用；</p>
+<p>解决方案就是代老师给的三个解决办法。然后把定时器关了，防止有频繁的连接。</p>
 ]]></content>
       <categories>
         <category>致远OA</category>
@@ -4046,57 +4062,6 @@
       </tags>
   </entry>
   <entry>
-    <title>记致远OA系统DEE挂掉遇坑</title>
-    <url>/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/</url>
-    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png" alt="20220808155648"></p>
-<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、尝试重启致远主服务、重启物理机均无效</p>
-<p>2、查看线程日志发现是所有的dee任务都在运行中，如下所示：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155803.png" alt="20220808155803"></p>
-<p>3、通过咨询致远代老师，拿到了解决方案，有3种方案：<br>方案一：<br>1、停止OA服务<br>2、将A8\base\dee\data下除了dee.mv.db或dee.h2.db外的，其他2个文件（dee.trace.db、dee.lock.db）删除<br>3、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>4、重启OA，连接上dee数据库</p>
-<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
-<p>方案二：<br>如果上述操作后还是看不到dee控制台的数据，则按如下操作：<br>1、停止OA服务<br>2、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>3、新建一个名为data的空文件夹<br>4、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>5、重启OA<br>6、在A8\base\dee\drpHistory下找到日期最近的drp文件（2020-12-10.drp），在dee控制台部署一下即可</p>
-<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
-<p>方案三：<br>如果上述操作后还不行，则如下操作：<br>1、如果有自己备份drp，或则有dee工具（包含所有OA的dee任务，则导出OA里的任务为drp包）<br>2、停止OA服务<br>3、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>4、新建一个名为data的空文件夹<br>5、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>6、重启OA<br>7、导入drp即可</p>
-<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
-<p>4、通过测试，方案二解决问题，但是所有的任务全部失效，从dee平台中重新导出一份到OA解决问题。</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、dee插件在致远系统中的数据库是H2内存数据库，猜测由于没有正常停用服务进程导致H2数据库没有正常释放导致此问题。</p>
-<p>2、官方反馈原因<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ce47ecc297f7f5c4e035e32b08fe219.png" alt="ce47ecc297f7f5c4e035e32b08fe219"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ae78b02e0154845397879b58741ccda.png" alt="ae78b02e0154845397879b58741ccda"></p>
-<p>他的意思是， DEE数据库是H2. 是这个数据库的弊端。 如果连接比较频繁，容易造成卡死。一般重启服务是能解决的。总体来说，是DEE本身数据库的弊端</p>
-<p>7.1版本，日志是在在同一个数据库文件中dee.mv.db，高并发会出现线程中断，导致文件受损以至于dee任务无法执行；8.1新的版本，dee做了改良，把日志记录的数据给剥离出来了，放到另外的一个数据库文件中，his_mv.db中，能保证dee任务正常使用；</p>
-<p>解决方案就是代老师给的三个解决办法。然后把定时器关了，防止有频繁的连接。</p>
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记致远OA线程堵塞遇坑</title>
-    <url>/2022/06/16/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E5%A0%B5%E5%A1%9E%E9%81%87%E5%9D%91/</url>
-    <content><![CDATA[<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年6月15号下午左右，致远OA开始出现点击提交到下一个节点后，下一个节点无法接收待办的情况；同时出现无法正常回写底表问题；同时在OA回传SAP状态，回写SAP数据等情况都不会触发DEE任务。</p>
-<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、在6月15号下午，以为是数据库内存占用过大的问题，通过查询发现数据库内存占用超过90%，在重启数据库并新增内存资源后，数据库使用占比降低。但是在重启后问题依然存在。这个时候只能手工推送SAP单据</p>
-<p>2、6月16号上午，反馈致远研发，研发在看log日志后判断是迈锐思插件（费控）问题，然后找迈锐思客服打上了补丁，但是打完补丁重启OA服务器以后，该问题依然存在。</p>
-<p>3、继续反馈致远研发查找问题，发现是在节点跳转的时候有问题，导致所有合并节点的操作都挂掉了，导致了无法接受待办问题。</p>
-<p>4、然后继续查，发现其实是环境问题，由于线程堵塞导致所有的操作均会卡掉，具体的原因如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191133868.png" alt="image-20220616191133868"></p>
-<p>通过这个界面，可以看出来，由于这个插件导致一直未响应堵塞，导致堆栈无法释放。</p>
-<p>5、找到真正原因后，把这个自开发插件停用掉，重启服务，恢复。</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、以后再遇到这种问题，首先要先去system中查看系统监控</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191402865.png" alt="image-20220616191402865"></p>
-<p>2、如果监控有问题，具体的排错是在</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
-<p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>评估类别、评估类和评估类型</title>
     <url>/2022/06/30/%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%88%AB%E3%80%81%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%92%8C%E8%AF%84%E4%BC%B0%E7%B1%BB%E5%9E%8B/</url>
     <content><![CDATA[<h2 id="评估类别（Valuation-Category）"><a href="#评估类别（Valuation-Category）" class="headerlink" title="评估类别（Valuation Category）"></a>评估类别（Valuation Category）</h2><p>  Determines whether stocks of the material are valuated together or separately.</p>
@@ -4143,6 +4108,41 @@
       </categories>
       <tags>
         <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>致远OA查询请求REST</title>
+    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>请求rest</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
+<ol start="2">
+<li>获取token</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
+<ol start="3">
+<li>根据rest请求</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
+<ol start="4">
+<li>塞data</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>拼接count和totalcount</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
       </tags>
   </entry>
   <entry>
