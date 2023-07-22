@@ -183,6 +183,108 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/06/23/SAP%E7%BB%93%E8%B4%A6%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">SAP月结步骤</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-23 17:34:00 / 修改时间：17:35:14" itemprop="dateCreated datePublished" datetime="2022-06-23T17:34:00+08:00">2022-06-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SAP/" itemprop="url" rel="index"><span itemprop="name">SAP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>1，VF04 查看当月所有交货都已经开好发票，并与实际打印发票要一致，VFX3则是销售发票的会计过账检查。当月的发票应该全部开出并且过账才对（即两个Tcode的当月清单均为空才是正确的）。特别注意样品交货。</p>
+<p>​      这样可保证当月收入与成本匹配。</p>
+<p>2，COOIS  查看生产订单状态，收货数与确认数应一致，另外，如果采用了物料分类账，为了避免在产品对差异分摊的影响，请把所有订单都做DLV或者TECO技术完成处理。这个要求，对保证生产成本的正确至关重要（为保险起见，请全部用DLV，如果生产订单中有联产品，则联产品也应打上交货已经完成的勾）。</p>
+<p>3，S_ALR_87013611  查看成本中心报表,在后续成本要素分配分摊过程中,做完每一步都要在这里刷新报表查看结果是不是正确。注意成本中心（组）及费用要素（组）的选择，生产成本中心不应该出现非制造费用科目有金额。管理费用要素组也不应该出现生产成本中心，一定要先做这个检查。发现不匹配，应做纠错分录处理。</p>
+<p>在进行下面的步骤之前，最好是先发出系统通知，请所有用户登出系统，以避免与结账操作互相冲突，对结账过程产生不利影响。</p>
+<p>4, KSV5&#x2F;KSU5  分配与分摊.   KSV5分配在初级成本要素之间,KSU5分摊则是在初级与次级之间进行费用的重分配,最终目标是把生产费用合理地分摊到生产成本中心去.如果是各车间共同费用分摊到各生产车间，最好是采用KSV5，这样可以费用的原始科目分摊转移（注：这个对后面的差异计算及作业价格重估有影响）。如果是采用KSU5，则要用到次级（43类型）成本要素进行结转，这样查看报表时看不清楚费用科目的来龙去脉。KSU5如果不用次级成本要素，则必须用到成本结构（TC：KSES维护）。还要注意循环的属性：重复和累计的选择，以及接受方以什么为基数分配接收。KSU5应该也可以实现KSV5的功能。如果要在生产成本中心之间再进行分摊转移，则应该采用KSU5。</p>
+<p>   我们选择使用KSV5。并且在ksv5之前，先用ksvb进行计划分配。</p>
+<p>5，KSS1  差异计算 （如果KSV5&#x2F;KSU5错误应用，差异计算也会错）</p>
+<p>6，KSS2  作业成本分割（固定与变动）（注意同上）</p>
+<p>7，KSII   作业价格重算 （得到实际作业价格）(结果受到上面三步的直接影响)。注意这里可以选择期间，意味着可以得到几个月的累计实际作业价格。这是进行成本计划时重要的参考数据。如果某个生产成本中心有作业发生，但是确没有成本金额产生，或者有金额产生但是没有作业发生，两种情况都会带来问题。没有作业发生等于是一个分式的分母为0，会发生无法相除的致命错误！如果没有金额，则分子为0，虽然现在不致命，但是到后面，会告诉你某个作业类型的实际价格无法确定，仍是致命错误！</p>
+<p>8，CO8A  联产品成本预结算（预分配），当存在联产品时必做。保险起见，一般都做一下这一步。</p>
+<p>9，KKAO  在产品成本计算  （在产品成本从生产成本状态转入在产品科目，形成存货，当使用物料分类账时，在产品并不分摊差异，这一点要特别注意，也是因为这一点，请避免产生在产品，这是神人SAP屠夫最有用的建议之一）。</p>
+<p>10，KKS1  生产订单成本差异计算，比较耗时，请耐心等待。结果出来后，会发现很多条错误类型的消息。这里需要经验判断，哪一些错误是不需要理睬的：例如某个订单没有dlv或者teco的状态，某个订单是clsd状态，或者别的已经知道原因并且处理过的错误信息。这一步要慎重对待。如果发现新的错误信息，则一定要先处理完错误才能继续。这时候请尊重顾问，向顾问虚心求教！切记。</p>
+<p>11，CO88  生产订单结算（这里，如果在结算版本中配置的在产品转出的会计科目同时生成了初级成本要素就会出错, 必须删除这个科目的成本要素）。如果前面都顺利，则生产订单的结算一般不会出现问题。这一步完成之后，生产订单就都处理完毕了。但是差异并没有实际结转，要继续以下重头戏：物料分类账的结账</p>
+<p>12，CKLMCP 以下物料分类账的结账内容较多，并且交错影响：</p>
+<p>物料账月末处理： a.选择        CKMLCP    物料账月末处理：b.确定顺序    CKMLCP 物料账月末处理：c.单级处理确定   CKMLCP  检查单级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作） 物料账月末处理：d.多级处理确定   CKMLCP  检查多级处理确定中的错误（如果处理中发现错误，并进行了修改，请重新从“物料账月末处理：a选择        CKMLCP”重新开始操作）</p>
+<p>物料账月末处理： e.消耗的重新评估  CKMLCP</p>
+<p>上面这几步完成后，要先打开新的期间才能继续： 打开新的物料期间   MMPV（打开期间前，必须已处理完所有的单级及多级的错误） </p>
+<p>打开新的会计期间 OB52  （打开这两个期间后，新的物料标准价格才能下达）</p>
+<p>然后继续：</p>
+<p>物料账月末处理： f.记账清算      CKMLCP （测试运行） （此步骤必须先测试运行）  检查物料账月末处理是否正确，OK后才能       物料账月末处理：f.记账清算     CKMLCP  （正式运行）   查询物料账相关报表，检查数据是否正确。其实只要查看F.01报表中的存货与生产成本，所有差异都结转为0，生产成本也结转为0，就表示正确无误了。但一般会存在几分钱的零头差异，这是正常的结果。生产成本的零头差异，一般在成本中心报表中可以看到。而存货差异的零头差异，则一般可用ckmvfm查看明细(未分摊的差异)。因均为零头，而且在系统运算过程中无法避免，所以一般都是用总账调整分录直接在FI中调整即可。 13，月末成本处理及物料账结算完成。打开锁定用户。通知大家可以继续正常使用系统了。</p>
+<p>最后在CKMLCP中的标志价格那一步，作用是在物料主档的会计1视图中以移动平均价更新未来价格。这一步没有必要做。</p>
+<p>至此，成本结算就差不多了。 再返回去看成本中心报表，所有生产成本中心应该结平（转走了），但一般情况下会出现几分钱的余额，这属正常现象。如果余额较大，应分析原因，以避免下一期再出现较大余额。但本期可以直接在FI中用调整分录调整一下就可以了。</p>
+<p>另外要看F.01 报表中在产品与生产成本科目的余额.   生产成本科目的余额按道理应为0才对,因为在产品结算后,生产成本的余额就全部转到在产品科目了. </p>
+<p> 此时所有物料，在系统中的成本已经转换成了实际成本。月末库存成本也为实际成本。实际成本：移动加权平均成本。系统中是使用周期成本来表述。</p>
+<p>以上为最重要的月末结账操作。从上面的描述可知，月末结账的内容很多，而且因为在结账过程中要冻结系统，一般人员不能使用，所以要求在半天，最多一天的时间内完成。过程中每一步都很重要，不允许出现错误，否则遗害整个系统。如果过程中出现错误，必须要有经验的人员进行处理，必须是处理完错误之后才能继续。因此需要资深的，对系统有全局把握的人员负责。当公司人员无法解决问题时，还必须得到外部顾问的帮助。（让人尴尬的是，SAP公司的技术支持人员，不会帮用户解决使用上碰到的非系统错误性质的问题）</p>
+<p>以下还有三个重要的结账操作：</p>
+<p>14，FAGL_FC_VAL  外币评估。  这一步要在所有外币业务处理完，特别是外销的收入。做完收入还要核对，例如跟报税的资料核对。一般配置两个变式，一个是要在下月初冲回，如果应收应付科目，一个则是不冲回，如货币资金科目。请按变式操作，不要随便动变式的任何配置。</p>
+<p>15，F.19  GI&#x2F;IR收货与收发票的对比，即在途存货与暂估应付账款的记账。 请按变式操作，不要随便动变式的任何配置。一般为暂估应付账款，即已经收货但没有收到发票的状态。这时的负债的是一个临时的，暂估的金额，因为最终是以发票金额确认负债的。</p>
+<p>16，FAGLF101 应收应付科目余额的重分类。请按变式操作，不要随便动变式的任何配置。应收科目的余额正常应该在借方，但如果出现在贷方呢？就应该重分类为负债。相反，应付科目的余额正常应该在贷方，但如果出现在借方呢？就应该重分类为资产。</p>
+<p>以上完成之后，SAP的系统月结就完成了。</p>
+<p>此时还可以做一些非生产制造成本费用的，非外币业务的，非应收应付的总账分录。如果没有，请及时关闭已经结账月份的期间。</p>
+<p>最终关闭旧期间： OB52  </p>
+<p>只有关闭了旧期间，这个期间的会计报表才是固定不变的。</p>
+<p>数据已经定型，接下来，各位分析师们，就开始各种数据分析了。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/22/ABAP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96-%E4%BD%BF%E7%94%A8Field%20Symbol%E5%92%8CData%20Reference/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -208,7 +310,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-22 15:31:00 / 修改时间：17:04:09" itemprop="dateCreated datePublished" datetime="2022-06-22T15:31:00+08:00">2022-06-22</time>
+              <time title="创建时间：2022-06-22 15:31:00 / 修改时间：17:04:10" itemprop="dateCreated datePublished" datetime="2022-06-22T15:31:00+08:00">2022-06-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -323,7 +425,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-20 18:43:27" itemprop="dateModified" datetime="2022-07-20T18:43:27+08:00">2022-07-20</time>
+                <time title="修改时间：2022-07-20 18:43:28" itemprop="dateModified" datetime="2022-07-20T18:43:28+08:00">2022-07-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -396,7 +498,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 18:28:00 / 修改时间：18:30:02" itemprop="dateCreated datePublished" datetime="2022-06-20T18:28:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-06-20 18:28:00 / 修改时间：18:30:04" itemprop="dateCreated datePublished" datetime="2022-06-20T18:28:00+08:00">2022-06-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -487,7 +589,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-21 07:54:07" itemprop="dateModified" datetime="2022-06-21T07:54:07+08:00">2022-06-21</time>
+                <time title="修改时间：2022-06-21 07:54:08" itemprop="dateModified" datetime="2022-06-21T07:54:08+08:00">2022-06-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -597,7 +699,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 17:18:00 / 修改时间：17:17:41" itemprop="dateCreated datePublished" datetime="2022-06-20T17:18:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-06-20 17:18:00 / 修改时间：17:17:42" itemprop="dateCreated datePublished" datetime="2022-06-20T17:18:00+08:00">2022-06-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -684,7 +786,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 17:08:00 / 修改时间：17:09:12" itemprop="dateCreated datePublished" datetime="2022-06-20T17:08:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-06-20 17:08:00 / 修改时间：17:09:14" itemprop="dateCreated datePublished" datetime="2022-06-20T17:08:00+08:00">2022-06-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -757,7 +859,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 16:28:00 / 修改时间：16:32:43" itemprop="dateCreated datePublished" datetime="2022-06-20T16:28:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-06-20 16:28:00 / 修改时间：16:32:44" itemprop="dateCreated datePublished" datetime="2022-06-20T16:28:00+08:00">2022-06-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -925,7 +1027,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 15:28:00 / 修改时间：15:34:52" itemprop="dateCreated datePublished" datetime="2022-06-20T15:28:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-06-20 15:28:00 / 修改时间：15:34:54" itemprop="dateCreated datePublished" datetime="2022-06-20T15:28:00+08:00">2022-06-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1064,7 +1166,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-06-20 14:33:00 / 修改时间：14:43:47" itemprop="dateCreated datePublished" datetime="2022-06-20T14:33:00+08:00">2022-06-20</time>
+              <time title="创建时间：2022-06-20 14:33:00 / 修改时间：14:43:48" itemprop="dateCreated datePublished" datetime="2022-06-20T14:33:00+08:00">2022-06-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1188,148 +1290,6 @@
 <p><strong>12 SAP VC学习路径</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-02beafa0236263c04bdb93fe3aa4f473_720w.jpg" alt="img"></p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/v2-53a7953ce940b0ebe78437dbbf480486_720w.jpg" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/06/17/%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">会计凭证理解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-06-17 08:10:00" itemprop="dateCreated datePublished" datetime="2022-06-17T08:10:00+08:00">2022-06-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-27 18:21:34" itemprop="dateModified" datetime="2022-10-27T18:21:34+08:00">2022-10-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%B4%A2%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">财务</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="1、会计凭证分类"><a href="#1、会计凭证分类" class="headerlink" title="1、会计凭证分类"></a>1、会计凭证分类</h2><p>会计凭证主要按照其用途和填制程序分类，可以分为原始凭证和记账凭证两类。</p>
-<p>区别：</p>
-<p>（一）原始凭证：俗称单据，实在静静业务发生或完成时取得或填制的，用以记录、证明经济业务已经发生或完成的书面证据，时进行会计核算的原始依据。</p>
-<p>原始凭证一般实在经济业务发生时直接取得或填制的，记载着大量的经济信息，又是证明经济业务发生的初始文件，具有较强的法律效力，所以它时一种很重要的凭证。</p>
-<p>原始凭证按照其来源不同，可分为外来原始凭证和自制原始凭证。</p>
-<p>（二）记账凭证：俗称传票，时会计人员根据审核后的原始凭证的经济内容确定会计分录而编制的一种凭证，时直接登账的依据。原始凭证来自各个不同的方面，表明经济业务的具体内容，因而其种类繁多，格式不易，不能清楚地表明其归类的会计科目和记账方向，不经过必要的归纳和整理，难以达到记账的要求。</p>
-<p>记账凭证按照其反应的经济业务的内容不同，可以分为<strong>收款凭证、付款凭证和转账凭证</strong>。</p>
-<ol>
-<li>收款凭证</li>
-</ol>
-<p>收款凭证时用以记录现金、银行存款收入业务的记账凭证。</p>
-<p>具体可以分为<strong>现金收款凭证</strong>、银行存款收款凭证。实际工作中，一般时由出纳人员根据有关人员审批批准后的收款收据编制而成的。</p>
-<ol start="2">
-<li>付款凭证</li>
-</ol>
-<p>付款凭证时用以记录现金、银行存款支付业务的记账凭证，具体可以分为<strong>现金付款凭证、银行存款付款凭证</strong>，实际工作中，它是由出纳人员根据有关人员审核批准的付款单据编制而成。</p>
-<ol start="3">
-<li>转账凭证</li>
-</ol>
-<p>转账凭证时用以记录不涉及现金、银行存在首付的其他经济业务，即转账业务，它是根据有关转账业务的原始凭证编制而成的。</p>
-<h2 id="2、会计记账凭证对应科目"><a href="#2、会计记账凭证对应科目" class="headerlink" title="2、会计记账凭证对应科目"></a>2、会计记账凭证对应科目</h2><p>会计科目时按照经济业务的内容和经济管理的要求，对会计要素的具体内容进行分类核算的科目，称为会计科目。</p>
-<h4 id="会计记账凭证对应科目"><a href="#会计记账凭证对应科目" class="headerlink" title="会计记账凭证对应科目"></a>会计记账凭证对应科目</h4><p>记账凭证的基本功时根据借贷记账法的记账规则，编制会计分录。</p>
-<p>编制会计分录时，必须填写会计科目，要符合如下要求：</p>
-<p>1、字迹必须清晰、工整。</p>
-<p>2、一级科目、二级科目或明细科目填写齐全，对应关系清楚，金额正确无误</p>
-<p>3、书写时，文字不要占满格，一般占格高度1&#x2F;2，上面留空格，便于更正差错。</p>
-<p>4、必须使用统一会计制度规定的会计科目，不得自创，以保证核算口径一致。</p>
-<h4 id="会计记账凭证科目的详细"><a href="#会计记账凭证科目的详细" class="headerlink" title="会计记账凭证科目的详细"></a>会计记账凭证科目的详细</h4><p>会计科目只不过时一个企业经营资料的统计分类而已，所以如果懂得会计科目的性质及结构系统，每一个管理员不但能看懂财务报表，还能设计会计科目，使会计资料成为很好的管理信息。</p>
-<p>会计科目时会计人员做记录的基础，在结构上共分五大类：即（1）资产（2）负债（3）资本（4）收益（5）费用（成本）</p>
-<p>一、资产：指企业所拥有的一切有价资源，其中又可分为流动资产、固定资产、其它资产等三小类。流动资产指现金及企业希望变成现金的资产。例如银行存款、应收账款、存货等。固定资产是指企业不希望出售，而是长期使用的资产，如土地、房屋、机器等。其它资产指无形资产、未分摊费用、保证金等。</p>
-<p>二、负债：指企业的债务，其中又可分为流动负债、长期负债和其他负债。流动负债是指一年以下负债，长期负债是指一年以上的负债，而其他负债是指斐财务行目标的所发生的负债，如存入保证金、代收款及各项损失准备等。</p>
-<p>三、资本：又名股东权益，是企业中属于股东的部分，所以等于资产与负债之差。资本可分股本及盈余两类，股本是股东所投资的部分，盈余是企业所赚的部分。</p>
-<p>四、收益：是指企业的出售产品或提供服务所发生的收入，可分营业收入及营业外收入两小类，营业收入是企业预定营业范围内的收入，而营业外收入是指预定营业范围外的收入，如非金融业的利息收入等。</p>
-<p>五、费用：是指因收益而发生的支出，其中又分四小类：直接成本、销售费用、管理费用、营业外费用。</p>
-<p>直接成本：是该项支出可直接归属于某项营业收入者，如销货成本、材料成本等。</p>
-<p>销售费用：是指为达成营业的目的而发生的支出，但无法直接归属于某项营业收入者。</p>
-<p>管理费用：是指维持企业运作所必须支付的费用，如管理人员薪酬、租金支出等。</p>
-<p>营业外费用：是指财务费用及投资损失等非属达成营业收入而必要的支出。</p>
-<h4 id="会计分录的一些理解"><a href="#会计分录的一些理解" class="headerlink" title="会计分录的一些理解"></a>会计分录的一些理解</h4><p>会计恒等式，资产 &#x3D; 负债 + 所有者权益。</p>
-<p>经过一年的经营（不考虑分红），资产 &#x3D; 负债 + 所有者权益 + 利润。</p>
-<p>利润 &#x3D; 收入 - 成本 - 费用。可以推导出：</p>
-<p>资产 &#x3D; 负债 + 所有者权益 + 收入 - 成本 - 费用</p>
-<p>整理得：</p>
-<p>资产 + 成本 + 费用 &#x3D; 负债 + 所有者权益 + 收入</p>
-<p>该等式左边科目，借方额 &#x3D; 增加，贷方额 &#x3D; 减少；（借增贷减）</p>
-<p>该等式右边科目，借方额 &#x3D; 减少，贷方额 &#x3D; 增加；（借减贷增）</p>
-<p>拿到具体业务，先分析影响的相关会计科目，这些科目是分别属于等式的左侧还是右侧，然后考虑该科目的余额（或发生额）会增加还是减少，然后按照公式去判断这个科目增加时，时使用借还是贷。</p>
-<hr>
-<ol>
-<li>举例：老板出差去美国，买机票2张，银行转账支付。</li>
-</ol>
-<p>影响科目：管理费用（费用，等式左边，借增贷减），银行存款（资产，等式左边，借增贷减）。</p>
-<p>影响方式：管理费用增加 &#x3D;&#x3D;&gt; 借方，银行存款减少 &#x3D;&#x3D;&gt; 贷方。</p>
-<p>会计分录：借：管理费用；贷：银行存款</p>
-<ol start="2">
-<li>再举例：老板在美国出差期间，取得美国VC的股权投资额，银行转账入账。</li>
-</ol>
-<p>影响科目：银行存款（资产，等式左边，借增贷减），实收资本（所有者权益，等式右边，借减贷增）</p>
-<p>影响方式：银行存款增加 &#x3D;&#x3D;&gt; 借方，实收资本增加 &#x3D;&#x3D;&gt; 贷方。</p>
-<p>会计分录：借：银行存款；贷：实收资本</p>
-<ol start="3">
-<li>再再举例：电费先是归集到制造费用，然后再分摊到每一个机台的生产成本中。</li>
-</ol>
-<p>会计分录：<br>电费录入：制造费用-电费（费用，等式左边，借增贷减）；供应商-预付账款（资产，等式左边，借增贷减）</p>
-<p>制造费用-电费增加 &#x3D;&#x3D;&gt; 借方，供应商-预付账款减少 &#x3D;&#x3D;&gt; 贷方</p>
-<p>会计分录：借：电费增加，贷：预付账款</p>
-<p>付款过账：供应商-预付账款（资产，等式左边，借增贷减）；银行存款（资产，等式左边，借增贷减）</p>
-<p>供应商-预付账款增加 &#x3D;&#x3D;&gt; 借方，银行存款减少 &#x3D;&#x3D;&gt; 贷方</p>
-<p>会计分录：借：预付账款，贷：银行存款。</p>
 
       
     </div>

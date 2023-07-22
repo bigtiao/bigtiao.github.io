@@ -482,32 +482,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP工单创建自动释放</title>
-    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
-<p>输入相关数据后保存，</p>
-<p>系统提示：process order 900275584 created.</p>
-<p>执行事务代码COR3显示该工单</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
-<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
-<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
-<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
-<p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
-<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
-<p>或者直接用：OPKP事务码。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP常用表</title>
     <url>/2022/07/27/SAP%E5%B8%B8%E7%94%A8%E8%A1%A8/</url>
     <content><![CDATA[<p><strong>一、MM常用表</strong><br>1、MARA: 常规物料数据<br>2、MARC: 物料的工厂数据<br>3、MAKT: 物料描述<br>4、MARD: 物料的工厂&#x2F;库存地点数据<br>5、MBEW: 物料评估（财务数据），其中MBEW-WERKS指工厂<br>6、MVKE: 物料销售数据<br>7、MLGN: 每一个仓库号物料数据（仓库）<br>8、MLGT: 每一个存储类型的物料数据（仓库&#x2F;存储类型）<br>8.1、MSTA：物料主记录状态<br>9、LFA1: 供应商主数据（一般数据）<br>10、LFB1: 供应商主数据（公司代码）<br>11、LFM1: 供应商采购组织数据<br>12、EINA: 采购信息记录（一般数据）<br>13、EINE: 采购信息记录（采购组织数据）<br>14、EKKO: 采购订单抬头<br>15、EKPO: 采购订单行项目<br>16、EKET: 计划协议计划行<br>17、EKKN: 采购凭证中的帐户设置<br>18、EKBE: 采购凭证历史<br>19、MKPF: 物料凭证抬头<br>20、MSEG: 物料凭证行项目<br>21、RBKP: 凭证抬头供应商发票数据<br>22、RSEG: 凭证项目供应商发票数据<br>EKKO&#x2F;EKPO–&gt;MKPF&#x2F;MSEG–&gt;RBKP&#x2F;RSEG–&gt;BKPF-BSEG<br>23、KNA1: 客户主数据（一般数据）<br>24、KNB1: 客户主数据（公司代码）<br>25、KNVV: 客户主记录销售数据<br>26、ADRC: 地址<br>27、EBAN: 采购申请</p>
@@ -538,6 +512,32 @@
 <p><strong>ALE</strong>主要用于SAP系统内部数据交换。EDI主要用于外部或不同client 间数据交换。它们同时都可采用 IDoc 的方式作为数据的传输格式。</p>
 <p><strong>Web Services</strong>是一种松散耦合的组件，使用XML描述交换信息内容，可以保证信息的自描述性和自适应性。WS的分布与地理位置无关，这样就可将非核心业务外包给专门的服务提供商。WS基于开放标准与技术（XML &#x2F; SOAP &#x2F; UDDI等），使其特别适合于异构平台的多样性和可扩展性。</p>
 <p><strong>XI</strong>适配器(Adapter)进行XML格式与业务系统的特定类型的数据格式之间的转换。依据业务系统的数据格式的不同，适配器可以分为多种类型，比如 SOAP Adapter, JDBCAdapter, File Adapter, RFC Adapter, IDoc Adapter , WS Adapter和XI Adapter等。WS Adapter和XI Adapter是基于Web Service技术实现的。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP工单创建自动释放</title>
+    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p>输入相关数据后保存，</p>
+<p>系统提示：process order 900275584 created.</p>
+<p>执行事务代码COR3显示该工单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
+<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
+<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
+<p>去后台如下配置路径，检查该PSP的配置信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
+<p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2807,7 +2807,7 @@
   </entry>
   <entry>
     <title>简介</title>
-    <url>/2022/05/19/hello-world/</url>
+    <url>/2023/06/23/hello-world/</url>
     <content><![CDATA[<p>厂里的打工仔，打灰、上螺丝家常便饭。</p>
 <p>主要就是SAP、致远OA、帆软、项目管理的一些问题点的记录。</p>
 ]]></content>
@@ -3035,6 +3035,34 @@
       </tags>
   </entry>
   <entry>
+    <title>入库产量逻辑梳理</title>
+    <url>/2022/11/20/%E5%85%A5%E5%BA%93%E4%BA%A7%E9%87%8F%E9%80%BB%E8%BE%91%E6%A2%B3%E7%90%86/</url>
+    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>这个需求实际是为了梳理公司的产量逻辑，目前的产量存在主要以下几个问题：</p>
+<ol>
+<li>各个部门对产量的定义不一致，导致对产量的叫法不一致，可能会有生产产量、运营产量、绩效产量等等。</li>
+<li>2个系统之间的对产量的定义不一致，导致产量的出数不一致，同时也导致了手工表的存在，主要在于第一个是跨月问题，ECP定义的产量是冷硬的结束时间，而ECP往SAP推送的是质检完成的入库时间。所以导致2个数据不一致。就是因为这个数据不一致导致了过去10个月财务按照SAP系统结账，但是按照保管给的手工账进行分析。这是一个非常严重的问题。</li>
+<li>SAP与ECP定位模糊，导致产量的数据应该从SAP出还是从ECP出大家都搞不清楚，从而导致BI取数不知道从那个系统取出。</li>
+</ol>
+<p>因此，在10月份，11月份，分别拉齐了生产、财务管理层梳理产量的定义。<br>会议确定：<br>产量分为入库产量、生产产量、绩效产量3部分，其中入库产量的定义是进入产成品库的数量。由于目前是SAP中管理库存，所以入库产量是从SAP系统中取出，并且入库的产量按照每月的实际入库产量为主，如果发生跨月消耗的话，记录负值在本月，过往月份的产量不动。</p>
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>在目前的入库产量里区分为酸洗产量和冷硬产量，酸洗的特殊情况不算多，基本就分为正常酸洗和酸洗反洗，而且量非常的少；但是冷硬的情况比较多一些，根据生产过程分为入库、入库冲销、物料转换、重轧、重卷、分卷等多种情况，并各种不同情况可以进行混杂，先入库、再冲销、再入库，继续物料转换，物料转换完成后重卷、分卷。类似这种情况非常多。</p>
+<p>那么怎么计算入库产量？<br>刚开始的时候第一个想法就是去ZMM006里取所有的入库的数据，根据物料、卷号、批次号来找出各种情况，比如冲销的、309的、重卷的、多次重卷或重轧的。而且针对重卷这种多种情况还和杨总设计了一种算法逻辑，就是根据父卷去找子卷，一直找到最后一个子卷，然后一级级的往上减，这样的话就能实现在每个月里的产量都是一致的。<br>这个逻辑出来了，但是通过和保管数据核对，发现ZMM006报表里面本身的计算逻辑就有纰漏，本身就没有包含所有的逻辑，所以我们从ZMM006里取到的值根本不对，源数据就不对了，所以再做多少加工都白搭。</p>
+<p>ZMM006不行，只能从底表查，底表的话基于物料的移动就是MSEG，因为MB51的查询底表就是MSEG，MSEG里有移动类型、批次、物料、工厂、库存地，所以我们就可以依据这个表查询出基于101收货，261投料、309物料转换、102冲销的移动类型。并且针对261、102的计算为负值。这样的好处是：首先我们查询的是产成品库</p>
+<ol>
+<li>正常的生产：就是只有一个101，产成品入库</li>
+<li>重卷、改轧的生产：首先101入库，然后261领料，这样就会有2条，然后产出的产品又会新增一条101入库。以此类推。</li>
+<li>正常生产后冲销的：101入口后直接一个102冲销，这样合计下来就是正确的入库量。</li>
+<li>309转换的，直接新增一条309转换的量。<br>因为MSEG只有物料、批次和移动类型，所以计算入库产量的时候异常的简单，只需要根据过账日期明确出不同的移动类型，然后加减就能得到每个卷的真实入库产量。</li>
+</ol>
+<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>接到需求后，尤其是之前实施都没有思考的需求，千万不要思维定势，而是要抓住问题的根本，这样的才能少走弯路，起码在ZMM006上至少浪费了4天的时间。</p>
+]]></content>
+      <categories>
+        <category>业务学习</category>
+      </categories>
+      <tags>
+        <tag>业务学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何定义需求的优先级</title>
     <url>/2022/07/08/%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E9%9C%80%E6%B1%82%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7/</url>
     <content><![CDATA[<p>如何定义需求的优先级&#x3D;考验你决策取舍的能力</p>
@@ -3074,34 +3102,6 @@
       </categories>
       <tags>
         <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>入库产量逻辑梳理</title>
-    <url>/2022/11/20/%E5%85%A5%E5%BA%93%E4%BA%A7%E9%87%8F%E9%80%BB%E8%BE%91%E6%A2%B3%E7%90%86/</url>
-    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>这个需求实际是为了梳理公司的产量逻辑，目前的产量存在主要以下几个问题：</p>
-<ol>
-<li>各个部门对产量的定义不一致，导致对产量的叫法不一致，可能会有生产产量、运营产量、绩效产量等等。</li>
-<li>2个系统之间的对产量的定义不一致，导致产量的出数不一致，同时也导致了手工表的存在，主要在于第一个是跨月问题，ECP定义的产量是冷硬的结束时间，而ECP往SAP推送的是质检完成的入库时间。所以导致2个数据不一致。就是因为这个数据不一致导致了过去10个月财务按照SAP系统结账，但是按照保管给的手工账进行分析。这是一个非常严重的问题。</li>
-<li>SAP与ECP定位模糊，导致产量的数据应该从SAP出还是从ECP出大家都搞不清楚，从而导致BI取数不知道从那个系统取出。</li>
-</ol>
-<p>因此，在10月份，11月份，分别拉齐了生产、财务管理层梳理产量的定义。<br>会议确定：<br>产量分为入库产量、生产产量、绩效产量3部分，其中入库产量的定义是进入产成品库的数量。由于目前是SAP中管理库存，所以入库产量是从SAP系统中取出，并且入库的产量按照每月的实际入库产量为主，如果发生跨月消耗的话，记录负值在本月，过往月份的产量不动。</p>
-<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p>在目前的入库产量里区分为酸洗产量和冷硬产量，酸洗的特殊情况不算多，基本就分为正常酸洗和酸洗反洗，而且量非常的少；但是冷硬的情况比较多一些，根据生产过程分为入库、入库冲销、物料转换、重轧、重卷、分卷等多种情况，并各种不同情况可以进行混杂，先入库、再冲销、再入库，继续物料转换，物料转换完成后重卷、分卷。类似这种情况非常多。</p>
-<p>那么怎么计算入库产量？<br>刚开始的时候第一个想法就是去ZMM006里取所有的入库的数据，根据物料、卷号、批次号来找出各种情况，比如冲销的、309的、重卷的、多次重卷或重轧的。而且针对重卷这种多种情况还和杨总设计了一种算法逻辑，就是根据父卷去找子卷，一直找到最后一个子卷，然后一级级的往上减，这样的话就能实现在每个月里的产量都是一致的。<br>这个逻辑出来了，但是通过和保管数据核对，发现ZMM006报表里面本身的计算逻辑就有纰漏，本身就没有包含所有的逻辑，所以我们从ZMM006里取到的值根本不对，源数据就不对了，所以再做多少加工都白搭。</p>
-<p>ZMM006不行，只能从底表查，底表的话基于物料的移动就是MSEG，因为MB51的查询底表就是MSEG，MSEG里有移动类型、批次、物料、工厂、库存地，所以我们就可以依据这个表查询出基于101收货，261投料、309物料转换、102冲销的移动类型。并且针对261、102的计算为负值。这样的好处是：首先我们查询的是产成品库</p>
-<ol>
-<li>正常的生产：就是只有一个101，产成品入库</li>
-<li>重卷、改轧的生产：首先101入库，然后261领料，这样就会有2条，然后产出的产品又会新增一条101入库。以此类推。</li>
-<li>正常生产后冲销的：101入口后直接一个102冲销，这样合计下来就是正确的入库量。</li>
-<li>309转换的，直接新增一条309转换的量。<br>因为MSEG只有物料、批次和移动类型，所以计算入库产量的时候异常的简单，只需要根据过账日期明确出不同的移动类型，然后加减就能得到每个卷的真实入库产量。</li>
-</ol>
-<h2 id="反思"><a href="#反思" class="headerlink" title="反思"></a>反思</h2><p>接到需求后，尤其是之前实施都没有思考的需求，千万不要思维定势，而是要抓住问题的根本，这样的才能少走弯路，起码在ZMM006上至少浪费了4天的时间。</p>
-]]></content>
-      <categories>
-        <category>业务学习</category>
-      </categories>
-      <tags>
-        <tag>业务学习</tag>
       </tags>
   </entry>
   <entry>

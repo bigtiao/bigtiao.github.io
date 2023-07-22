@@ -183,6 +183,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一骗树">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打螺丝闲暇的记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/08/%E8%AE%B0%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FDEE%E6%8C%82%E6%8E%89%E9%81%87%E5%9D%91/" class="post-title-link" itemprop="url">记致远OA系统DEE挂掉遇坑</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-08 15:53:02" itemprop="dateCreated datePublished" datetime="2022-08-08T15:53:02+08:00">2022-08-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-09 15:15:24" itemprop="dateModified" datetime="2022-08-09T15:15:24+08:00">2022-08-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%87%B4%E8%BF%9COA/" itemprop="url" rel="index"><span itemprop="name">致远OA</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>在2022年8月7号下午左右，致远OA所有任务调用都出现问题，所有的任务都出现操作异常的弹窗。<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155648.png" alt="20220808155648"></p>
+<h2 id="问题查找"><a href="#问题查找" class="headerlink" title="问题查找"></a>问题查找</h2><p>1、尝试重启致远主服务、重启物理机均无效</p>
+<p>2、查看线程日志发现是所有的dee任务都在运行中，如下所示：<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20220808155803.png" alt="20220808155803"></p>
+<p>3、通过咨询致远代老师，拿到了解决方案，有3种方案：<br>方案一：<br>1、停止OA服务<br>2、将A8\base\dee\data下除了dee.mv.db或dee.h2.db外的，其他2个文件（dee.trace.db、dee.lock.db）删除<br>3、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>4、重启OA，连接上dee数据库</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>方案二：<br>如果上述操作后还是看不到dee控制台的数据，则按如下操作：<br>1、停止OA服务<br>2、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>3、新建一个名为data的空文件夹<br>4、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>5、重启OA<br>6、在A8\base\dee\drpHistory下找到日期最近的drp文件（2020-12-10.drp），在dee控制台部署一下即可</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>方案三：<br>如果上述操作后还不行，则如下操作：<br>1、如果有自己备份drp，或则有dee工具（包含所有OA的dee任务，则导出OA里的任务为drp包）<br>2、停止OA服务<br>3、备份A8\base\dee\data文件夹，比如改名data为data-bak<br>4、新建一个名为data的空文件夹<br>5、删除A8\base\dee\history下所有文件（没有history文件夹则不用管这个）<br>6、重启OA<br>7、导入drp即可</p>
+<p>备注：集群OA的话每个节点需要做一次上面的操作</p>
+<p>4、通过测试，方案二解决问题，但是所有的任务全部失效，从dee平台中重新导出一份到OA解决问题。</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>1、dee插件在致远系统中的数据库是H2内存数据库，猜测由于没有正常停用服务进程导致H2数据库没有正常释放导致此问题。</p>
+<p>2、官方反馈原因<br><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ce47ecc297f7f5c4e035e32b08fe219.png" alt="ce47ecc297f7f5c4e035e32b08fe219"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/ae78b02e0154845397879b58741ccda.png" alt="ae78b02e0154845397879b58741ccda"></p>
+<p>他的意思是， DEE数据库是H2. 是这个数据库的弊端。 如果连接比较频繁，容易造成卡死。一般重启服务是能解决的。总体来说，是DEE本身数据库的弊端</p>
+<p>7.1版本，日志是在在同一个数据库文件中dee.mv.db，高并发会出现线程中断，导致文件受损以至于dee任务无法执行；8.1新的版本，dee做了改良，把日志记录的数据给剥离出来了，放到另外的一个数据库文件中，his_mv.db中，能保证dee任务正常使用；</p>
+<p>解决方案就是代老师给的三个解决办法。然后把定时器关了，防止有频繁的连接。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/02/%E9%87%87%E8%B4%AD%E4%BB%93%E5%82%A8%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +303,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-22 19:44:47" itemprop="dateModified" datetime="2022-09-22T19:44:47+08:00">2022-09-22</time>
+                <time title="修改时间：2022-09-22 19:44:48" itemprop="dateModified" datetime="2022-09-22T19:44:48+08:00">2022-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -552,7 +641,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-29 17:16:00 / 修改时间：17:12:56" itemprop="dateCreated datePublished" datetime="2022-07-29T17:16:00+08:00">2022-07-29</time>
+              <time title="创建时间：2022-07-29 17:16:00 / 修改时间：17:12:58" itemprop="dateCreated datePublished" datetime="2022-07-29T17:16:00+08:00">2022-07-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -644,7 +733,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-27 16:51:00 / 修改时间：17:09:57" itemprop="dateCreated datePublished" datetime="2022-07-27T16:51:00+08:00">2022-07-27</time>
+              <time title="创建时间：2022-07-27 16:51:00 / 修改时间：17:09:58" itemprop="dateCreated datePublished" datetime="2022-07-27T16:51:00+08:00">2022-07-27</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -728,7 +817,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-09-06 08:34:43" itemprop="dateModified" datetime="2022-09-06T08:34:43+08:00">2022-09-06</time>
+                <time title="修改时间：2022-09-06 08:34:44" itemprop="dateModified" datetime="2022-09-06T08:34:44+08:00">2022-09-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -828,7 +917,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-18 20:40:00 / 修改时间：20:40:54" itemprop="dateCreated datePublished" datetime="2022-07-18T20:40:00+08:00">2022-07-18</time>
+              <time title="创建时间：2022-07-18 20:40:00 / 修改时间：20:40:56" itemprop="dateCreated datePublished" datetime="2022-07-18T20:40:00+08:00">2022-07-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -911,7 +1000,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-14 08:36:35" itemprop="dateModified" datetime="2022-07-14T08:36:35+08:00">2022-07-14</time>
+                <time title="修改时间：2022-07-14 08:36:36" itemprop="dateModified" datetime="2022-07-14T08:36:36+08:00">2022-07-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1095,7 +1184,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-08 15:51:00 / 修改时间：15:54:34" itemprop="dateCreated datePublished" datetime="2022-07-08T15:51:00+08:00">2022-07-08</time>
+              <time title="创建时间：2022-07-08 15:51:00 / 修改时间：15:54:36" itemprop="dateCreated datePublished" datetime="2022-07-08T15:51:00+08:00">2022-07-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1434,7 +1523,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-08 15:18:00 / 修改时间：15:32:47" itemprop="dateCreated datePublished" datetime="2022-07-08T15:18:00+08:00">2022-07-08</time>
+              <time title="创建时间：2022-07-08 15:18:00 / 修改时间：15:32:48" itemprop="dateCreated datePublished" datetime="2022-07-08T15:18:00+08:00">2022-07-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1532,7 +1621,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-07-08 15:06:00 / 修改时间：15:16:41" itemprop="dateCreated datePublished" datetime="2022-07-08T15:06:00+08:00">2022-07-08</time>
+              <time title="创建时间：2022-07-08 15:06:00 / 修改时间：15:16:42" itemprop="dateCreated datePublished" datetime="2022-07-08T15:06:00+08:00">2022-07-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1586,97 +1675,6 @@
 <h3 id="2、better-worse系数"><a href="#2、better-worse系数" class="headerlink" title="2、better-worse系数"></a>2、better-worse系数</h3><p>Better系数&#x3D;（期望数+魅力数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
 <p>Worse系数&#x3D; -1*（期望数+必备数）&#x2F;（期望数+魅力数+必备数+无差异数）</p>
 <p>Better系数越接近1，表示该具备度越高该需求对用户满意度提升的影响效果越大。Worse系数越接近-1，表示具备度越低该需求对用户满意度造成的负面影响越大。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一骗树">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="打螺丝闲暇的记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/07/08/%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ELT%E5%92%8CETL%E5%90%97/" class="post-title-link" itemprop="url">你真的了解ELT和ETL吗</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-07-08 09:58:00 / 修改时间：09:58:54" itemprop="dateCreated datePublished" datetime="2022-07-08T09:58:00+08:00">2022-07-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>ETL 和 ELT 有很多共同点，从本质上讲，每种集成方法都可以将数据从源端抽取到数据仓库中，<strong>两者的区别在于数据在哪里进行转换</strong>。 接下来，我们一起详细地分析一下 ETL 和 ELT各自的优缺点，看看在你们现在的业务中用哪种方式处理数据比较合适。</p>
-<h2 id="01-ETL"><a href="#01-ETL" class="headerlink" title="01 ETL"></a><strong>01 ETL</strong></h2><p><strong><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/0ff508bcb0fc59847ca432a23449311a.jpg" alt="img"></strong></p>
-<p><strong>ETL - 抽取、转换、加载</strong></p>
-<p>从不同的数据源抽取信息，将其转换为根据业务定义的格式，然后将其加载到其他数据库或数据仓库中。另一种 ETL 集成方法是反向 ETL，它将结构化数据从数据仓库中加载到业务数据库中，如我们常用数据仓库加工好的报表，推送到报表系统的数据库中。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/4b2ad6e50c2b1f00b89011ce3b773ec3.jpg" alt="img"></p>
-<p><strong>ELT - 抽取、加载、转换</strong></p>
-<p>同样的从一个或多个数据源中抽取数据，然后将其加载到目标数据仓库中，此时不需要进行数据格式的转换。在 ELT 过程中，数据的转换发生在目标数据仓库中。ELT 对远程资源的要求较少，只需要它们的原始数据即可。</p>
-<h2 id="03-ELT的演变"><a href="#03-ELT的演变" class="headerlink" title="03 ELT的演变"></a><strong>03 ELT的演变</strong></h2><p>ELT 已经存在了一段时间，但 Hadoop 等大数据技术出现后，更加活跃了。像以前转换 PB 级原始数据这样的大型任务无法处理，现在可以被分成小作业，进行处理，然后再加载到目标数据库中。同时，处理能力也提高了，尤其是以私有云集群的方式，把处理、加工数据可以在一个数据仓库中完成了。</p>
-<h2 id="04-ELT的工作原理"><a href="#04-ELT的工作原理" class="headerlink" title="04 ELT的工作原理"></a><strong>04 ELT的工作原理</strong></h2><p>与 ETL 不同，ELT是从多个数据源收集信息，将其加载到数据仓库（或者数据湖）中，然后将其转换为可操作的商业智能的过程。</p>
-<p><strong>抽取</strong>——在ELT和ETL两种数据管理方法中的原理相似。一般我们会采用增量抽取，对于一些维表数据量比较小的也会采用全量抽取。</p>
-<p><strong>加载</strong>——这是 ELT 和 ETL 开始不同的地方了。ELT 不是在抽取大量原始数据的过程中将其转换，而是将所有数据都加在到湖仓中，然后统一进行转换，这样做加快了抽取的效率，但也意味着数据变得有用之前还有很多工作要做。</p>
-<p><strong>转换</strong>——数据湖或数据仓库对数据进行规范化，将部分或全部数据保留在湖仓中，并可用于定制报告。存储海量数据的开销更高，但也是为了后续能够更加快速的进行数据挖掘和报表展现，也就是我们常说的用空间换时间。</p>
-<h2 id="05-什么时候我们选择ELT"><a href="#05-什么时候我们选择ELT" class="headerlink" title="05 什么时候我们选择ELT"></a><strong>05 什么时候我们选择ELT</strong></h2><p>这取决于公司现有的网络和技术架构、预算以及它已经利用云和大数据技术的程度。如果是有下面三个需求场景时，那么ELT就是正确的选择~</p>
-<p><strong>1. 当抽取速度是第一选择时</strong></p>
-<p>因为 ELT 不必等待数据在抽取过程中进行转换后再加载，那么抽取过程要快得多。</p>
-<p><strong>2. 当需要随时访问原始数据时</strong></p>
-<p>有很多场景，我们需要保留所有历史数据，分析师可以根据时间、销售模式、季节性趋势或任何对业务变得重要的新兴指标进行挖掘。由于数据在加载之前未进行转换，因此您可以访问所有原始数据。比如，数据仓库一般都有一个原始数据层，很多数据科学家更喜欢访问原始数据，而业务用户更喜欢使用分析后的应用层或者模型层数据。</p>
-<p><strong>3. 当需要随时可扩展数据湖仓时</strong></p>
-<p>当您使用 Hadoop 或云数据仓库等数据处理引擎时，ELT 可以利用本机处理能力实现更高的可扩展性。</p>
-<h2 id="06-数据湖是不是很好的ELT落脚点"><a href="#06-数据湖是不是很好的ELT落脚点" class="headerlink" title="06 数据湖是不是很好的ELT落脚点"></a><strong>06 数据湖是不是很好的ELT落脚点</strong></h2><p>首先，<strong>我们思考一下数仓为什么会出现？</strong>其实是数据量的飞速增长，以至于当时的数据存储计算引擎，不能很好的满足分析需求；于是数仓概念和经典的理论出现了，很好的解决了当时的问题，用“规范+存储”来解决了当时的问题。</p>
-<p>那么现在大数据时代，随着技术的不断发展，很多新技术出现了，大批量的存储和计算不再是那么难了，那么我们放弃数仓那一套是否可行呢？从一哥现在处理的业务看，如果你的业务系统相对较单一，没有几十个业务系统每天往数仓里灌数据，那么数据湖可以满足你的需求，并且对于“数据驱动”更“敏捷”。如果一线的业务系统较复杂，那么现在使用数据湖也会一不小心会变成“<strong>数据沼泽</strong>”。</p>
-<p>数据湖治理策略没有明确前，还不要急着就上数据湖，并不是适用于每个公司的业务场景的！</p>
-<h2 id="07-结语"><a href="#07-结语" class="headerlink" title="07 结语"></a><strong>07 结语</strong></h2><p>ELT和ETL都有各自的应用场景，可以说现在大数据环境下，很多已经是ELT架构了，<strong>所以这也是我近几年一直不看好很多厂商在推“拖拉拽”的ETL工具或者平台，未来肯定是需要一种通用语言来实现所有的ELT过程</strong>。</p>
-<p>同样，<strong>数据湖是趋势，但现在依然不成熟</strong>，不要看网上很多一线大厂的技术文章中提到了很多数据湖的概念和技术应用，但是请结合自己公司的业务场景，暂时先谨慎选择！</p>
 
       
     </div>
