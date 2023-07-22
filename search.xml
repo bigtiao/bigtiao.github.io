@@ -150,44 +150,6 @@
       </tags>
   </entry>
   <entry>
-    <title>OLTP与OLAP的区别</title>
-    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
-<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
-<ul>
-<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
-<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
-</ul>
-<p><strong>2、实时性要求不同：</strong></p>
-<ul>
-<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
-<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
-</ul>
-<p><strong>3、数据量不同：</strong></p>
-<ul>
-<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
-<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
-</ul>
-<p><strong>4、用户和系统的面向性不同：</strong></p>
-<ul>
-<li>OLTP是面向顾客的,用于事务和查询处理。</li>
-<li>OLAP是面向市场的,用于数据分析。</li>
-</ul>
-<p><strong>5、数据库设计不同：</strong></p>
-<ul>
-<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
-<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>数据</category>
-      </categories>
-      <tags>
-        <tag>数据</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SAP NOTE安装过程</title>
     <url>/2022/06/20/SAP%20NOTE%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</url>
     <content><![CDATA[<p><strong>1.更改note的目标系统client配置</strong></p>
@@ -210,74 +172,6 @@
 <p> <strong>4.新建传输号</strong></p>
 <p>  对每一个note新建一个传输号，从配置环境并传输到需要的测试或生产环境中。</p>
 <p>   其它注意事项：NOTE按照完成后，需要把SCC4和SE06的参数修改回来。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP会计凭证类型总结</title>
-    <url>/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="1、SAP凭证类型作用"><a href="#1、SAP凭证类型作用" class="headerlink" title="1、SAP凭证类型作用"></a>1、SAP凭证类型作用</h2><p>传统的财务的系统凭证类型如收付转三类凭证类型，而SAP的凭证类型是用来区分业务的。</p>
-<ul>
-<li>凭证类型决定记账编号范围，常见的Tcode中FBN1维护编号范围，OBH1+OBH2复制编号范围</li>
-<li>凭证类型决定了过账的会计科目的账户类型（S、A、D、K、M）</li>
-<li>凭证类型决定了记账的默认汇率，默认的是M类型的汇率类型。</li>
-<li>凭证类型决定了凭证抬头的参考号码+凭证抬头文本是否必输。</li>
-<li>凭证类型决定允许负数记账、贸易伙伴必输、公司间过账等参数。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204059594.png" alt="在这里插入图片描述"></p>
-<h2 id="2、SAP常见凭证类型"><a href="#2、SAP常见凭证类型" class="headerlink" title="2、SAP常见凭证类型"></a>2、SAP常见凭证类型</h2><p>如上所述，SAP的凭证类型是用来区分业务，一般项目采用SAP默认的凭证类型清单即可满足业务需求。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204149149.png" alt="在这里插入图片描述"></p>
-<h2 id="3、OBU1：FI相应事务代码默认凭证类型"><a href="#3、OBU1：FI相应事务代码默认凭证类型" class="headerlink" title="3、OBU1：FI相应事务代码默认凭证类型"></a>3、OBU1：FI相应事务代码默认凭证类型</h2><p>通过OBU1可更改大部分FI事务代码的默认凭证类型，但是FB50&#x2F;FB60&#x2F;FB70这几个事务代码的凭证类型是不能直接更改的</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204235953.png" alt="img"></p>
-<h2 id="4、OBZO：更改感兴趣业务的凭证类型"><a href="#4、OBZO：更改感兴趣业务的凭证类型" class="headerlink" title="4、OBZO：更改感兴趣业务的凭证类型"></a>4、OBZO：更改感兴趣业务的凭证类型</h2><p>通过OBZO即可实现对FB50、60、70默认凭证类型的更改</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204259797.png" alt="在这里插入图片描述"></p>
-<ul>
-<li>第一步：FB50&#x2F;FB60&#x2F;FB70这些默认的凭证不允许修改，但可通过设置OBZO就可以修改了，可能需要打NOTES-323113，也可以通过用户参数BAR默认FB50的凭证类型</li>
-<li>你第二步：实施Notes-339765<br>优先级问题</li>
-</ul>
-<p>OBZO维护的默认凭证类型<br>用户参数BAR维护的凭证类型<br>程序写死的SA、KR、DR</p>
-<h2 id="5、OMBA：后勤货物移动默认凭证类型"><a href="#5、OMBA：后勤货物移动默认凭证类型" class="headerlink" title="5、OMBA：后勤货物移动默认凭证类型"></a>5、OMBA：后勤货物移动默认凭证类型</h2><p>OMJJ对各种移动类型默认可使用的事务，然后通过OMBA对事务进行默认凭证类型。我们来举个栗子来，比如WI盘点凭证，你们看看各自的SAP系统是WI还是WA凭证类型，取决于你的盘点流程是采用标准的MI07还是借用701&#x2F;702通过MIGO_GI来处理。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204352139.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204407986.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204423577.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204437214.png" alt="在这里插入图片描述"></p>
-<h2 id="6、OMR4：发票默认的凭证类型"><a href="#6、OMR4：发票默认的凭证类型" class="headerlink" title="6、OMR4：发票默认的凭证类型"></a>6、OMR4：发票默认的凭证类型</h2><p>CKMI就是物料帐结算的事务代码，默认的是ML</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204457539.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204509783.png" alt="在这里插入图片描述"></p>
-<p>MIR7采购部预制发票</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620453342.png" alt="在这里插入图片描述"></p>
-<p>MIRO采购部直接发票过账</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204554606.png" alt="在这里插入图片描述"></p>
-<p>MR21标准价格变更</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620490257.png" alt="在这里插入图片描述"></p>
-<p>MR22移动价格变更</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205017877.png" alt="在这里插入图片描述"></p>
-<p>MR8M取消供应商发票</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205250457.png" alt="在这里插入图片描述"></p>
-<p>MRKO供应商寄售的凭证类型</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205348662.png" alt="在这里插入图片描述"></p>
-<h2 id="7、VOFA：销售开票默认凭证类型"><a href="#7、VOFA：销售开票默认凭证类型" class="headerlink" title="7、VOFA：销售开票默认凭证类型"></a>7、VOFA：销售开票默认凭证类型</h2><p>销售开票凭证类型会对应不同的会计凭证类型</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205639312.png" alt="在这里插入图片描述"></p>
-<h2 id="8、OKO7：订单结算默认凭证类型"><a href="#8、OKO7：订单结算默认凭证类型" class="headerlink" title="8、OKO7：订单结算默认凭证类型"></a>8、OKO7：订单结算默认凭证类型</h2><p>只要生产订单、销售订单、WBS结算、内部订单结算的凭证类型都在这默认。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205705570.png" alt="在这里插入图片描述"></p>
-<h2 id="9、OB59：外币评估默认凭证类型"><a href="#9、OB59：外币评估默认凭证类型" class="headerlink" title="9、OB59：外币评估默认凭证类型"></a>9、OB59：外币评估默认凭证类型</h2><p>通过外币评估方法直接定义凭证类型。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620573211.png" alt="在这里插入图片描述"></p>
-<h2 id="10、FBKP：清账程序默认凭证类型"><a href="#10、FBKP：清账程序默认凭证类型" class="headerlink" title="10、FBKP：清账程序默认凭证类型"></a>10、FBKP：清账程序默认凭证类型</h2><p>比如说你是否意识到F.13自动清账产生的会计凭证凭证类型？</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205756623.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620584369.png" alt="在这里插入图片描述"></p>
-<h2 id="11、GRIR重分类默认的凭证类型"><a href="#11、GRIR重分类默认的凭证类型" class="headerlink" title="11、GRIR重分类默认的凭证类型"></a>11、GRIR重分类默认的凭证类型</h2><p>这个SAP就没有地方来默认凭证类型了</p>
-<p>直接在源程序上写了一段话，这也算隐式增强吧！</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205945790.png" alt="在这里插入图片描述"></p>
-<h2 id="12、FAGLF101往来重分类默认凭证类型"><a href="#12、FAGLF101往来重分类默认凭证类型" class="headerlink" title="12、FAGLF101往来重分类默认凭证类型"></a>12、FAGLF101往来重分类默认凭证类型</h2><p>往来重分类必然会用到评估范围，通过新增评估方法达到新增评估范围的作用，即可实现对往来重分类默认不同的会计科目。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210011282.png" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
-<p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -399,6 +293,112 @@
       </tags>
   </entry>
   <entry>
+    <title>OLTP与OLAP的区别</title>
+    <url>/2022/06/30/OLTP%E4%B8%8EOLAP%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p><strong>联机事务处理（On-Line Transaction Processing，OLTP）</strong><br><strong>联机分析处理（On-Line Analytical Processing，OLAP）</strong></p>
+<p>OLTP和OLAP主要区别有：<br><strong>1、基本含义不同：</strong></p>
+<ul>
+<li>OLTP是传统的关系型数据库的主要应用，主要是基本的、日常的事务处理，记录即时的增、删、改、查，比如在银行存取一笔款，就是一个事务交易。</li>
+<li>OLAP即联机分析处理，是数据仓库的核心部心，支持复杂的分析操作，侧重决策支持，并且提供直观易懂的查询结果。典型的应用就是复杂的动态报表系统。</li>
+</ul>
+<p><strong>2、实时性要求不同：</strong></p>
+<ul>
+<li>OLTP实时性要求高，OLTP 数据库旨在使事务应用程序仅写入所需的数据，以便尽快处理单个事务。</li>
+<li>OLAP的实时性要求不是很高，很多应用顶多是每天更新一下数据。</li>
+</ul>
+<p><strong>3、数据量不同：</strong></p>
+<ul>
+<li>OLTP数据量不是很大，一般只读&#x2F;写数十条记录，处理简单的事务。</li>
+<li>OLAP数据量大，因为OLAP支持的是动态查询，所以用户也许要通过将很多数据的统计后才能得到想要知道的信息，例如时间序列分析等等，所以处理的数据量很大。</li>
+</ul>
+<p><strong>4、用户和系统的面向性不同：</strong></p>
+<ul>
+<li>OLTP是面向顾客的,用于事务和查询处理。</li>
+<li>OLAP是面向市场的,用于数据分析。</li>
+</ul>
+<p><strong>5、数据库设计不同：</strong></p>
+<ul>
+<li>OLTP采用实体-联系ER模型和面向应用的数据库设计。</li>
+<li>OLAP采用星型或雪花模型和面向主题的数据库设计。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20191114152931845.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>数据</category>
+      </categories>
+      <tags>
+        <tag>数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP会计凭证类型总结</title>
+    <url>/2022/06/07/SAP%E4%BC%9A%E8%AE%A1%E5%87%AD%E8%AF%81%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1、SAP凭证类型作用"><a href="#1、SAP凭证类型作用" class="headerlink" title="1、SAP凭证类型作用"></a>1、SAP凭证类型作用</h2><p>传统的财务的系统凭证类型如收付转三类凭证类型，而SAP的凭证类型是用来区分业务的。</p>
+<ul>
+<li>凭证类型决定记账编号范围，常见的Tcode中FBN1维护编号范围，OBH1+OBH2复制编号范围</li>
+<li>凭证类型决定了过账的会计科目的账户类型（S、A、D、K、M）</li>
+<li>凭证类型决定了记账的默认汇率，默认的是M类型的汇率类型。</li>
+<li>凭证类型决定了凭证抬头的参考号码+凭证抬头文本是否必输。</li>
+<li>凭证类型决定允许负数记账、贸易伙伴必输、公司间过账等参数。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204059594.png" alt="在这里插入图片描述"></p>
+<h2 id="2、SAP常见凭证类型"><a href="#2、SAP常见凭证类型" class="headerlink" title="2、SAP常见凭证类型"></a>2、SAP常见凭证类型</h2><p>如上所述，SAP的凭证类型是用来区分业务，一般项目采用SAP默认的凭证类型清单即可满足业务需求。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204149149.png" alt="在这里插入图片描述"></p>
+<h2 id="3、OBU1：FI相应事务代码默认凭证类型"><a href="#3、OBU1：FI相应事务代码默认凭证类型" class="headerlink" title="3、OBU1：FI相应事务代码默认凭证类型"></a>3、OBU1：FI相应事务代码默认凭证类型</h2><p>通过OBU1可更改大部分FI事务代码的默认凭证类型，但是FB50&#x2F;FB60&#x2F;FB70这几个事务代码的凭证类型是不能直接更改的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204235953.png" alt="img"></p>
+<h2 id="4、OBZO：更改感兴趣业务的凭证类型"><a href="#4、OBZO：更改感兴趣业务的凭证类型" class="headerlink" title="4、OBZO：更改感兴趣业务的凭证类型"></a>4、OBZO：更改感兴趣业务的凭证类型</h2><p>通过OBZO即可实现对FB50、60、70默认凭证类型的更改</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204259797.png" alt="在这里插入图片描述"></p>
+<ul>
+<li>第一步：FB50&#x2F;FB60&#x2F;FB70这些默认的凭证不允许修改，但可通过设置OBZO就可以修改了，可能需要打NOTES-323113，也可以通过用户参数BAR默认FB50的凭证类型</li>
+<li>你第二步：实施Notes-339765<br>优先级问题</li>
+</ul>
+<p>OBZO维护的默认凭证类型<br>用户参数BAR维护的凭证类型<br>程序写死的SA、KR、DR</p>
+<h2 id="5、OMBA：后勤货物移动默认凭证类型"><a href="#5、OMBA：后勤货物移动默认凭证类型" class="headerlink" title="5、OMBA：后勤货物移动默认凭证类型"></a>5、OMBA：后勤货物移动默认凭证类型</h2><p>OMJJ对各种移动类型默认可使用的事务，然后通过OMBA对事务进行默认凭证类型。我们来举个栗子来，比如WI盘点凭证，你们看看各自的SAP系统是WI还是WA凭证类型，取决于你的盘点流程是采用标准的MI07还是借用701&#x2F;702通过MIGO_GI来处理。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204352139.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204407986.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204423577.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204437214.png" alt="在这里插入图片描述"></p>
+<h2 id="6、OMR4：发票默认的凭证类型"><a href="#6、OMR4：发票默认的凭证类型" class="headerlink" title="6、OMR4：发票默认的凭证类型"></a>6、OMR4：发票默认的凭证类型</h2><p>CKMI就是物料帐结算的事务代码，默认的是ML</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204457539.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204509783.png" alt="在这里插入图片描述"></p>
+<p>MIR7采购部预制发票</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620453342.png" alt="在这里插入图片描述"></p>
+<p>MIRO采购部直接发票过账</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116204554606.png" alt="在这里插入图片描述"></p>
+<p>MR21标准价格变更</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620490257.png" alt="在这里插入图片描述"></p>
+<p>MR22移动价格变更</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205017877.png" alt="在这里插入图片描述"></p>
+<p>MR8M取消供应商发票</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205250457.png" alt="在这里插入图片描述"></p>
+<p>MRKO供应商寄售的凭证类型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205348662.png" alt="在这里插入图片描述"></p>
+<h2 id="7、VOFA：销售开票默认凭证类型"><a href="#7、VOFA：销售开票默认凭证类型" class="headerlink" title="7、VOFA：销售开票默认凭证类型"></a>7、VOFA：销售开票默认凭证类型</h2><p>销售开票凭证类型会对应不同的会计凭证类型</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205639312.png" alt="在这里插入图片描述"></p>
+<h2 id="8、OKO7：订单结算默认凭证类型"><a href="#8、OKO7：订单结算默认凭证类型" class="headerlink" title="8、OKO7：订单结算默认凭证类型"></a>8、OKO7：订单结算默认凭证类型</h2><p>只要生产订单、销售订单、WBS结算、内部订单结算的凭证类型都在这默认。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205705570.png" alt="在这里插入图片描述"></p>
+<h2 id="9、OB59：外币评估默认凭证类型"><a href="#9、OB59：外币评估默认凭证类型" class="headerlink" title="9、OB59：外币评估默认凭证类型"></a>9、OB59：外币评估默认凭证类型</h2><p>通过外币评估方法直接定义凭证类型。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620573211.png" alt="在这里插入图片描述"></p>
+<h2 id="10、FBKP：清账程序默认凭证类型"><a href="#10、FBKP：清账程序默认凭证类型" class="headerlink" title="10、FBKP：清账程序默认凭证类型"></a>10、FBKP：清账程序默认凭证类型</h2><p>比如说你是否意识到F.13自动清账产生的会计凭证凭证类型？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205756623.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2021011620584369.png" alt="在这里插入图片描述"></p>
+<h2 id="11、GRIR重分类默认的凭证类型"><a href="#11、GRIR重分类默认的凭证类型" class="headerlink" title="11、GRIR重分类默认的凭证类型"></a>11、GRIR重分类默认的凭证类型</h2><p>这个SAP就没有地方来默认凭证类型了</p>
+<p>直接在源程序上写了一段话，这也算隐式增强吧！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116205945790.png" alt="在这里插入图片描述"></p>
+<h2 id="12、FAGLF101往来重分类默认凭证类型"><a href="#12、FAGLF101往来重分类默认凭证类型" class="headerlink" title="12、FAGLF101往来重分类默认凭证类型"></a>12、FAGLF101往来重分类默认凭证类型</h2><p>往来重分类必然会用到评估范围，通过新增评估方法达到新增评估范围的作用，即可实现对往来重分类默认不同的会计科目。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210011282.png" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210024300.png" alt="在这里插入图片描述"></p>
+<p>如果想要在进入faglf101就直接默认凭证类型，可做一个小增强</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/20210116210050103.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP变式配置BOM实现</title>
     <url>/2022/06/20/SAP%E5%8F%98%E5%BC%8F%E9%85%8D%E7%BD%AEBOM%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>**业务场景:**一般用于按单生产,且每次的订单BOM都不是固定的,但企业不可能为每一张订单所生产的产品都建立不同的物料编码.最常见的例子是按客户需求组装电脑,客户根据需求选择不同的配置,主板品牌,CPU 型号,硬盘容量等等参数,选择完毕后,组装电脑的 BOM 才确定下来.在 SAP 中,实现该过程是这样的:销售订单下达的时候,会提示该成品的特性,由用户去选择或填入相关特性,系统根据这些特性从一个最全的 BOM(SAP 称为超级 BOM)中做逻辑判断(SAP 称为相关性),配置出符合这个销售订单的 BOM.该业务场景在 SAP 中称为可配置 BOM 的实现。</p>
@@ -482,6 +482,32 @@
       </tags>
   </entry>
   <entry>
+    <title>SAP工单创建自动释放</title>
+    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
+<p>输入相关数据后保存，</p>
+<p>系统提示：process order 900275584 created.</p>
+<p>执行事务代码COR3显示该工单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
+<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
+<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
+<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
+<p>去后台如下配置路径，检查该PSP的配置信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
+<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
+<p>或者直接用：OPKP事务码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SAP常用表</title>
     <url>/2022/07/27/SAP%E5%B8%B8%E7%94%A8%E8%A1%A8/</url>
     <content><![CDATA[<p><strong>一、MM常用表</strong><br>1、MARA: 常规物料数据<br>2、MARC: 物料的工厂数据<br>3、MAKT: 物料描述<br>4、MARD: 物料的工厂&#x2F;库存地点数据<br>5、MBEW: 物料评估（财务数据），其中MBEW-WERKS指工厂<br>6、MVKE: 物料销售数据<br>7、MLGN: 每一个仓库号物料数据（仓库）<br>8、MLGT: 每一个存储类型的物料数据（仓库&#x2F;存储类型）<br>8.1、MSTA：物料主记录状态<br>9、LFA1: 供应商主数据（一般数据）<br>10、LFB1: 供应商主数据（公司代码）<br>11、LFM1: 供应商采购组织数据<br>12、EINA: 采购信息记录（一般数据）<br>13、EINE: 采购信息记录（采购组织数据）<br>14、EKKO: 采购订单抬头<br>15、EKPO: 采购订单行项目<br>16、EKET: 计划协议计划行<br>17、EKKN: 采购凭证中的帐户设置<br>18、EKBE: 采购凭证历史<br>19、MKPF: 物料凭证抬头<br>20、MSEG: 物料凭证行项目<br>21、RBKP: 凭证抬头供应商发票数据<br>22、RSEG: 凭证项目供应商发票数据<br>EKKO&#x2F;EKPO–&gt;MKPF&#x2F;MSEG–&gt;RBKP&#x2F;RSEG–&gt;BKPF-BSEG<br>23、KNA1: 客户主数据（一般数据）<br>24、KNB1: 客户主数据（公司代码）<br>25、KNVV: 客户主记录销售数据<br>26、ADRC: 地址<br>27、EBAN: 采购申请</p>
@@ -512,32 +538,6 @@
 <p><strong>ALE</strong>主要用于SAP系统内部数据交换。EDI主要用于外部或不同client 间数据交换。它们同时都可采用 IDoc 的方式作为数据的传输格式。</p>
 <p><strong>Web Services</strong>是一种松散耦合的组件，使用XML描述交换信息内容，可以保证信息的自描述性和自适应性。WS的分布与地理位置无关，这样就可将非核心业务外包给专门的服务提供商。WS基于开放标准与技术（XML &#x2F; SOAP &#x2F; UDDI等），使其特别适合于异构平台的多样性和可扩展性。</p>
 <p><strong>XI</strong>适配器(Adapter)进行XML格式与业务系统的特定类型的数据格式之间的转换。依据业务系统的数据格式的不同，适配器可以分为多种类型，比如 SOAP Adapter, JDBCAdapter, File Adapter, RFC Adapter, IDoc Adapter , WS Adapter和XI Adapter等。WS Adapter和XI Adapter是基于Web Service技术实现的。</p>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SAP工单创建自动释放</title>
-    <url>/2022/06/29/SAP%E5%B7%A5%E5%8D%95%E5%88%9B%E5%BB%BA%E8%87%AA%E5%8A%A8%E9%87%8A%E6%94%BE%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>执行事务代码COR1，创建一个新的工单。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135213099.png" alt="image-20220629135213099"></p>
-<p>输入相关数据后保存，</p>
-<p>系统提示：process order 900275584 created.</p>
-<p>执行事务代码COR3显示该工单</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135400627.png" alt="image-20220629135400627"></p>
-<p>其system status显示为REL, 表明该工单被自动RELEASE了。</p>
-<p>SAP是如何实现此种自动RELEASE工单的效果呢？经查，是通过production schedule profile来实现的。</p>
-<p>该工单的产出物料主数据里production schedule profile(PSP)字段值为PI01.</p>
-<p>去后台如下配置路径，检查该PSP的配置信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135451226.png" alt="image-20220629135451226"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629135501016.png" alt="image-20220629135501016"></p>
-<p>在Automatic Actions里，On Creation 下Release选项被勾选了，如上图。意味着该物料的工单在新建保存的时候就自动被release了。</p>
-<p>或者直接用：OPKP事务码。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220629141453243.png" alt="image-20220629141453243"></p>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -2685,60 +2685,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SAP脚本录制与回放功能</title>
-    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
-    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
-<p>​    一、开启SAP脚本录制功能</p>
-<p>​    事务代码：RZ11</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
-<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
-<p> 进入“参数详细信息”界面后，点击“更改值”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
-<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
-<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
-<p>​    二、SAP脚本录制功能测试</p>
-<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
-<p>​    1.打开录制，点下图红色按钮</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
-<p> 2.输入事务代码“&#x2F;nMM02”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
-<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
-<p>​    3.录制结束，停止录制</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
-<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
-<p>​    5.使用记事本格式或装vb打开录制脚本</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
-<p>​    获取脚本引擎的方法，如下：</p>
-<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
-<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
-<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
-<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
-<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
-<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
-
-<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
-<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
-<ol start="9">
-<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>SAP</category>
-      </categories>
-      <tags>
-        <tag>SAP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SE21创建_复制包均报错</title>
     <url>/2022/05/20/SE21%E5%88%9B%E5%BB%BA-%E5%A4%8D%E5%88%B6%E5%8C%85%E5%9D%87%E6%8A%A5%E9%94%99/</url>
     <content><![CDATA[<h3 id="1-1-1-报错"><a href="#1-1-1-报错" class="headerlink" title="1.1.1 *报错*"></a><strong>1.1.1</strong> <em><strong>*报错*</strong></em></h3><p>SE21</p>
@@ -2797,6 +2743,60 @@
 <p>保存</p>
 <p>SE21创建包即可</p>
 <h3 id="1-1-4-问题小结"><a href="#1-1-4-问题小结" class="headerlink" title="1.1.4 *问题小结*"></a><strong>1.1.4</strong> <em><strong>*问题小结*</strong></em></h3><p>上图是一个正常的D110系统的SE06的设置，可见是SAP的BASIS漏了非常重要的工作。</p>
+]]></content>
+      <categories>
+        <category>SAP</category>
+      </categories>
+      <tags>
+        <tag>SAP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SAP脚本录制与回放功能</title>
+    <url>/2022/06/20/SAP%E8%84%9A%E6%9C%AC%E5%BD%95%E5%88%B6%E4%B8%8E%E5%9B%9E%E6%94%BE/</url>
+    <content><![CDATA[<p>SAP系统的脚本录制功能，支持VB Script，可以将屏幕操作记录下来，转换成VB Script代码，VB Script代码编辑修改后可用在office软件中的vba中，可以批量进行数据处理。</p>
+<p>​    一、开启SAP脚本录制功能</p>
+<p>​    事务代码：RZ11</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/81ii58rk00.png" alt="img"></p>
+<p> 输入参数名称：sapgui&#x2F;user_scripting，回车</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5euwlxi0c3.png" alt="img"></p>
+<p> 进入“参数详细信息”界面后，点击“更改值”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/b587w8m0co.png" alt="img"></p>
+<p> 找到“新价值”录入框，录入“TRUE”，然后保存，即可激活SAP脚本录制功能。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/nc5tugndbh.png" alt="img"></p>
+<p> 在SAP首页，点击“更多”–“SAP GUI 设置和操作”–“脚本录制和回放”为可选状态，且能调出录制控件，即表示激活成功。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/yq9t9g3s7l.jpeg" alt="img"></p>
+<p>​    二、SAP脚本录制功能测试</p>
+<p>​    我们以修改物料主数据的“MRP2视图”中的“计划交货时间”为例，如下：</p>
+<p>​    1.打开录制，点下图红色按钮</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/6us71ox25v.png" alt="img"></p>
+<p> 2.输入事务代码“&#x2F;nMM02”</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbdanrighk.png" alt="img"></p>
+<p>​        输入物料编码、选择工厂代码，进入到MRP2视图，找到计划交货时间，并进行修改后保存。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/fbb5yjslk.png" alt="img"></p>
+<p>​    3.录制结束，停止录制</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/3oghu3jdt7.png" alt="img"></p>
+<p>   \4. 找到存放脚本的文件夹，如果未修改，脚本默认名称为Script1.vbs</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/5ww447pc4p.png" alt="img"></p>
+<p>​    5.使用记事本格式或装vb打开录制脚本</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/2hsr965c76.png" alt="img"></p>
+<p>​    获取脚本引擎的方法，如下：</p>
+<p>​        Set SapGuiAuto  &#x3D; GetObject(“SAPGUI”)</p>
+<p>​        Set application &#x3D; SapGuiAuto.GetScriptingEngine</p>
+<p>​    只需要复制上图红色框部分内容到EXCEL的VBA代码中。</p>
+<p>​    6.在EXCEL中整理需要维护的物料编码、计划交货日期</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/m34rh2fj49.png" alt="img"></p>
+<p>​    7.在EXCEL“开发工具”–“VBA代码”里将脚本复制到vba编辑器， 添加FOR循环，达到批量修改的目的，把物料编码修改为表格的第1列，把计划交货时间修改为表格的第2列</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/uvb4tu6qp.png" alt="img"></p>
+<p>实际vba代码，修改mm02计划交货日期，使用前提：sap已登录。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Sub SAPTEST()</span><br><span class="line">    Dim i%</span><br><span class="line">    Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)</span><br><span class="line">    Set sapApplication = SapGuiAuto.GetScriptingEngine</span><br><span class="line">    Set Connection = sapApplication.Children(0)</span><br><span class="line">    Set session = Connection.Children(0)</span><br><span class="line">    </span><br><span class="line">For i = 2 To 4</span><br><span class="line">With session.findById(&quot;wnd[0]&quot;).maximize</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/okcd&quot;).Text = &quot;/NMM02&quot;</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/ctxtRMMG1-MATNR&quot;).Text = Cells(i, 1)</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14&quot;).Select</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).Text = &quot;2000&quot;</span><br><span class="line">session.findById(&quot;wnd[1]/usr/ctxtRMMG1-WERKS&quot;).caretPosition = 4</span><br><span class="line">session.findById(&quot;wnd[1]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).Text = Cells(i, 2)</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).SetFocus</span><br><span class="line">session.findById(&quot;wnd[0]/usr/tabsTABSPR1/tabpSP14/ssubTABFRA1:SAPLMGMM:2000/subSUB3:SAPLMGD1:2485/txtMARC-PLIFZ&quot;).caretPosition = 1</span><br><span class="line">session.findById(&quot;wnd[0]&quot;).sendVKey 0</span><br><span class="line">session.findById(&quot;wnd[1]/usr/btnSPOP-OPTION1&quot;).press</span><br><span class="line">session.findById(&quot;wnd[0]/tbar[0]/btn[15]&quot;).press</span><br><span class="line"></span><br><span class="line">End With</span><br><span class="line">Next i</span><br><span class="line">End Sub</span><br></pre></td></tr></table></figure>
+
+<p>  <img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220621075119024.png" alt="image-20220621075119024"></p>
+<p>  8.最后，点执行按钮，即可进行SAP的批量数据更新处理</p>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/npk4e41hrh.png" alt="img"></p>
+<ol start="9">
+<li>需要注意的地方是，如果物料编码本身手工操作修改有问题，那么用vba批导也可能会619错误，这个要注意下。</li>
+</ol>
 ]]></content>
       <categories>
         <category>SAP</category>
@@ -3961,41 +3961,6 @@
       </tags>
   </entry>
   <entry>
-    <title>致远OA查询请求REST</title>
-    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
-    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
-<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
-<li>请求rest</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
-<ol start="2">
-<li>获取token</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
-<ol start="3">
-<li>根据rest请求</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
-<ol start="4">
-<li>塞data</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>拼接count和totalcount</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>致远OA</category>
-      </categories>
-      <tags>
-        <tag>致远OA</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>致远OA遇坑记录</title>
     <url>/2022/05/20/%E8%87%B4%E8%BF%9COA%E9%81%87%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<h2 id="数据源问题"><a href="#数据源问题" class="headerlink" title="数据源问题"></a>数据源问题</h2><p>1、数据源这里如果配置OA数据源，必须要点OA元数据，不然不会出现OA元数据的各个表单，只会出现OA数据库中的各个数据表。</p>
@@ -4061,6 +4026,41 @@
 <p>2、如果监控有问题，具体的排错是在</p>
 <p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220616191502501.png" alt="image-20220616191502501"></p>
 <p>点进去，就能看到所有的堵塞的线程情况，进一步进行排错。</p>
+]]></content>
+      <categories>
+        <category>致远OA</category>
+      </categories>
+      <tags>
+        <tag>致远OA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>致远OA查询请求REST</title>
+    <url>/2022/06/15/%E8%87%B4%E8%BF%9COA%E6%9F%A5%E8%AF%A2%E8%AF%B7%E6%B1%82REST/</url>
+    <content><![CDATA[<h2 id="问题背景："><a href="#问题背景：" class="headerlink" title="问题背景："></a>问题背景：</h2><p>致远OA请求rest接口查询数据，需要对查询的数据进行组装。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>根据致远document的需求，按需组装，<strong>尤其是要记住表的标签要加count和totalCount。</strong></p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><ol>
+<li>请求rest</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115114147.png" alt="image-20220615115114147"></p>
+<ol start="2">
+<li>获取token</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115155617.png" alt="image-20220615115155617"></p>
+<ol start="3">
+<li>根据rest请求</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/bigtiao/pic/images/image-20220615115246703.png" alt="image-20220615115246703"></p>
+<ol start="4">
+<li>塞data</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSONObject;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import static net.sf.json.JSONSerializer.toJSON;</span><br><span class="line">import net.sf.json.JSON;</span><br><span class="line">import net.sf.json.xml.XMLSerializer;</span><br><span class="line"></span><br><span class="line">Object aaa = getRestResult(document);</span><br><span class="line">//解析json拿到data</span><br><span class="line">com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(aaa);</span><br><span class="line">//debug(&quot;12&quot;,&quot;alibaba&quot;,jsonObject);</span><br><span class="line">String data = jsonObject.getString(&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">//在data外层拼接一层intab</span><br><span class="line">String data1 = &quot;&#123; &quot;+&quot;\&quot;&quot;+&quot;ET_DATAA&quot;+ &quot;\&quot;&quot; +&quot;:&quot; + data + &quot;&#125;&quot;;</span><br><span class="line">//把取到的值都塞到data</span><br><span class="line"></span><br><span class="line">setParam(document, &quot;data&quot;, data1);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//aaa</span><br><span class="line">Object dataa = document.getContext().getParameters().getValue(&quot;data&quot;);</span><br><span class="line">//Object dataa = getParaByName(document,&quot;data&quot;);</span><br><span class="line"></span><br><span class="line">net.sf.json.JSON json = toJSON(dataa);</span><br><span class="line"></span><br><span class="line">XMLSerializer serializer = new XMLSerializer();</span><br><span class="line"></span><br><span class="line">serializer.setTypeHintsEnabled(false);</span><br><span class="line">serializer.setObjectName(&quot;root&quot;);</span><br><span class="line">serializer.setElementName(&quot;row&quot;);</span><br><span class="line"></span><br><span class="line">String xml = serializer.write(json);</span><br><span class="line"></span><br><span class="line">createDocByXml(xml);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>拼接count和totalcount</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Element root = getRootElement(document);</span><br><span class="line">Element t = getChildByName(root, &quot;ET_DATAA&quot;);</span><br><span class="line">List&lt;Element&gt; chds = getAllChildOfElement(t); //获取et_dataa节点的子节点</span><br><span class="line">t.setAttribute(&quot;count&quot;, chds.size());</span><br><span class="line">t.setAttribute(&quot;totalCount&quot;, chds.size());</span><br><span class="line">//debug(&quot;3&quot;,&quot;aaa&quot;,t);</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>致远OA</category>
